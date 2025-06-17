@@ -35,16 +35,20 @@ class ManagerRepository
         return $this->model->find($id);
     }
 
-    public function update(int $id, array $data): void
+    public function update(int $id, array $data): ?Manager
     {
         $manager = $this->findById($id);
+        if (!$manager) return null;
         $manager->update($data);
         $this->clearManagerCache($manager->manager_id);
+        return $manager;
     }
 
-    public function create(array $data)
+    public function create(array $data): Manager
     {
-        return $this->model->create($data);
+        $manager = $this->model->create($data);
+        $this->clearManagerCache($manager->manager_id);
+        return $manager;
     }
 
 
