@@ -38,12 +38,15 @@ class AuthPassword extends Component
         session()->put('auth_manager.manager_id', $id);
     }
 
+    public function rules(): array
+    {
+        return [
+            'token' => 'required|string',
+        ];
+    }
+
     public function submit(OAuthService $OAuthService, ManagerService $ManagerService)
     {
-        $this->validate([
-            'token' => 'required|string',
-        ]);
-
         $this->t();
 
         $accessToken = session('auth_manager.access_token');
