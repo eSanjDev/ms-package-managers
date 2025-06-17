@@ -29,7 +29,7 @@ class AuthPassword extends Component
     private function t(): void
     {
         if (RateLimiter::tooManyAttempts("auth-manager-" . request()->ip(), $this->maxAttempts)) {
-            $this->addError('token', AuthManagerStatusResponsesEnum::to_many_attempts->value);
+            $this->addError('token', AuthManagerStatusResponsesEnum::too_many_attempts->value);
         }
     }
 

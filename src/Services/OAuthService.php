@@ -60,7 +60,7 @@ class OAuthService
      * @param string $state
      * @return bool
      */
-    public function isExistsState(string $state): bool
+    public function pullState(string $state): bool
     {
         return (bool)Cache::pull($this->stateCacheKey . $state);
     }

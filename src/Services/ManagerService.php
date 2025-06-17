@@ -39,13 +39,13 @@ class ManagerService
         ]);
     }
 
-    public function SwitchToInactive(int $managerID)
+    public function switchToInactive(int $managerID)
     {
         $id = $this->repository->findByMangerId($managerID)?->id;
         return $this->repository->update($id, ['is_active' => 0]);
     }
 
-    public function SwitchToActive(int $managerID)
+    public function switchToActive(int $managerID)
     {
         $id = $this->repository->findByMangerId($managerID)?->id;
         return $this->repository->update($id, ['is_active' => 1]);

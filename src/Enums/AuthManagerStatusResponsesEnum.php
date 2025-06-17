@@ -9,5 +9,5 @@ enum AuthManagerStatusResponsesEnum: string
     case public_key_not_found = 'Public key not found';
     case invalid_token = 'Invalid token';
     case not_found_token = 'Token not found';
-    case to_many_attempts = 'Too many attempts. Please try again later.';
+    case too_many_attempts = 'Too many attempts. Please try again later.';
 }

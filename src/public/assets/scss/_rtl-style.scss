@@ -1,0 +1,52 @@
+[dir="rtl"] * {
+    font-family: ECfont;
+}
+
+[dir="rtl"] .slider-box-items {
+    @apply flex-row-reverse ;
+}
+
+[dir="rtl"] .logo-box a.return-link {
+    flex-direction: row;
+}
+
+[dir="rtl"] .form-input i.icon-password::after {
+    right: auto;
+    left: 24px;
+}
+
+[dir="rtl"] .btn-next::before,
+[dir="rtl"] .btn-prev::before {
+    transform: unset;
+}
+
+[dir="rtl"] .other-link {
+    & a, & .other-link-select {
+        border-right: none;
+        border-left: 2px solid #D0D0D0;
+        padding-left: 8px;
+        padding-right: 0;
+    }
+}
+
+[dir="rtl"] .other-link a:last-of-type {
+    border-left: none;
+}
+
+[dir="rtl"] .form-input.multi-input {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"].rage-password {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .input-box-info {
+    padding-left: 0px;
+    padding-right: 7px;
+
+    &::before {
+        left: auto;
+        right: 0;
+    }
+}

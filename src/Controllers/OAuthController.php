@@ -22,11 +22,11 @@ class OAuthController extends Controller
 
     public function callback(Request $request)
     {
-//        throw_if(
-//            !$this->service->isExistsState($request->input("state")),
-//            InvalidArgumentException::class,
-//            'Invalid state value.'
-//        );
+        throw_if(
+            !$this->service->pullState($request->input("state")),
+            InvalidArgumentException::class,
+            'Invalid state value.'
+        );
 
         $response = $this->service->getToken($request->input("code"));
 
