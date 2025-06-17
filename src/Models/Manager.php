@@ -12,18 +12,15 @@ class Manager extends Model
     protected $table = 'oauth_managers';
 
     protected $fillable = [
-        'sub_id',
+        'manager_id',
         'token',
         'is_active',
         'last_login',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'is_active' => 'boolean',
-            'last_login' => 'datetime',
-            'token' => 'hashed'
-        ];
-    }
+    protected $casts = [
+        'is_active' => 'boolean',
+        'last_login' => 'datetime',
+        'token' => 'hashed'
+    ];
 }
