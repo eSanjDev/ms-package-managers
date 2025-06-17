@@ -1,0 +1,32 @@
+{
+    "name": "esanj/manager",
+    "description": "",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Esanj Team"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Esanj\\Manager\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Esanj\\Manager\\Providers\\ManagerServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^12.0",
+        "firebase/php-jwt": "^6.11",
+        "livewire/livewire": "^3.6"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
+
