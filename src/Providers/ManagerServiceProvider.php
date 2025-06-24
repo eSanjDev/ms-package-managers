@@ -2,47 +2,129 @@
 
 namespace Esanj\Manager\Providers;
 
+use Esanj\Manager\Commands\InstallCommand;
 use Esanj\Manager\Livewire\AuthPassword;
-use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Repositories\ManagerRepository;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
 class ManagerServiceProvider extends ServiceProvider
 {
-    public function register()
+    /**
+     * Register any application services.
+     */
+    public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/manager.php', 'manager');
-
-        $this->app->bind(
-            ManagerRepository::class,
-            fn($app) => new ManagerRepository(new Manager())
-        );
+        $this->registerConfig();
+        $this->registerCommands();
     }
 
-    public function boot()
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
     {
-        $this->publishes([
-            __DIR__ . '/../config/manager.php' => config_path('manager.php'),
-        ], 'manager-config');
+        $this->registerRoutes();
+        $this->registerViews();
+        $this->registerTranslations();
+        $this->registerMigrations();
+        $this->registerLivewireComponents();
+        $this->registerPublishing();
+    }
 
-        $this->publishes([
-            __DIR__ . '/../resources/views' => resource_path('views/vendor/manager'),
-        ], 'manager-views');
+    /**
+     * Register configuration files.
+     */
+    private function registerConfig(): void
+    {
+        $this->mergeConfigFrom($this->packagePath('config/manager.php'), 'manager');
+    }
 
-        $this->publishes([
-            __DIR__ . '/../lang' => lang_path('vendor/manager'),
-        ], 'manager-lang');
+    /**
+     * Register console commands.
+     */
+    private function registerCommands(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                InstallCommand::class,
+            ]);
+        }
+    }
 
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'manager');
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'manager');
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+    /**
+     * Register routes.
+     */
+    private function registerRoutes(): void
+    {
+        $this->loadRoutesFrom($this->packagePath('routes/web.php'));
+    }
 
+    /**
+     * Register views.
+     */
+    private function registerViews(): void
+    {
+        $this->loadViewsFrom($this->packagePath('resources/views'), 'manager');
+    }
+
+    /**
+     * Register translations.
+     */
+    private function registerTranslations(): void
+    {
+        $this->loadTranslationsFrom($this->packagePath('lang'), 'manager');
+    }
+
+    /**
+     * Register migrations.
+     */
+    private function registerMigrations(): void
+    {
+        $this->loadMigrationsFrom($this->packagePath('database/migrations'));
+    }
+
+    /**
+     * Register Livewire components.
+     */
+    private function registerLivewireComponents(): void
+    {
         Livewire::component('manager.auth-password', AuthPassword::class);
+    }
 
-        $this->publishes([
-            __DIR__ . '/../public' => public_path(),
-        ], 'manager-assets');
+    /**
+     * Register assets, configs, views, langs, migrations for publishing.
+     */
+    private function registerPublishing(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                $this->packagePath('public/assets') => public_path('assets/vendor/manager'),
+            ], 'manager-assets');
+
+            $this->publishes([
+                $this->packagePath('config/manager.php') => config_path('manager.php'),
+            ], 'manager-config');
+
+            $this->publishes([
+                $this->packagePath('resources/views') => resource_path('views/vendor/manager'),
+            ], 'manager-views');
+
+            $this->publishes([
+                $this->packagePath('lang') => lang_path('vendor/manager'),
+            ], 'manager-lang');
+
+            $this->publishes([
+                $this->packagePath('database/migrations/') => database_path('migrations'),
+            ], 'manager-migrations');
+        }
+    }
+
+    /**
+     * Get full path to a package sub-folder/file.
+     */
+    private function packagePath(string $path): string
+    {
+        return dirname(__DIR__) . '/' . ltrim($path, '/');
     }
 }
