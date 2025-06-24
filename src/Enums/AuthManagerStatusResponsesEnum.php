@@ -4,10 +4,15 @@ namespace Esanj\Manager\Enums;
 
 enum AuthManagerStatusResponsesEnum: string
 {
-    case successful = 'Successful';
-    case token_incorrect = 'The token you entered is incorrect';
-    case public_key_not_found = 'Public key not found';
-    case invalid_token = 'Invalid token';
-    case not_found_token = 'Token not found';
-    case too_many_attempts = 'Too many attempts. Please try again later.';
+    case SUCCESSFUL = 'Successful';
+    case TOKEN_INCORRECT = 'token_incorrect';
+    case PUBLIC_KEY_NOT_FOUND = 'public_key_not_found';
+    case INVALID_TOKEN = 'invalid_token';
+    case TOKEN_NOT_FOUND = 'token_not_found';
+    case TOO_MANY_ATTEMPTS = 'too_many_attempts';
+
+    public function message(array $params = []): string
+    {
+        return trans("manager::manager.errors.{$this->value}", $params);
+    }
 }
