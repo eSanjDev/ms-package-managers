@@ -6,10 +6,7 @@
     <title>@yield('title') | {{ config('app.name') }}</title>
 
     {{-- Styles --}}
-    <link href="/assets/css/auth-style.css" rel="stylesheet">
-{{--    @vite(['resources/assets/scss/auth/auth-style.scss'])--}}
-    @stack('styles')
-
+    <link href="{{asset("/assets/vendor/manager/css/auth-style.css")}}" rel="stylesheet">
 
 </head>
 <body>
@@ -19,7 +16,6 @@
     </div>
 </main>
 
-{{--@vite(['resources/assets/js/pages/auth/auth-script.js'])--}}
-<script src="/assets/js/auth-script.js"></script>
+<script src="{{asset("/assets/vendor/manager/js/auth-script.js")}}"></script>
 </body>
 </html>
