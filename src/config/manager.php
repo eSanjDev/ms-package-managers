@@ -19,4 +19,6 @@ return [
     'redirect_to' => '/',
 
     'base_url' => env('ACCOUNTING_BASE_URL', 'http://127.0.0.1:8000'),
+
+    'logo_path' => '/assets/vendor/manager/img/logo.png',
 ];
