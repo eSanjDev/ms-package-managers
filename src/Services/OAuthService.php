@@ -114,7 +114,7 @@ class OAuthService
         throw_if(
             !File::exists(storage_path('oauth-public.key')),
             FileNotFoundException::class,
-            AuthManagerStatusResponsesEnum::public_key_not_found->value
+            AuthManagerStatusResponsesEnum::PUBLIC_KEY_NOT_FOUND->message()
         );
 
         $publicKey = file_get_contents(storage_path('oauth-public.key'));

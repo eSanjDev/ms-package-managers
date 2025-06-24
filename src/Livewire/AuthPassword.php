@@ -29,7 +29,7 @@ class AuthPassword extends Component
     private function t(): void
     {
         if (RateLimiter::tooManyAttempts("auth-manager-" . request()->ip(), $this->maxAttempts)) {
-            $this->addError('token', AuthManagerStatusResponsesEnum::too_many_attempts->value);
+            $this->addError('token', AuthManagerStatusResponsesEnum::TOO_MANY_ATTEMPTS->message());
         }
     }
 
@@ -52,7 +52,7 @@ class AuthPassword extends Component
         $accessToken = session('auth_manager.access_token');
 
         if (!$accessToken) {
-            return $this->addError('token', AuthManagerStatusResponsesEnum::not_found_token->value);
+            return $this->addError('token', AuthManagerStatusResponsesEnum::TOKEN_NOT_FOUND->message());
         }
 
         $authenticate = $OAuthService->authenticate($accessToken);
@@ -63,7 +63,7 @@ class AuthPassword extends Component
 
         if (!$ManagerService->checkManagerToken($manager, $this->token)) {
             RateLimiter::increment("auth-manager-" . request()->ip(), $this->decaySeconds);
-            return $this->addError('token', AuthManagerStatusResponsesEnum::token_incorrect->value);
+            return $this->addError('token', AuthManagerStatusResponsesEnum::TOKEN_INCORRECT->message());
         }
 
         $this->updateSession($managerID);
