@@ -26,7 +26,7 @@ class AuthPassword extends Component
         return view('manager::livewire.auth-password');
     }
 
-    private function t(): void
+    private function checkRateLimit(): void
     {
         if (RateLimiter::tooManyAttempts("auth-manager-" . request()->ip(), $this->maxAttempts)) {
             $this->addError('token', AuthManagerStatusResponsesEnum::TOO_MANY_ATTEMPTS->message());
@@ -47,7 +47,7 @@ class AuthPassword extends Component
 
     public function submit(OAuthService $OAuthService, ManagerService $ManagerService)
     {
-        $this->t();
+        $this->checkRateLimit();
 
         $accessToken = session('auth_manager.access_token');
 
