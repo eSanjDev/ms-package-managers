@@ -21,7 +21,56 @@ class InstallCommand extends Command
         $this->info('Running migrations...');
         $this->call('migrate');
 
+
+        $this->ensureEnvKeys([
+            'CLIENT_ID',
+            'SECRET_ID',
+            'ACCOUNTING_BASE_URL',
+        ]);
+
+
         $this->info('Manager package installed successfully ✔');
         return self::SUCCESS;
+    }
+
+    protected function ensureEnvKeys(array $keys): bool
+    {
+        $envPath = base_path('.env');
+        if (!file_exists($envPath) || !is_writable($envPath)) {
+            $this->error('.env file not found or not writable.');
+            return false;
+        }
+
+        $envContent = file_get_contents($envPath);
+        $lines = explode("\n", $envContent);
+
+        $existingKeys = [];
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || str_starts_with($line, '#')) {
+                continue;
+            }
+            $parts = explode('=', $line, 2);
+            if (count($parts) === 2) {
+                $existingKeys[trim($parts[0])] = true;
+            }
+        }
+
+        $newLines = [];
+        foreach ($keys as $key) {
+            if (!isset($existingKeys[$key])) {
+                $newLines[] = "$key=";
+            }
+        }
+
+        if (!empty($newLines)) {
+            $envContent = rtrim($envContent) . "\n" . implode("\n", $newLines) . "\n";
+            file_put_contents($envPath, $envContent);
+            $this->info('.env keys added: ' . implode(', ', $keys));
+        } else {
+            $this->info('All env keys already exist.');
+        }
+
+        return true;
     }
 }
