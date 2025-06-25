@@ -2,6 +2,7 @@
 
 namespace Esanj\Manager\Providers;
 
+use Esanj\Manager\Commands\CreateManagerCommand;
 use Esanj\Manager\Commands\InstallCommand;
 use Esanj\Manager\Livewire\AuthPassword;
 use Esanj\Manager\Repositories\ManagerRepository;
@@ -48,6 +49,7 @@ class ManagerServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
+                CreateManagerCommand::class,
             ]);
         }
     }
