@@ -17,7 +17,7 @@ class ManagerService
         return $this->repository->findByMangerId($id);
     }
 
-    public function checkManagerToken(Manager $manager, string $token): bool
+    public function checkManagerToken(Manager $manager = null, string $token): bool
     {
         if ($manager && $manager->is_active && Hash::check($token, $manager->token)) {
             return true;
