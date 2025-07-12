@@ -1,181 +1,138 @@
-# Manager Package
+# Manager Auth Package for Laravel
+
+A secure middleware + token-based authentication system for manager-level access, built for microservice-based
+architectures, using Laravel.
+
+## 🌐 Overview
+
+This package provides authentication protection for manager/admin-level routes using a two-step process:
+
+1. **OAuth Authentication** through a centralized accounting microservice.
+2. **Static Token Verification** using a hashed secret token stored in a `oauth_managers` table.
+
+If unauthorized, the manager is redirected to the accounting service. After login, the manager must enter a static token
+to verify identity.
 
 ---
 
-## Overview
+## ✅ Features
 
-Manager is a robust Laravel 12 package for OAuth admin authentication via an accounting microservice.  
-It implements a two-step login flow:
-1. OAuth 2.0 authentication with an external microservice
-2. Static token confirmation for admin users
-
-This ensures highly secure, segregated admin access for your application.  
-
----
-
-## Features
-
-- Laravel 12 & PHP 8.2+ support
-- OAuth 2.0 with customizable accounting microservice
-- Static token confirmation (after OAuth)
-- Admin session & middleware protection (`CheckAccessTokenMiddleware`)
-- UI with Livewire 3 components (RTL/LTR)
-- Rate limiting for brute-force protection
-- Configurable, publishable views and assets
-- Persian and English language support  
+- 🧩 **Configurable Laravel Middleware**
+- 🔐 Supports **OAuth2 + static token**
+- ⚠️ **Rate limiting** for incorrect attempts (configurable)
+- 💾 Configurable caching (TTL, driver, prefix)
+- 🧑‍💼 Artisan command: `manager:create` to create new manager records
+- 🗂️ Includes multilingual support (EN/FA)
+- 🗃️ Highly extensible and publishable
 
 ---
 
-## Requirements
+## 📦 Installation
 
-1. **PHP >= 8.2**
-2. **Laravel >= 12.x**
-3. **Livewire >= 3.6**
-4. **Access to an OAuth-powered accounting microservice**
-
----
-
-## Installation
-
-### 1. Install via Composer
-
-```sh
+```bash
 composer require esanj/ms-package-managers
 ```
 
-### 2. Run the package installer
-```sh
+Run the install command to publish assets, and run migrations:
+
+```bash
 php artisan manager:install
 ```
 
-This will:
+## ⚙️ Configuration
 
-- Publish config files to config/
-- Publish static assets to public/assets/vendor/manager
-- Run required migrations to create the oauth_managers table
+Set the following environment variables:
 
-### 3. Configure Environment
+```
+MANAGER_SUCCESS_REDIRECT=/admin/dashboard
+MANAGER_PUBLIC_KEY_PATH=storage/oauth-public.key
+MANAGER_LOGO_PATH=/assets/vendor/manager/img/logo.png
+```
 
-Set the following variables in your .env file:
+## 🔑 Authentication Flow
 
-`CLIENT_ID=your-app-client-id
-`
+protected route ( e . g . ) is behind .Your protected route (eg /admin) is behind CheckAuthManagerMiddleware.
+not authenticated :If not authenticated:
+to accounting microservice for OAuth loginRedirects to accounting microservice for OAuth login
+return , it requests a static tokenUpon return, it requests a static token
+Token is checked using a hashed comparison
+Success? Manager is marked logged-in in the session
 
-`SECRET_ID=your-app-secret-id
-`
+## 🔒 Middleware Protection
 
-`
-ACCOUNTING_BASE_URL=https://your-accounting-microservice.com
-`
-
-ACCOUNTING_BASE_URL is the full base URI for your accounting microservice.
-
-**CLIENT_ID and SECRET_ID are the credentials for your application obtained from the accounting microservice.**
-
-### 4. Add oauth_public.key file
-
-Copy the public key used to verify JWT tokens to the following path:
-
-`
-storage/oauth-public.key
-`
-
-(You can obtain this from your accounting service admin.)
-
----
-
-## Usage
-
-- ### OAuth Flow
-
-They're redirected to the OAuth login page of your accounting microservice
-
-Upon successful login, callback saves the access/refresh token in session
-
-User enters their static manager token (second step)
-
-On success, session is authorized as admin
-
-- ### Protecting Routes
-
-To ensure only logged-in managers can access certain pages, apply the middleware:
+To protect routes:
 
 ```php
-use Esanj\Manager\Middleware\CheckAccessTokenMiddleware;
+use Esanj\Manager\Middleware\CheckAuthManagerMiddleware;
 
-Route::middleware([CheckAccessTokenMiddleware::class])->group(function () {
-    // your protected admin routes
+Route::middleware([CheckAuthManagerMiddleware::class])
+->prefix('admin')
+->group(function () {
+// Protected routes here
 });
 ```
----
 
-## Creating Manager Accounts
-You can create new admin (manager) records with this command:
+## 🔨 Artisan Commands
 
-Example:
-```sh
+Create a new manager:
+
+```bash
 php artisan manager:create
 ```
-If the manager ID is already registered, you'll get an error.
-Token is hashed for storage.
 
----
+You'll be asked for the manager ID. A random static token will be hashed and stored. Duplicate manager IDs are blocked.
 
-## Customizing
+## 🎯 Publishing Resources
 
-The Manager package is fully customizable. You can publish and override every part using artisan commands:
+You can publish any part of the package for customization:
 
-### Publish Languages
+Resource Command
 
-To publish the language files (for translation editing):
+Config:    ```php artisan vendor:publish --tag=manager-config```
 
-```sh
-php artisan vendor:publish --provider="Esanj\Manager\Providers\ManagerServiceProvider" --tag=manager-lang
+Views: ```php artisan vendor:publish --tag=manager-views```
+
+Lang files:    ```php artisan vendor:publish --tag=manager-lang```
+
+Migrations:    ```php artisan vendor:publish --tag=manager-migrations```
+
+Assets:    ```php artisan vendor:publish --tag=manager-assets```
+
+## 💼 ManagerService Class Overview
+
+Namespace: Esanj\Manager\Services\ManagerService
+Purpose is the core application service responsible for handling manager - specific business logic . It acts as an abstraction layer between your application ( e.g. controllers , middleware ) and the persistence layer ( ) , following SOLID design principles .​​​The ManagerServiceis the core application service responsible for handling manager-specific business logic. It acts as an abstraction layer between your application (eg controllers, middleware) and the persistence layer ( ManagerRepository), following SOLID design principles .
+
+Method Description
+
+```findByManagerID(int $id)```	Fetches an Managerinstance by its manager ID (cached if enabled).
+
+```checkManagerToken(Manager $manager, string $token): bool```	Validates a raw input tokenagainst a hashed token stored in the database.
+
+```updateLastLogin(int $id)```	Updates the last_logintimestamp of a manager to now().
+
+```updateManager(int $id, array $data)``` Manager	Updates a manager record. Accepts fields like token, is_active, etc.
+
+```createManager(int $id, string $token)``` Manager	Creates a new manager with the given manager_idand a hashed token.
+
+```switchToInactive(int $managerID)```	Flags the manager as inactive ( is_active= false).
+
+```switchToActive(int $managerID)```	Flags the manager as active ( is_active= true).
+
+Example Usage:
+```php
+use Esanj\Manager\Services\ManagerService;
+
+$service = app(ManagerService::class);
+
+$manager = $service->findByManagerID(175);
+
+if ($service->checkManagerToken($manager, 'my-secret-token')) {
+$service->updateLastLogin($manager->id);
+}
 ```
+**Notes**
 
-Edit the files in: `lang/**/manager.php`
-
-### Publish Migrations
-
-To publish only the migration files (if you want to modify the table structure):
-
-```sh
-php artisan vendor:publish --provider="Esanj\Manager\Providers\ManagerServiceProvider" --tag=manager-migrations
-```
-
-Edit the files in: `database/migrations/`
-
-### Publish Assets
-
-To publish static assets (CSS, JS, images, fonts):
-
-```sh
-php artisan vendor:publish --provider="Esanj\Manager\Providers\ManagerServiceProvider" --tag=manager-assets
-```
-
-After publishing you can edit: `public/assets/vendor/manager/`
-
-### Publish Views
-
-To customize Blade views:
-
-```sh
-php artisan vendor:publish --provider="Esanj\Manager\Providers\ManagerServiceProvider" --tag=manager-views
-```
-
-Edit views in: `resources/views/vendor/manager/`
-
-### Publish Config
-You can also publish the config file if you want to update default settings, such as route prefix, cache, redirects, etc:
-
-```sh
-php artisan vendor:publish --provider="Esanj\Manager\Providers\ManagerServiceProvider" --tag=manager-config
-```
-
-Edit: `config/manager.php`
-
----
-
-## Credits
-Developed and maintained by the Esanj Team.
-Pull requests and issues are welcome.
+are always hashed using Laravel’s for security .Tokens are always hashed using Laravel's `Hash::check()` for security.
+This service is used internally in the middleware, controller, and artisan commands.
+manager’s activation state ( ) is strictly checked before session persist .The manager's activation state ( is_active) is strictly checked before session persist.
