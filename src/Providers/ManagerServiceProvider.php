@@ -4,8 +4,9 @@ namespace Esanj\Manager\Providers;
 
 use Esanj\Manager\Commands\CreateManagerCommand;
 use Esanj\Manager\Commands\InstallCommand;
-use Esanj\Manager\Livewire\AuthPassword;
-use Esanj\Manager\Repositories\ManagerRepository;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
@@ -67,7 +68,7 @@ class ManagerServiceProvider extends ServiceProvider
      */
     private function registerViews(): void
     {
-        $this->loadViewsFrom($this->packagePath('resources/views'), 'manager');
+        $this->loadViewsFrom($this->packagePath('views'), 'manager');
     }
 
     /**
@@ -101,7 +102,7 @@ class ManagerServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                $this->packagePath('public/assets') => public_path('assets/vendor/manager'),
+                $this->packagePath('assets') => public_path('assets/vendor/manager'),
             ], 'manager-assets');
 
             $this->publishes([

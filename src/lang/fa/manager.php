@@ -19,10 +19,10 @@ return [
     ],
 
     'errors' => [
-        'token_incorrect' => 'توکن وارد شده صحیح نیست.',
-        'public_key_not_found' => 'کلید عمومی یافت نشد.',
-        'invalid_token' => 'توکن نامعتبر است.',
-        'token_not_found' => 'توکن یافت نشد.',
         'too_many_attempts' => 'تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً بعداً دوباره تلاش کنید.',
+
+        'public_key_not_found' => 'کلید عمومی یافت نشد.',
+        'token_incorrect' => 'توکن وارد شده صحیح نمی باشد.',
+        'manager_not_active' => 'مدیر فعال نیست',
     ],
 ];

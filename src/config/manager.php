@@ -2,23 +2,27 @@
 
 
 return [
-    'client_id' => env('CLIENT_ID'),
-    'secret_id' => env('SECRET_ID'),
+    'logo_path' => env("MANAGER_LOGO_PATH"),
 
-    'state_ttl' => env('STATE_TTL', 300), // 5 minutes
+    'success_redirect' => env('MANAGER_SUCCESS_REDIRECT', '/'),
 
-    'cache' => [
-        'is_enabled' => env('CACHE_ENABLED', true),
-        'prefix' => 'oauth_manager_',
-        'driver' => env('CACHE_DRIVER', 'file'),
-        'ttl' => env('CACHE_TTL', 60 * 24 * 7), // 7 days
+    'routes' => [
+        'prefix' => env('MANAGER_ROUTE_PREFIX', 'manager'),
+        'middleware' => ['web'],
     ],
 
-    'prefix' => 'oauth',
+    'public_key_path' => env("MANAGER_PUBLIC_KEY_PATH", storage_path('oauth-public.key')),
 
-    'redirect_to' => '/',
+    'cache' => [
+        'is_enabled' => env('MANAGER_CACHE_ENABLED', true),
+        'prefix' => env("MANAGER_CACHE_PREFIX", 'manager_'),
+        'driver' => env('CACHE_DRIVER', 'file'),
+        'ttl' => env('MANAGER_CACHE_TTL', 60 * 24 * 7),
+    ],
 
-    'base_url' => env('ACCOUNTING_BASE_URL', 'http://127.0.0.1:8000'),
-
-    'logo_path' => '/assets/vendor/manager/img/logo.png',
+    'rate_limit' => [
+        'is_enabled' => env('MANAGER_RATE_LIMIT_ENABLED', true),
+        'max_attempts' => env('MANAGER_RATE_LIMIT_MAX_ATTEMPTS', 1),
+        'decay_seconds' => env('MANAGER_RATE_LIMIT_DECAY_SECONDS', 10 * 60), // 10 minutes
+    ],
 ];

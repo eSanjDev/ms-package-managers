@@ -1,13 +1,13 @@
 <?php
 
-use Esanj\Manager\Controllers\OAuthController;
+use Esanj\Manager\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware(['web'])
-    ->prefix(config('manager.prefix', 'oauth'))
-    ->name('oauth.')
+Route::middleware(config('manager.routes.middleware'))
+    ->prefix(config('manager.routes.prefix'))
+    ->name('manager.')
     ->group(function () {
-        Route::get('/', [OAuthController::class, 'redirect'])->name('redirect');
-        Route::get('/callback', [OAuthController::class, 'callback'])->name('callback');
+        Route::get('/token', [TokenController::class, 'index'])->name('index');
+        Route::post('/token', [TokenController::class, 'login'])->name('login');
     });

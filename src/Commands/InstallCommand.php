@@ -23,9 +23,7 @@ class InstallCommand extends Command
 
 
         $this->ensureEnvKeys([
-            'CLIENT_ID',
-            'SECRET_ID',
-            'ACCOUNTING_BASE_URL',
+            'MANAGER_SUCCESS_REDIRECT',
         ]);
 
 

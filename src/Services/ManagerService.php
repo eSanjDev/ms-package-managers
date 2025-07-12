@@ -19,7 +19,7 @@ class ManagerService
 
     public function checkManagerToken(Manager $manager = null, string $token): bool
     {
-        if ($manager && $manager->is_active && Hash::check($token, $manager->token)) {
+        if ($manager && Hash::check($token, $manager->token)) {
             return true;
         }
 
@@ -29,6 +29,11 @@ class ManagerService
     public function updateLastLogin(int $id)
     {
         return $this->repository->update($id, ['last_login' => now()]);
+    }
+
+    public function updateManager(int $id, array $data): Manager
+    {
+        return $this->repository->update($id, $data);
     }
 
     public function createManager(int $id, string $token): Manager
