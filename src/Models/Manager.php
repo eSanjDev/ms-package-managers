@@ -9,8 +9,6 @@ class Manager extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'oauth_managers';
-
     protected $fillable = [
         'manager_id',
         'token',
