@@ -4,11 +4,7 @@ namespace Esanj\Manager\Providers;
 
 use Esanj\Manager\Commands\CreateManagerCommand;
 use Esanj\Manager\Commands\InstallCommand;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 
 class ManagerServiceProvider extends ServiceProvider
 {
@@ -30,7 +26,6 @@ class ManagerServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerTranslations();
         $this->registerMigrations();
-        $this->registerLivewireComponents();
         $this->registerPublishing();
     }
 
@@ -85,14 +80,6 @@ class ManagerServiceProvider extends ServiceProvider
     private function registerMigrations(): void
     {
         $this->loadMigrationsFrom($this->packagePath('database/migrations'));
-    }
-
-    /**
-     * Register Livewire components.
-     */
-    private function registerLivewireComponents(): void
-    {
-        Livewire::component('manager.auth-password', AuthPassword::class);
     }
 
     /**
