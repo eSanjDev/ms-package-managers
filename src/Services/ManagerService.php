@@ -2,6 +2,7 @@
 
 namespace Esanj\Manager\Services;
 
+use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Repositories\ManagerRepository;
 use Illuminate\Support\Facades\Hash;
@@ -36,11 +37,12 @@ class ManagerService
         return $this->repository->update($id, $data);
     }
 
-    public function createManager(int $id, string $token): Manager
+    public function createManager(int $manager_id, string $token, ManagerRoleEnum $role = ManagerRoleEnum::Manager): Manager
     {
         return $this->repository->create([
-            'manager_id' => $id,
+            'manager_id' => $manager_id,
             'token' => $token,
+            'role' => $role
         ]);
     }
 
