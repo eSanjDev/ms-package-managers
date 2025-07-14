@@ -29,7 +29,7 @@
                             <div class="input-box @error('token') error @enderror">
                                 <p>{{ trans('manager::manager.labels.token') }}</p>
                                 <div class="form-input">
-                                    <input type="password" name="token" required value="4QYpLyQ8Lge73CJNQfoyjPDTF2FqkqYX"
+                                    <input type="password" name="token" required
                                            placeholder="{{ trans('manager::manager.steps.security.token_placeholder') }}">
                                     <i onclick="AuthScripts.showHidePass(this)" class="icon-password"></i>
                                 </div>
