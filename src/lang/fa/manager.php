@@ -20,9 +20,9 @@ return [
 
     'errors' => [
         'too_many_attempts' => 'تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً بعداً دوباره تلاش کنید.',
-
         'public_key_not_found' => 'کلید عمومی یافت نشد.',
         'token_incorrect' => 'توکن وارد شده صحیح نمی باشد.',
         'manager_not_active' => 'مدیر فعال نیست',
+        'role_not_allowed' => 'نقش انتخاب شده مجاز نیست',
     ],
 ];

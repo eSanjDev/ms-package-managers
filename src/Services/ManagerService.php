@@ -5,56 +5,74 @@ namespace Esanj\Manager\Services;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Repositories\ManagerRepository;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class ManagerService
 {
-    public function __construct(protected ManagerRepository $repository)
+    public function __construct(
+        protected ManagerRepository $repository
+    )
     {
     }
 
-    public function findByManagerID(int $id)
+    public function findByEsanjId(int $esanjId): ?Manager
     {
-        return $this->repository->findByMangerId($id);
+        return $this->repository->findByEsanjId($esanjId);
     }
 
-    public function checkManagerToken(Manager $manager = null, string $token): bool
+    public function findById(int $id): ?Manager
     {
-        if ($manager && Hash::check($token, $manager->token)) {
-            return true;
-        }
-
-        return false;
+        return $this->repository->findById($id);
     }
 
-    public function updateLastLogin(int $id)
+    public function createManager(array $data): Manager
     {
-        return $this->repository->update($id, ['last_login' => now()]);
+        return $this->repository->create($data);
     }
 
-    public function updateManager(int $id, array $data): Manager
+    public function updateManager(int $id, array $data): ?Manager
     {
         return $this->repository->update($id, $data);
     }
 
-    public function createManager(int $manager_id, string $token, ManagerRoleEnum $role = ManagerRoleEnum::Manager): Manager
+    public function delete(int $id): bool
     {
-        return $this->repository->create([
-            'manager_id' => $manager_id,
-            'token' => $token,
-            'role' => $role
+        return $this->repository->delete($id);
+    }
+
+    public function restoreManager(int $id): ?Manager
+    {
+        return $this->repository->restore($id);
+    }
+
+    public function checkManagerToken(?Manager $manager, string $token): bool
+    {
+        return $manager && Hash::check($token, $manager->token);
+    }
+
+    public function updateLastLogin(int $id): ?Manager
+    {
+        return $this->repository->update($id, [
+            'last_login' => Carbon::now(),
         ]);
     }
 
-    public function switchToInactive(int $managerID)
+    public function hasPermission(int $id, string $permission): bool
     {
-        $id = $this->repository->findByMangerId($managerID)?->id;
-        return $this->repository->update($id, ['is_active' => 0]);
+        $manager = $this->findById($id);
+
+        if (!$manager) {
+            return false;
+        }
+
+        // Admin has all permissions
+        return $manager->role === ManagerRoleEnum::Admin ||
+            $manager->permissions->contains('key', $permission);
     }
 
-    public function switchToActive(int $managerID)
+    public function generateToken(int $length = 32): string
     {
-        $id = $this->repository->findByMangerId($managerID)?->id;
-        return $this->repository->update($id, ['is_active' => 1]);
+        return bin2hex(random_bytes($length / 2));
     }
 }

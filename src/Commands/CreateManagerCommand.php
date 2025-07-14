@@ -2,6 +2,7 @@
 
 namespace Esanj\Manager\Commands;
 
+use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
@@ -13,20 +14,30 @@ class CreateManagerCommand extends Command
 
     public function handle(ManagerService $service): int
     {
-        $managerId = $this->ask('Manager ID');
+        $esanjId = $this->ask('Esanj ID');
 
-        if (!$managerId) {
-            $this->error('manager id are required.');
+        if (!$esanjId) {
+            $this->error('Esanj id are required.');
             return self::FAILURE;
         }
 
-        $manager = $service->findByManagerID($managerId);
+        $manager = $service->findByEsanjId($esanjId);
+
         if ($manager) {
             $this->error('Manager with this ID already exists.');
             return self::FAILURE;
         }
 
-        $service->createManager($managerId, Str::random(32));
+        $token = Str::random(32);
+
+        $data = [
+            'esanj_id' => $esanjId,
+            'token' => $token,
+            'role' => ManagerRoleEnum::Admin,
+        ];
+        $service->createManager($data);
+
+        $this->info("Token: $token");
 
         $this->info('Manager successfully created!');
         return self::SUCCESS;

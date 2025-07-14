@@ -20,9 +20,9 @@ return [
 
     'errors' => [
         'too_many_attempts' => 'Too many attempts, please try again later',
-
         'public_key_not_found' => 'Public key not found',
         'token_incorrect' => 'Token is incorrect',
         'manager_not_active' => 'Manager is not active',
+        'role_not_allowed' => 'The selected role is not allowed',
     ],
 ];

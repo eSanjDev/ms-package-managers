@@ -35,6 +35,17 @@ class ManagerServiceProvider extends ServiceProvider
     private function registerConfig(): void
     {
         $this->mergeConfigFrom($this->packagePath('config/manager.php'), 'manager');
+
+        config([
+            'auth.providers.managers' => [
+                'driver' => 'eloquent',
+                'model' => \Esanj\Manager\Models\Manager::class,
+            ],
+            'auth.guards.manager' => [
+                'driver' => 'session',
+                'provider' => 'managers',
+            ],
+        ]);
     }
 
     /**
@@ -56,6 +67,7 @@ class ManagerServiceProvider extends ServiceProvider
     private function registerRoutes(): void
     {
         $this->loadRoutesFrom($this->packagePath('routes/web.php'));
+        $this->loadRoutesFrom($this->packagePath('routes/api.php'));
     }
 
     /**

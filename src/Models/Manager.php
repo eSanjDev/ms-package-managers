@@ -2,16 +2,19 @@
 
 namespace Esanj\Manager\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Esanj\Manager\Enums\ManagerRoleEnum;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Manager extends Model
+class Manager extends Authenticatable
 {
     use SoftDeletes;
 
     protected $fillable = [
-        'manager_id',
+        'esanj_id',
         'token',
+        'role',
         'is_active',
         'last_login',
     ];
@@ -19,6 +22,16 @@ class Manager extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'last_login' => 'datetime',
-        'token' => 'hashed'
+        'token' => 'hashed',
+        'role' => ManagerRoleEnum::class,
     ];
+
+    protected $hidden = [
+        'token'
+    ];
+
+    public function Permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'manager_permissions');
+    }
 }

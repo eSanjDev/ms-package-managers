@@ -1,5 +1,6 @@
 <?php
 
+use Esanj\Manager\Enums\ManagerRoleEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,9 +11,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('oauth_managers', function (Blueprint $table) {
+        Schema::create('managers', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('manager_id')->unique()->index();
+            $table->unsignedBigInteger('esanj_id')->unique()->index();
+            $table->enum('role', ManagerRoleEnum::toArray())->default(ManagerRoleEnum::Manager);
             $table->string('token');
             $table->boolean('is_active')->default(true);
             $table->timestamp('last_login')->nullable();
@@ -27,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('oauth_managers');
+        Schema::dropIfExists('managers');
     }
 };

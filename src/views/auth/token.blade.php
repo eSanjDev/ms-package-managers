@@ -24,12 +24,12 @@
                         <h1>{{ trans('manager::manager.welcome_back') }}</h1>
                         <p>{{ trans('manager::manager.steps.security.box_sub_title') }}</p>
 
-                        <form method="post" action="{{route("manager.login")}}">
+                        <form method="post" action="{{route("manager.auth.login")}}">
                             @csrf
                             <div class="input-box @error('token') error @enderror">
                                 <p>{{ trans('manager::manager.labels.token') }}</p>
                                 <div class="form-input">
-                                    <input type="password" name="token" required
+                                    <input type="password" name="token" required value="4QYpLyQ8Lge73CJNQfoyjPDTF2FqkqYX"
                                            placeholder="{{ trans('manager::manager.steps.security.token_placeholder') }}">
                                     <i onclick="AuthScripts.showHidePass(this)" class="icon-password"></i>
                                 </div>
