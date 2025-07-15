@@ -3,6 +3,7 @@
 namespace Esanj\Manager\Providers;
 
 use Esanj\Manager\Commands\CreateManagerCommand;
+use Esanj\Manager\Commands\ImportPermissionsCommand;
 use Esanj\Manager\Commands\InstallCommand;
 use Illuminate\Support\ServiceProvider;
 
@@ -57,6 +58,7 @@ class ManagerServiceProvider extends ServiceProvider
             $this->commands([
                 InstallCommand::class,
                 CreateManagerCommand::class,
+                ImportPermissionsCommand::class,
             ]);
         }
     }
