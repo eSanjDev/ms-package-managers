@@ -89,7 +89,7 @@ class TokenController extends Controller
 
     private function handleFailedLogin(string $message): RedirectResponse
     {
-        return redirect()->route('manager.index')->withErrors(['token' => $message]);
+        return redirect()->route('manager.auth.index')->withErrors(['token' => $message]);
     }
 
     /**
