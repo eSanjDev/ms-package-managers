@@ -109,7 +109,7 @@ class ManagerServiceProvider extends ServiceProvider
             ], 'manager-config');
 
             $this->publishes([
-                $this->packagePath('resources/views') => resource_path('views/vendor/manager'),
+                $this->packagePath('views') => resource_path('views/vendor/manager'),
             ], 'manager-views');
 
             $this->publishes([
