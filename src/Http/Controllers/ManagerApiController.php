@@ -3,14 +3,14 @@
 namespace Esanj\Manager\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Http\Resources\ManagerResource;
-use Esanj\Manager\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ManagerApiController extends Controller
+class ManagerApiController extends BaseController
 {
     public function __construct(protected ManagerService $managerService)
     {

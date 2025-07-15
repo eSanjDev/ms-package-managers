@@ -4,18 +4,18 @@ namespace Esanj\Manager\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Esanj\Manager\Enums\ManagerRoleEnum;
+use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Http\Request\ManagerCreateRequest;
 use Esanj\Manager\Http\Request\ManagerUpdateRequest;
-use Esanj\Manager\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Models\Permission;
 use Esanj\Manager\Services\ManagerService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
-class ManagerController extends Controller
+class ManagerController extends BaseController
 {
     public function __construct(protected ManagerService $managerService)
     {
