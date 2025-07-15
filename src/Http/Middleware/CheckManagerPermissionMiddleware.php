@@ -1,6 +1,6 @@
 <?php
 
-namespace Esanj\Manager\Middleware;
+namespace Esanj\Manager\Http\Middleware;
 
 use Closure;
 use Esanj\Manager\Services\ManagerService;
