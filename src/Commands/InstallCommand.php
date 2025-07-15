@@ -23,7 +23,14 @@ class InstallCommand extends Command
 
 
         $this->ensureEnvKeys([
+            'ACCOUNTING_BRIDGE_CLIENT_ID',
+            'ACCOUNTING_BRIDGE_CLIENT_SECRET',
+            'ACCOUNTING_BRIDGE_BASE_URL',
+            'ACCOUNTING_BRIDGE_SUCCESS_REDIRECT',
             'MANAGER_SUCCESS_REDIRECT',
+            'MANAGER_ACCESS_DENIED_REDIRECT',
+            'MANAGER_PANEL_ROUTE_PREFIX',
+            'MANAGER_API_ROUTE_PREFIX',
         ]);
 
 
