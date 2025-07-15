@@ -1,138 +1,133 @@
-# Manager Auth Package for Laravel
+# 🧑‍💼 Manager Package for Laravel
 
-A secure middleware + token-based authentication system for manager-level access, built for microservice-based
-architectures, using Laravel.
+[![Latest Version](https://img.shields.io/packagist/v/esanj/ms-package-managers.svg?style=flat-square)](https://packagist.org/packages/esanj/ms-package-managers)
+[![License](https://img.shields.io/packagist/l/esanj/ms-package-managers.svg?style=flat-square)](LICENSE)
 
-## 🌐 Overview
-
-This package provides authentication protection for manager/admin-level routes using a two-step process:
-
-1. **OAuth Authentication** through a centralized accounting microservice.
-2. **Static Token Verification** using a hashed secret token stored in a `oauth_managers` table.
-
-If unauthorized, the manager is redirected to the accounting service. After login, the manager must enter a static token
-to verify identity.
+> 🔐 A simple and secure **OAuth-based Manager Panel Authentication** system for Laravel 12 — built with **SOLID principles**, and manager permission control.
 
 ---
 
-## ✅ Features
+## ✨ Features
 
-- 🧩 **Configurable Laravel Middleware**
-- 🔐 Supports **OAuth2 + static token**
-- ⚠️ **Rate limiting** for incorrect attempts (configurable)
-- 💾 Configurable caching (TTL, driver, prefix)
-- 🧑‍💼 Artisan command: `manager:create` to create new manager records
-- 🗂️ Includes multilingual support (EN/FA)
-- 🗃️ Highly extensible and publishable
+✅ OAuth-based authentication via Accounting Bridge  
+✅ Manager role & permission management  
+✅ Dedicated route prefixes for panel & API  
+✅ Web UI for managing managers  
+✅ Admin role with full access   
+✅ Auth & Permission middlewares  
+✅ Artisan command to create admin managers  
+✅ Easily publishable configs, views, assets, etc.
 
 ---
 
-## 📦 Installation
+## ⚙️ Requirements
+
+* PHP	^8.2 | ^8.3 | ^8.4
+* Laravel	^10.0 | ^11.0 | ^12.0
+* firebase/php-jwt	*
+* esanj/auth-bridge	*
+
+🛑 Make sure all dependencies are installed via Composer.
+
+---
+
+## ⚙️ Installation & Setup
+
+### 📥 Step 1: Install the package
 
 ```bash
 composer require esanj/ms-package-managers
 ```
 
-Run the install command to publish assets, and run migrations:
-
+### 📥 Step 2: Run the installer
 ```bash
 php artisan manager:install
 ```
+---
 
-## ⚙️ Configuration
+## 🛠️ Environment Configuration
 
-Set the following environment variables:
+Update your .env file with the following parameters:
 
-```
+```env
+ACCOUNTING_BRIDGE_CLIENT_ID=your-client-id-from-accounting
+ACCOUNTING_BRIDGE_CLIENT_SECRET=your-client-secret-from-accounting
+ACCOUNTING_BRIDGE_BASE_URL=https://accounting-service.test
+ACCOUNTING_BRIDGE_SUCCESS_REDIRECT=https://your-app.test/oauth/success
+
 MANAGER_SUCCESS_REDIRECT=/admin/dashboard
-MANAGER_PUBLIC_KEY_PATH=storage/oauth-public.key
-MANAGER_LOGO_PATH=/assets/vendor/manager/img/logo.png
+MANAGER_ACCESS_DENIED_REDIRECT=/no-permission
+
+MANAGER_PANEL_ROUTE_PREFIX=admin
+MANAGER_API_ROUTE_PREFIX=api/admin
 ```
 
-## 🔑 Authentication Flow
+### 🔑 Explanation
 
-protected route ( e . g . ) is behind .Your protected route (eg /admin) is behind CheckAuthManagerMiddleware.
-not authenticated :If not authenticated:
-to accounting microservice for OAuth loginRedirects to accounting microservice for OAuth login
-return , it requests a static tokenUpon return, it requests a static token
-Token is checked using a hashed comparison
-Success? Manager is marked logged-in in the session
+Key	Description
 
-## 🔒 Middleware Protection
+```ACCOUNTING_BRIDGE_CLIENT_ID```	Client ID from the accounting service
 
-To protect routes:
+```ACCOUNTING_BRIDGE_CLIENT_SECRET```	Client Secret from the accounting service
 
-```php
-use Esanj\Manager\Middleware\CheckAuthManagerMiddleware;
+```ACCOUNTING_BRIDGE_BASE_URL```	Microservice base URL
 
-Route::middleware([CheckAuthManagerMiddleware::class])
-->prefix('admin')
-->group(function () {
-// Protected routes here
-});
-```
+```ACCOUNTING_BRIDGE_SUCCESS_REDIRECT```	Redirect after successful OAuth login
 
-## 🔨 Artisan Commands
+```MANAGER_SUCCESS_REDIRECT```	Redirect after successful token validation
 
-Create a new manager:
+```MANAGER_ACCESS_DENIED_REDIRECT```	Redirect when manager has no permission
+
+```MANAGER_PANEL_ROUTE_PREFIX```	Web route group prefix (e.g., /admin)
+
+```MANAGER_API_ROUTE_PREFIX```	API route group prefix (e.g., /api/admin)
+
+---
+
+## 📦 Publishable Files
+You can customize the package via these publish commands:
+
+### 🔧 What Command
+Config file:	```php artisan vendor:publish --tag=manager-config```
+
+Blade views:	```php artisan vendor:publish --tag=manager-views```
+
+Language files:	```php artisan vendor:publish --tag=manager-lang```
+
+Database migrations:	```php artisan vendor:publish --tag=manager-migrations```
+
+Front-end assets (JS/CSS):	```php artisan vendor:publish --tag=manager-assets```
+
+---
+
+## 🔐 Middlewares
+Middleware Purpose
+
+```CheckAuthManagerMiddleware```	Ensures a manager is authenticated
+
+```CheckManagerPermissionMiddleware```	Validates manager’s permission on routes
+
+Use these to protect your web routes and API endpoints.
+
+---
+
+## 🧑‍💻 Artisan Commands
+
+### ➕ Create a New Manager
 
 ```bash
 php artisan manager:create
 ```
 
-You'll be asked for the manager ID. A random static token will be hashed and stored. Duplicate manager IDs are blocked.
+This command creates a manager user with the Admin role, which includes all permissions by default.
 
-## 🎯 Publishing Resources
+---
 
-You can publish any part of the package for customization:
+### 🚪 Route Access
+To access the Manager Panel UI:
 
-Resource Command
+`route('managers.index')`
 
-Config:    ```php artisan vendor:publish --tag=manager-config```
+This route is available after the package is installed.
 
-Views: ```php artisan vendor:publish --tag=manager-views```
-
-Lang files:    ```php artisan vendor:publish --tag=manager-lang```
-
-Migrations:    ```php artisan vendor:publish --tag=manager-migrations```
-
-Assets:    ```php artisan vendor:publish --tag=manager-assets```
-
-## 💼 ManagerService Class Overview
-
-Namespace: Esanj\Manager\Services\ManagerService
-Purpose is the core application service responsible for handling manager - specific business logic . It acts as an abstraction layer between your application ( e.g. controllers , middleware ) and the persistence layer ( ) , following SOLID design principles .​​​The ManagerServiceis the core application service responsible for handling manager-specific business logic. It acts as an abstraction layer between your application (eg controllers, middleware) and the persistence layer ( ManagerRepository), following SOLID design principles .
-
-Method Description
-
-```findByManagerID(int $id)```	Fetches an Managerinstance by its manager ID (cached if enabled).
-
-```checkManagerToken(Manager $manager, string $token): bool```	Validates a raw input tokenagainst a hashed token stored in the database.
-
-```updateLastLogin(int $id)```	Updates the last_logintimestamp of a manager to now().
-
-```updateManager(int $id, array $data)``` Manager	Updates a manager record. Accepts fields like token, is_active, etc.
-
-```createManager(int $id, string $token)``` Manager	Creates a new manager with the given manager_idand a hashed token.
-
-```switchToInactive(int $managerID)```	Flags the manager as inactive ( is_active= false).
-
-```switchToActive(int $managerID)```	Flags the manager as active ( is_active= true).
-
-Example Usage:
-```php
-use Esanj\Manager\Services\ManagerService;
-
-$service = app(ManagerService::class);
-
-$manager = $service->findByManagerID(175);
-
-if ($service->checkManagerToken($manager, 'my-secret-token')) {
-$service->updateLastLogin($manager->id);
-}
-```
-**Notes**
-
-are always hashed using Laravel’s for security .Tokens are always hashed using Laravel's `Hash::check()` for security.
-This service is used internally in the middleware, controller, and artisan commands.
-manager’s activation state ( ) is strictly checked before session persist .The manager's activation state ( is_active) is strictly checked before session persist.
+---
