@@ -135,7 +135,7 @@
     </form>
     <div class="row">
         <div class="col-lg-12">
-            @foreach(config('manager.extra_parameter') as $item)
+            @foreach(config('manager.extra_blade') as $item)
                 @include($item)
             @endforeach
         </div>
