@@ -103,7 +103,7 @@
                                     @if($manager->role->value === 'admin' && !$isAdmin) readonly @endif>
                                 @foreach($roles as $role)
                                     <option
-                                        @selected(old('role',$manager->role->value) === $role) value="{{$role}}">{{$role}}</option>
+                                            @selected(old('role',$manager->role->value) === $role) value="{{$role}}">{{$role}}</option>
                                 @endforeach
                             </select>
                             <label>Role</label>
@@ -119,7 +119,7 @@
                                                                                  id="regenerate"></i></span>
                                 <input type="password" class="form-control" name="token" placeholder="Token" readonly/>
                                 <span class="input-group-text cursor-pointer toggle-show-token"><i
-                                        class="icon-base ti ti-eye-off"></i></span>
+                                            class="icon-base ti ti-eye-off"></i></span>
                             </div>
                             @error('token')
                             <div class="text-danger">{{ $message }}</div> @enderror
@@ -135,7 +135,9 @@
     </form>
     <div class="row">
         <div class="col-lg-12">
-          
+            @foreach(config('manager.extra_parameter') as $item)
+                @include($item)
+            @endforeach
         </div>
     </div>
 @endsection
