@@ -14,9 +14,11 @@ return new class extends Migration {
         Schema::create('managers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('esanj_id')->unique()->index();
+            $table->string("name")->nullable();
             $table->enum('role', ManagerRoleEnum::toArray())->default(ManagerRoleEnum::Manager);
             $table->string('token');
             $table->boolean('is_active')->default(true);
+            $table->longText('extra')->nullable();
             $table->timestamp('last_login')->nullable();
 
             $table->softDeletes();

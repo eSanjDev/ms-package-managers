@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.querySelector('.toggle-show-token');
-    const inputToken = document.querySelector('.input-token');
+    const inputToken = document.querySelector('input[name=token]');
 
     if (inputToken) {
         inputToken.addEventListener('click', function () {
@@ -46,4 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
             $("#permissions").removeClass('d-none')
         }
     })
+
+    const selectAll = document.querySelector('#selectAll'), checkboxList = document.querySelectorAll('[type="checkbox"]');
+    if(selectAll){
+        selectAll.addEventListener('change', t => {
+            checkboxList.forEach(e => {
+                e.checked = t.target.checked;
+            });
+        });
+    }
 });

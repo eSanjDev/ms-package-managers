@@ -14,6 +14,7 @@ class ManagerCreateRequest extends FormRequest
 
         return [
             'esanj_id' => ['required', 'integer', 'unique:managers,esanj_id'],
+            'name' => ['required', 'string', 'max:255'],
             'role' => ['required', Rule::in(ManagerRoleEnum::toArray())],
             'token' => ['nullable', 'string', 'max:' . config('manager.token_length')],
             'is_active' => ['boolean'],

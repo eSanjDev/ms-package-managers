@@ -2,7 +2,6 @@
 
 namespace Esanj\Manager\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Http\Request\ManagerCreateRequest;
@@ -57,7 +56,7 @@ class ManagerController extends BaseController
 
         $manager->permissions()->sync($request->input('permissions', []));
 
-        return redirect()->route('managers.index')
+        return redirect()->route('managers.edit', $manager->id)
             ->with('success', trans('manager::manager.success.create'));
     }
 
@@ -76,7 +75,7 @@ class ManagerController extends BaseController
 
     public function update(ManagerUpdateRequest $request, Manager $manager): RedirectResponse
     {
-        $updateData = $request->only(['role', 'is_active']);
+        $updateData = $request->only(['role', 'is_active', 'name']);
 
         if ($request->filled('token')) {
             $updateData['token'] = $request->input('token');
@@ -86,7 +85,7 @@ class ManagerController extends BaseController
 
         $manager->permissions()->sync($request->input('permissions', []));
 
-        return redirect()->route('managers.index')
+        return redirect()->route('managers.edit', $manager->id)
             ->with('success', trans('manager::manager.success.update'));
     }
 
@@ -99,7 +98,7 @@ class ManagerController extends BaseController
     {
         $roles = ManagerRoleEnum::toArray();
 
-        return $isAdmin ? $roles : array_diff($roles, [ManagerRoleEnum::Admin]);
+        return $isAdmin ? $roles : array_diff($roles, [ManagerRoleEnum::Admin->value]);
     }
 
     private function getGroupedPermissions(): array

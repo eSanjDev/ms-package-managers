@@ -35,10 +35,10 @@ class ManagerTable extends BaseTable {
             ...super.getColumnDefinitions(),
             {
                 targets: 1,
-                data: 'esanj_id',
-                title: 'Esanj ID',
+                data: 'name',
+                title: 'Name',
                 render(data, type, full) {
-                    return `<strong>${full.esanj_id}</strong>`;
+                    return `<strong>${full.name}</strong>`;
                 }
             },
             {
@@ -49,23 +49,22 @@ class ManagerTable extends BaseTable {
                     return `<span>${full.role}</span>`;
                 }
             },
-
             {
                 targets: 3,
+                data: 'last_login',
+                title: 'Last Login',
+                render(data, type, full) {
+                    return `<span>${full.last_login}</span>`;
+                }
+            },
+            {
+                targets: 4,
                 data: 'status',
                 title: 'Status',
                 render(data, type, full) {
                     const statusClass = full.status ? 'bg-label-success' : 'bg-label-secondary';
                     const statusText = full.status ? 'Active' : 'Inactive';
                     return `<span class="badge ${statusClass}">${statusText}</span>`;
-                }
-            },
-            {
-                targets: 4,
-                data: 'created_at',
-                title: 'Created At',
-                render(data, type, full) {
-                    return `<span>${full.created_at}</span>`;
                 }
             },
             {
@@ -93,9 +92,10 @@ class ManagerTable extends BaseTable {
         return response.data.map(entityItem => ({
             id: entityItem.id,
             esanj_id: entityItem.esanj_id,
+            name: entityItem.name,
             role: entityItem.role,
             status: entityItem.is_active,
-            created_at: entityItem.created_at,
+            last_login: entityItem.last_login,
             deleted_at: entityItem.deleted_at,
             actions: ''
         }))

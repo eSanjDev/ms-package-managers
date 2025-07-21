@@ -13,10 +13,12 @@ class Manager extends Authenticatable
 
     protected $fillable = [
         'esanj_id',
+        'name',
         'token',
         'role',
         'is_active',
         'last_login',
+        'extra',
     ];
 
     protected $casts = [

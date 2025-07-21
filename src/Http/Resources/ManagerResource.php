@@ -2,6 +2,7 @@
 
 namespace Esanj\Manager\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,9 +17,11 @@ class ManagerResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'name' => $this->name,
             'esanj_id' => $this->esanj_id,
             'role' => $this->role,
             'is_active' => $this->is_active,
+            'last_login' => $this->last_login?->toDateTimeString(),
             'created_at' => $this->created_at,
             'deleted_at' => $this->deleted_at,
         ];

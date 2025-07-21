@@ -15,6 +15,7 @@ class ManagerUpdateRequest extends FormRequest
         return [
             'role' => ['required', Rule::in(ManagerRoleEnum::toArray())],
             'token' => ['nullable', 'string', 'max:' . config('manager.token_length')],
+            'name' => ['required', 'string', 'max:255'],
             'is_active' => ['boolean'],
             'permissions' => ['array', Rule::requiredIf($isNotAdmin)],
             'permissions.*' => ['exists:permissions,id'],
@@ -24,7 +25,7 @@ class ManagerUpdateRequest extends FormRequest
     public function prepareForValidation(): void
     {
         $this->merge([
-            'is_active' => $this->input('is_active') == 'on'
+            'is_active' => $this->input('is_active') == '1'
         ]);
     }
 }
