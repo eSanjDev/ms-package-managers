@@ -16,12 +16,14 @@ class Manager extends Authenticatable
         'name',
         'token',
         'role',
+        'api_access',
         'is_active',
         'last_login',
         'extra',
     ];
 
     protected $casts = [
+        'api_access' => 'boolean',
         'is_active' => 'boolean',
         'last_login' => 'datetime',
         'token' => 'hashed',

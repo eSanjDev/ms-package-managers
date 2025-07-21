@@ -99,6 +99,17 @@
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
+                            <select name="api_access" class="form-select">
+                                <option @selected(old('api_access', $manager->api_access) === 1) value="1">Yes
+                                </option>
+                                <option @selected(old('api_access', $manager->api_access) === 0) value="0">No
+                                </option>
+                            </select>
+                            <label>Api access</label>
+                        </div>
+                    </div>
+                    <div class="col-12 position-relative select-box mb-4">
+                        <div class="form-floating">
                             <select name="role" class="form-select"
                                     @if($manager->role->value === 'admin' && !$isAdmin) readonly @endif>
                                 @foreach($roles as $role)

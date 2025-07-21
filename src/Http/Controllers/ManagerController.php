@@ -49,7 +49,7 @@ class ManagerController extends BaseController
             ]);
         }
 
-        $requestData = $request->only(['esanj_id', 'role', 'is_active']);
+        $requestData = $request->only(['esanj_id', 'role', 'is_active', 'api_access']);
         $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken(config('manager.token_length'));
 
         $manager = $this->managerService->createManager($requestData);
@@ -75,7 +75,7 @@ class ManagerController extends BaseController
 
     public function update(ManagerUpdateRequest $request, Manager $manager): RedirectResponse
     {
-        $updateData = $request->only(['role', 'is_active', 'name']);
+        $updateData = $request->only(['role', 'api_access', 'is_active', 'name']);
 
         if ($request->filled('token')) {
             $updateData['token'] = $request->input('token');
