@@ -45,9 +45,9 @@ return [
             'display_name' => 'List Managers',
             'description' => 'Allows viewing the list of managers',
         ],
-        'managers.update' => [
-            'display_name' => 'Update Managers',
-            'description' => 'Allows updating manager information',
+        'managers.create' => [
+            'display_name' => 'Create Manager',
+            'description' => 'Allows create new manager',
         ],
         'managers.delete' => [
             'display_name' => 'Delete Managers',
