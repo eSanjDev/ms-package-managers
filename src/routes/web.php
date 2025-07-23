@@ -10,6 +10,6 @@ Route::middleware("web")->prefix(config('manager.routes.auth_prefix'))->name('ma
     Route::post('/token', [TokenController::class, 'login'])->name('login');
 });
 
-Route::resource(config('manager.routes.panel_prefix'), ManagerController::class)
+Route::resource(config('manager.routes.panel_prefix') . "/managers", ManagerController::class)
     ->middleware('web')
     ->except(['show', 'destroy']);

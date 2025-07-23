@@ -8,9 +8,9 @@
 
 @section('page-script')
     <script>
-        window.baseApi = "{{config('manager.routes.api_prefix')}}"
+        window.baseUrlApiAdmin = "{{config('manager.routes.api_prefix')}}"
     </script>
-    <script src="{{asset("assets/vendor/manager/js/Manager.js")}}"
+    <script src="{{asset("assets/vendor/manager/js/Manager.js")}}"></script>
 @endsection
 
 @section('content')
@@ -90,9 +90,9 @@
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
                             <select name="is_active" class="form-select">
-                                <option @selected(old('is_active')) value="1">Active
+                                <option @selected(old('is_active') == "1") value="1">Active
                                 </option>
-                                <option @selected(!old('is_active')) value="0">diactive
+                                <option @selected(old('is_active') == "0")value="0">diactive
                                 </option>
                             </select>
                             <label>Status</label>
@@ -100,20 +100,10 @@
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
-                            <select name="api_access" class="form-select">
-                                <option @selected(old('api_access')) value="1">Yes
-                                </option>
-                                <option @selected(!old('api_access')) value="0">No
-                                </option>
-                            </select>
-                            <label>Api access</label>
-                        </div>
-                    </div>
-                    <div class="col-12 position-relative select-box mb-4">
-                        <div class="form-floating">
                             <select name="role" class="form-select">
                                 @foreach($roles as $role)
-                                    <option @selected(old('role') === $role) value="{{$role}}" selected>{{$role}}</option>
+                                    <option @selected(old('role') === $role) value="{{$role}}"
+                                            selected>{{$role}}</option>
                                 @endforeach
                             </select>
                             <label>Role</label>
@@ -128,7 +118,8 @@
                                 <span class="input-group-text cursor-pointer">
                                     <i class="icon-base ti ti-refresh" id="regenerate"></i>
                                 </span>
-                                <input type="password" class="form-control" value="{{$token}}" name="token" placeholder="Token" readonly/>
+                                <input type="password" class="form-control" value="{{$token}}" name="token"
+                                       placeholder="Token" readonly/>
                                 <span class="input-group-text cursor-pointer toggle-show-token">
                                     <i class="icon-base ti ti-eye-off"></i>
                                 </span>
@@ -191,7 +182,7 @@
                             <input type="password" name="token" value="{{old('token')??$token}}" readonly
                                    class="form-control input-token">
                             <span class="input-group-text cursor-pointer toggle-show-token"><i
-                                        class="icon-base ti ti-eye-off"></i></span>
+                                    class="icon-base ti ti-eye-off"></i></span>
                         </div>
                         @error('token')
                         <div class="text-danger">{{ $message }}</div> @enderror

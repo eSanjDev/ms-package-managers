@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $("#regenerate").on("click", function () {
         $.ajax({
-            url: `${window.baseApi}/regenerate`,
+            url: `${window.baseUrlApiAdmin}/regenerate`,
             type: 'GET',
             success: function (response) {
                 $("input[name=token]").val(response.data.token)

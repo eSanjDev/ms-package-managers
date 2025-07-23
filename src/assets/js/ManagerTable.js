@@ -80,7 +80,7 @@ class ManagerTable extends BaseTable {
                         </div>` : `
                         <div class="d-flex align-items-center">
                             <a href="javascript:;" class="text-body delete-record"><i class="ti ti-trash ti-sm mx-2"></i></a>
-                            <a href="${baseUrlAdmin}/${resourceName}/${full['id']}/edit" class="text-body"><i class="ti ti-edit ti-sm me-2"></i></a>
+                            <a href="${window.baseUrlAdmin}/${resourceName}/${full['id']}/edit" class="text-body"><i class="ti ti-edit ti-sm me-2"></i></a>
                         </div>
                     `;
                 }

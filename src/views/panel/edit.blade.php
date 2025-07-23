@@ -8,7 +8,7 @@
 
 @section('page-script')
     <script>
-        window.baseApi = "{{config('manager.routes.api_prefix')}}"
+        window.baseUrlApiAdmin = "{{config('manager.routes.api_prefix')}}"
     </script>
     <script src="{{asset('assets/vendor/manager/js/Manager.js')}}"></script>
 @endsection
@@ -89,23 +89,12 @@
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
                             <select name="is_active" class="form-select">
-                                <option @selected(old('is_active', $manager->is_active)) value="1">Active
+                                <option @selected(old('is_active', $manager->is_active) == "1") value="1">Active
                                 </option>
-                                <option @selected(!old('is_active', $manager->is_active)) value="0">diactive
+                                <option @selected(old('is_active', $manager->is_active) == "0")value="0">diactive
                                 </option>
                             </select>
                             <label>Status</label>
-                        </div>
-                    </div>
-                    <div class="col-12 position-relative select-box mb-4">
-                        <div class="form-floating">
-                            <select name="api_access" class="form-select">
-                                <option @selected(old('api_access', $manager->api_access)) value="1">Yes
-                                </option>
-                                <option @selected(!old('api_access', $manager->api_access)) value="0">No
-                                </option>
-                            </select>
-                            <label>Api access</label>
                         </div>
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
