@@ -21,6 +21,7 @@ class InstallCommand extends Command
         $this->info('Running migrations...');
         $this->call('migrate');
 
+        $this->call('manager:permissions-import');
 
         $this->ensureEnvKeys([
             'ACCOUNTING_BRIDGE_CLIENT_ID',
