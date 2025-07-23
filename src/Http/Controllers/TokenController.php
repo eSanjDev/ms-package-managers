@@ -114,6 +114,7 @@ class TokenController extends Controller
         try {
             $decoded = JWT::decode($jwt, new Key($publicKey, 'RS256'));
         } catch (\Throwable $e) {
+            session()->forget('auth_bridge');
             abort(401, trans('manager::manager.errors.token_invalid_or_expired'));
         }
 
