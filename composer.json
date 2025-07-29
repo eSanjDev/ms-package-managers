@@ -1,6 +1,6 @@
 {
     "name": "esanj/managers",
-    "description": "",
+    "description": "The **Manager** package is responsible for handling OAuth2-based authentication and managing admin-level permissions.",
     "type": "library",
     "license": "MIT",
     "authors": [
