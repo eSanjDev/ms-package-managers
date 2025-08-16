@@ -36,4 +36,22 @@ class Manager extends Authenticatable
     {
         return $this->belongsToMany(Permission::class, 'manager_permissions');
     }
+
+    public function getMeta($key)
+    {
+        return $this->meta->where('key', $key)->value('value');
+    }
+
+    public function meta()
+    {
+        return $this->hasMany(ManagerMeta::class);
+    }
+
+    public function setMeta(string $key, $value)
+    {
+        return $this->meta()->updateOrCreate(
+            ['key' => $key],
+            ['value' => $value]
+        );
+    }
 }
