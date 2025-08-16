@@ -12,9 +12,19 @@ return [
 
     // Manager route prefixes
     'routes' => [
-        'auth_prefix' => env('MANAGER_AUTH_ROUTE_PREFIX', 'manager'),
-        'panel_prefix' => env('MANAGER_PANEL_ROUTE_PREFIX', 'managers'),
+        'auth_prefix' => env('MANAGER_AUTH_ROUTE_PREFIX', 'admin/managers'),
+        'panel_prefix' => env('MANAGER_PANEL_ROUTE_PREFIX', 'admin/managers'),
         'api_prefix' => env('MANAGER_API_ROUTE_PREFIX', 'api/managers'),
+    ],
+
+    'middlewares' => [
+        'api' => [
+            "api"
+        ],
+
+        'web' => [
+            'web'
+        ]
     ],
 
     // Public key path for OAuth manager authentication
@@ -56,7 +66,7 @@ return [
     ],
 
     // Blade components that can be used in the manager edit panel
-    'extra_blade' => [
+    'extra_field' => [
         // Example: "content.manager.limit",
     ],
 ];
