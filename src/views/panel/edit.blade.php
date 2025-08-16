@@ -82,16 +82,16 @@
                     <div class="col-12 mb-4">
                         <div class="form-floating">
                             <input type="text" class="form-control" placeholder="Esanj ID"
-                                   value="{{$manager->esanj_id}}" readonly/>
+                                   value="{{$manager->esanj_id}}" disabled readonly/>
                             <label>Esanj ID</label>
                         </div>
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
                             <select name="is_active" class="form-select">
-                                <option @selected(old('is_active', $manager->is_active) == "1") value="1">Active
+                                <option @selected(old('is_active', $manager->is_active) == 1) value="1">Active
                                 </option>
-                                <option @selected(old('is_active', $manager->is_active) == "0")value="0">diactive
+                                <option @selected(old('is_active', $manager->is_active ) == 0) value="0">Inactive
                                 </option>
                             </select>
                             <label>Status</label>
@@ -135,7 +135,7 @@
     </form>
     <div class="row">
         <div class="col-lg-12">
-            @foreach(config('manager.extra_blade') as $item)
+            @foreach(config('manager.extra_field') as $item)
                 @include($item)
             @endforeach
         </div>

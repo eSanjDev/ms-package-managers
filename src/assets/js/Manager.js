@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $("#regenerate").on("click", function () {
         $.ajax({
-            url: `${window.baseUrlApiAdmin}/regenerate`,
+            url: `${window.baseUrlApiAdmin}/managers/regenerate`,
             type: 'GET',
             success: function (response) {
                 $("input[name=token]").val(response.data.token)
@@ -47,8 +47,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    const selectAll = document.querySelector('#selectAll'), checkboxList = document.querySelectorAll('[type="checkbox"]');
-    if(selectAll){
+    const selectAll = document.querySelector('#selectAll'),
+        checkboxList = document.querySelectorAll('[type="checkbox"]');
+    if (selectAll) {
         selectAll.addEventListener('change', t => {
             checkboxList.forEach(e => {
                 e.checked = t.target.checked;

@@ -76,7 +76,7 @@ class BaseTable {
             `);
             pageLengthContainer.parent().append(customBtn);
             $('#trash-btn').on('click', () => {
-                window.location = `${window.baseUrlApiAdmin}/${this.resourceName}?only_trash=1`;
+                window.location = `${baseUrlAdmin}/${this.resourceName}?only_trash=1`;
             });
         } else {
             const customBtn = $(`
@@ -86,7 +86,7 @@ class BaseTable {
             `);
             pageLengthContainer.parent().append(customBtn);
             $('#trash-back-btn').on('click', () => {
-                window.location = `${window.baseUrlAdmin}/${this.resourceName}`;
+                window.location = `${baseUrlAdmin}/${this.resourceName}`;
             });
         }
     }
@@ -114,7 +114,7 @@ class BaseTable {
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
-                        url: `${window.baseUrlApiAdmin}/${this.resourceName}/${entityId}`,
+                        url: `${baseUrlApiAdmin}/${this.resourceName}/${entityId}`,
                         method: 'DELETE',
                         success: () => {
                             Swal.fire({
@@ -165,7 +165,7 @@ class BaseTable {
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
-                        url: `${window.baseUrlApiAdmin}/${this.resourceName}/${entityId}/restore`,
+                        url: `${baseUrlApiAdmin}/${this.resourceName}/${entityId}/restore`,
                         method: 'POST',
                         success: (response) => {
                             Swal.fire({
@@ -223,7 +223,7 @@ class BaseTable {
 
         const flagOnlyTrashed = this.params.flagOnlyTrashed || 0;
         const includesRelations = this.params.includesRelations;
-        $.getJSON(`${window.baseUrlApiAdmin}/${this.resourceName}`, {
+        $.getJSON(`${baseUrlApiAdmin}/${this.resourceName}`, {
             page: page,
             per_page: data.length,
             search: searchValue,
@@ -324,7 +324,7 @@ class BaseTable {
                 text: `<i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New ${entityName}</span>`,
                 className: 'add-new btn btn-primary waves-effect waves-light',
                 action() {
-                    window.location = `${window.baseUrlAdmin}/${resourceName}/create`;
+                    window.location = `${baseUrlAdmin}/${resourceName}/create`;
                 }
             }
         ] : [exportButtons];

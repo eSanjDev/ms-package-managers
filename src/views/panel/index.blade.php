@@ -4,11 +4,9 @@
 
 <!-- Vendor Styles -->
 @section('vendor-style')
-    {{--    @vite([--}}
-    {{--      'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',--}}
-    {{--      'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',--}}
-    {{--      'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss'--}}
-    {{--    ])--}}
+        <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
+        <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables.bootstrap5.css')}}">
+        <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.css')}}">
 @stop
 
 <!-- Page Scripts -->
@@ -17,8 +15,8 @@
         window.baseUrlApiAdmin = "{{config('manager.routes.api_prefix')}}"
         window.baseUrlAdmin = "{{config('manager.routes.panel_prefix')}}"
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment-jalaali@0.9.2/build/moment-jalaali.js"></script>
+    <script type="module" src="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
+    <script type="module" src="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.js')}}"></script>
     <script type="module" src="{{asset("assets/vendor/manager/js/ManagerTable.js")}}"></script>
 @stop
 
