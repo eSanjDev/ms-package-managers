@@ -22,8 +22,9 @@ class ManagerResource extends JsonResource
             'role' => $this->role,
             'is_active' => $this->is_active,
             'last_login' => $this->last_login?->toDateTimeString(),
-            'created_at' => $this->created_at,
-            'deleted_at' => $this->deleted_at,
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString(),
+            'deleted_at' => $this->deleted_at?->toDateTimeString(),
         ];
     }
 }

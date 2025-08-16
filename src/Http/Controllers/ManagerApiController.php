@@ -2,8 +2,8 @@
 
 namespace Esanj\Manager\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
+use Esanj\Manager\Http\Request\ManagerCreateRequest;
+use Esanj\Manager\Http\Request\ManagerUpdateRequest;
 use Esanj\Manager\Http\Resources\ManagerResource;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Services\ManagerService;
@@ -14,14 +14,6 @@ class ManagerApiController extends BaseController
 {
     public function __construct(protected ManagerService $managerService)
     {
-        $this->middleware(CheckManagerPermissionMiddleware::class . ':managers.delete')
-            ->only(['destroy', 'restore']);
-
-        $this->middleware(CheckManagerPermissionMiddleware::class . ':managers.list')
-            ->only(['index']);
-
-        $this->middleware(CheckManagerPermissionMiddleware::class . ':managers.create')
-            ->only(['regenerate']);
     }
 
     public function index(Request $request): JsonResponse
@@ -44,6 +36,46 @@ class ManagerApiController extends BaseController
                 'per_page' => $managers->perPage(),
                 'last_page' => $managers->lastPage(),
             ]
+        ]);
+    }
+
+    public function show(Manager $manager): JsonResponse
+    {
+        return response()->json([
+            'data' => new ManagerResource($manager),
+        ]);
+    }
+
+    public function store(ManagerCreateRequest $request): JsonResponse
+    {
+        $requestData = $request->only(['esanj_id', 'role', 'is_active']);
+        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken(config('manager.token_length'));
+
+        $manager = $this->managerService->createManager($requestData);
+
+        $manager->permissions()->sync($request->input('permissions', []));
+
+        return response()->json([
+            'data' => new ManagerResource($manager),
+            'message' => trans('manager::manager.success.stored')
+        ], 201);
+    }
+
+    public function update(Manager $manager, ManagerUpdateRequest $request): JsonResponse
+    {
+        $updateData = $request->only(['role', 'is_active', 'name']);
+
+        if ($request->filled('token')) {
+            $updateData['token'] = $request->input('token');
+        }
+
+        $manager = $this->managerService->updateManager($manager->id, $updateData);
+
+        $manager->permissions()->sync($request->input('permissions', []));
+
+        return response()->json([
+            'data' => new ManagerResource($manager),
+            'message' => trans('manager::manager.success.updated')
         ]);
     }
 

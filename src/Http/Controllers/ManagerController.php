@@ -57,7 +57,7 @@ class ManagerController extends BaseController
         $manager->permissions()->sync($request->input('permissions', []));
 
         return redirect()->route('managers.edit', $manager->id)
-            ->with('success', trans('manager::manager.success.create'));
+            ->with('success', trans('manager::manager.success.stored'));
     }
 
     public function edit(Manager $manager): View
@@ -86,7 +86,7 @@ class ManagerController extends BaseController
         $manager->permissions()->sync($request->input('permissions', []));
 
         return redirect()->route('managers.edit', $manager->id)
-            ->with('success', trans('manager::manager.success.update'));
+            ->with('success', trans('manager::manager.success.updated'));
     }
 
     private function currentUserIsAdmin(): bool

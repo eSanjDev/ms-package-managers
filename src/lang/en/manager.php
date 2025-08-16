@@ -18,6 +18,11 @@ return [
         ],
     ],
 
+    'success' => [
+        'updated' => 'Manager updated successfully.',
+        'stored' => 'Manager saved successfully.',
+    ],
+
     'errors' => [
         'too_many_attempts' => 'Too many attempts, please try again later',
         'public_key_not_found' => 'Public key not found',
