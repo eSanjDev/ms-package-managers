@@ -14,7 +14,7 @@ class ManagerUpdateRequest extends FormRequest
 
         return [
             'role' => ['required', Rule::in(ManagerRoleEnum::toArray())],
-            'token' => ['nullable', 'string', 'max:' . config('manager.token_length')],
+            'token' => ['nullable', 'string', 'max:' . config('esanj.manager.token_length')],
             'name' => ['required', 'string', 'max:255'],
             'is_active' => ['boolean'],
             'permissions' => ['array', Rule::requiredIf($isNotAdmin)],

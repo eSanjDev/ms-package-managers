@@ -35,7 +35,7 @@ class ManagerServiceProvider extends ServiceProvider
      */
     private function registerConfig(): void
     {
-        $this->mergeConfigFrom($this->packagePath('config/manager.php'), 'manager');
+        $this->mergeConfigFrom($this->packagePath('config/manager.php'), 'esanj.manager');
 
         config([
             'auth.providers.managers' => [
@@ -77,7 +77,9 @@ class ManagerServiceProvider extends ServiceProvider
      */
     private function registerViews(): void
     {
-        $this->loadViewsFrom($this->packagePath('views'), 'manager');
+        if (!config('esanj.manager.just_api')) {
+            $this->loadViewsFrom($this->packagePath('views'), 'manager');
+        }
     }
 
     /**
@@ -104,23 +106,23 @@ class ManagerServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 $this->packagePath('assets') => public_path('assets/vendor/manager'),
-            ], 'manager-assets');
+            ], 'esanj-manager-assets');
 
             $this->publishes([
-                $this->packagePath('config/manager.php') => config_path('manager.php'),
-            ], 'manager-config');
+                $this->packagePath('config/manager.php') => config_path('esanj/manager.php'),
+            ], 'esanj-manager-config');
 
             $this->publishes([
                 $this->packagePath('views') => resource_path('views/vendor/manager'),
-            ], 'manager-views');
+            ], 'esanj-manager-views');
 
             $this->publishes([
                 $this->packagePath('lang') => lang_path('vendor/manager'),
-            ], 'manager-lang');
+            ], 'esanj-manager-lang');
 
             $this->publishes([
                 $this->packagePath('database/migrations/') => database_path('migrations'),
-            ], 'manager-migrations');
+            ], 'esanj-manager-migrations');
         }
     }
 

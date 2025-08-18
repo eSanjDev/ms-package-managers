@@ -34,7 +34,7 @@ class ManagerController extends BaseController
 
         $roles = $this->getAvailableRoles($isAdmin);
         $permissions = $this->getGroupedPermissions();
-        $token = $this->managerService->generateToken(config('manager.token_length'));
+        $token = $this->managerService->generateToken(config('esanj.manager.token_length'));
 
         return view('manager::panel.create', compact('roles', 'isAdmin', 'permissions', 'token'));
     }
@@ -50,7 +50,7 @@ class ManagerController extends BaseController
         }
 
         $requestData = $request->only(['esanj_id', 'role', 'is_active']);
-        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken(config('manager.token_length'));
+        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken(config('esanj.manager.token_length'));
 
         $manager = $this->managerService->createManager($requestData);
 

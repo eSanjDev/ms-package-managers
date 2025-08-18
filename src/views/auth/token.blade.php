@@ -15,7 +15,7 @@
         <div class="form-box">
             <section class="form-box-content">
                 <header class="logo-box">
-                    <img src="{{ config('manager.logo_path')??asset('assets/vendor/manager/img/logo.png') }}"
+                    <img src="{{ config('esanj.manager.logo_path')??asset('assets/vendor/manager/img/logo.png') }}"
                          alt="{{ trans('app.logo_alt') }}">
                 </header>
 

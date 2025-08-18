@@ -49,7 +49,7 @@ class ManagerApiController extends BaseController
     public function store(ManagerCreateRequest $request): JsonResponse
     {
         $requestData = $request->only(['esanj_id', 'role', 'is_active']);
-        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken(config('manager.token_length'));
+        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken(config('esanj.manager.token_length'));
 
         $manager = $this->managerService->createManager($requestData);
 
@@ -106,7 +106,7 @@ class ManagerApiController extends BaseController
 
     public function regenerate(): JsonResponse
     {
-        $tokenLength = config('manager.token_length', 32);
+        $tokenLength = config('esanj.manager.token_length', 32);
         $token = $this->managerService->generateToken($tokenLength);
 
         return response()->json([

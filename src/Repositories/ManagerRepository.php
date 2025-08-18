@@ -100,19 +100,19 @@ class ManagerRepository
 
     private function getCacheTtlInSeconds(): int
     {
-        return config('manager.cache.is_enabled', true)
-            ? config('manager.cache.ttl', 60)
+        return config('esanj.manager.cache.is_enabled', true)
+            ? config('esanj.manager.cache.ttl', 60)
             : 1;
     }
 
     private function getCachePrefix(): string
     {
-        return config('manager.cache.prefix', 'manager_');
+        return config('esanj.manager.cache.prefix', 'manager_');
     }
 
     private function getCacheRepository(): CacheRepository
     {
-        $driver = config('manager.cache.driver', config('cache.default'));
+        $driver = config('esanj.manager.cache.driver', config('cache.default'));
         return Cache::driver($driver);
     }
 }

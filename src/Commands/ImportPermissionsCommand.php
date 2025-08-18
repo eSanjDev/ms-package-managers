@@ -12,7 +12,7 @@ class ImportPermissionsCommand extends Command
 
     public function handle(): int
     {
-        $permissions = config('manager.permissions');
+        $permissions = config('esanj.manager.permissions');
 
         foreach ($permissions as $key => $item) {
 

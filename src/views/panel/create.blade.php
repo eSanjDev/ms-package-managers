@@ -8,7 +8,7 @@
 
 @section('page-script')
     <script>
-        window.baseUrlApiAdmin = "{{config('manager.routes.api_prefix')}}"
+        window.baseUrlApiAdmin = "{{config('esanj.manager.routes.api_prefix')}}"
     </script>
     <script src="{{asset("assets/vendor/manager/js/Manager.js")}}"></script>
 @endsection
@@ -102,8 +102,7 @@
                         <div class="form-floating">
                             <select name="role" class="form-select">
                                 @foreach($roles as $role)
-                                    <option @selected(old('role') === $role) value="{{$role}}"
-                                            selected>{{$role}}</option>
+                                    <option value="{{$role}}" selected>{{$role}}</option>
                                 @endforeach
                             </select>
                             <label>Role</label>

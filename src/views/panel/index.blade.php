@@ -12,8 +12,8 @@
 <!-- Page Scripts -->
 @section('page-script')
     <script>
-        window.baseUrlApiAdmin = "{{config('manager.routes.api_prefix')}}"
-        window.baseUrlAdmin = "{{config('manager.routes.panel_prefix')}}"
+        window.baseUrlApiAdmin = "{{config('esanj.manager.routes.api_prefix')}}"
+        window.baseUrlAdmin = "{{config('esanj.manager.routes.panel_prefix')}}"
     </script>
     <script type="module" src="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
     <script type="module" src="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.js')}}"></script>

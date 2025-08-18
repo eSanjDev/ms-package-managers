@@ -26,6 +26,6 @@ class CheckManagerPermissionMiddleware
             return $next($request);
         }
 
-        return redirect(config('manager.access_denied_redirect'));
+        return redirect(config('esanj.manager.access_denied_redirect'));
     }
 }

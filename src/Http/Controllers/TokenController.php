@@ -58,17 +58,17 @@ class TokenController extends Controller
 
         Auth::guard('manager')->loginUsingId($manager->id);
 
-        return redirect(config('manager.success_redirect'));
+        return redirect(config('esanj.manager.success_redirect'));
     }
 
     private function checkRateLimit(): ?RedirectResponse
     {
-        if (!config('manager.rate_limit.is_enabled')) {
+        if (!config('esanj.manager.rate_limit.is_enabled')) {
             return null;
         }
 
         $key = $this->getRateLimitKey();
-        $maxAttempts = config('manager.rate_limit.max_attempts');
+        $maxAttempts = config('esanj.manager.rate_limit.max_attempts');
 
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
             return $this->handleFailedLogin(trans('manager::manager.errors.too_many_attempts'));
@@ -79,7 +79,7 @@ class TokenController extends Controller
 
     private function hitRateLimit(): void
     {
-        RateLimiter::hit($this->getRateLimitKey(), config('manager.rate_limit.decay_minutes'));
+        RateLimiter::hit($this->getRateLimitKey(), config('esanj.manager.rate_limit.decay_minutes'));
     }
 
     private function getRateLimitKey(): string
@@ -101,7 +101,7 @@ class TokenController extends Controller
      */
     private function extractEsanjIdFromJwt(string $jwt): string
     {
-        $publicKeyPath = config('manager.public_key_path');
+        $publicKeyPath = config('esanj.manager.public_key_path');
 
         throw_if(
             !File::exists($publicKeyPath),

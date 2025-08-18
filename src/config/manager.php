@@ -10,6 +10,8 @@ return [
 
     'token_length' => 32,
 
+    'just_api' => env('MANAGER_JUST_API', false),
+
     // Manager route prefixes
     'routes' => [
         'auth_prefix' => env('MANAGER_AUTH_ROUTE_PREFIX', 'admin/managers'),

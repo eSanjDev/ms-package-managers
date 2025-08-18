@@ -14,7 +14,7 @@ class InstallCommand extends Command
         $this->info('Publishing configuration...');
         $this->call('vendor:publish', [
             '--provider' => "Esanj\\Manager\\Providers\\ManagerServiceProvider",
-            '--tag' => ['manager-assets'],
+            '--tag' => ['esanj-manager-assets'],
             '--force' => true,
         ]);
 
