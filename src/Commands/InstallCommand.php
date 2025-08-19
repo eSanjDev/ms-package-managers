@@ -18,10 +18,13 @@ class InstallCommand extends Command
             '--force' => true,
         ]);
 
-        $this->info('Running migrations...');
-        $this->call('migrate');
+        if ($this->confirm('Should migrations be performed?')) {
+            $this->info('Running migrations...');
+            $this->call('migrate');
 
-        $this->call('manager:permissions-import');
+            $this->call('manager:permissions-import');
+        }
+
 
         $this->ensureEnvKeys([
             'ACCOUNTING_BRIDGE_CLIENT_ID',
