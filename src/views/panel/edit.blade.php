@@ -88,7 +88,7 @@
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
-                            <select name="is_active" class="form-select">
+                            <select name="is_active" class="form-select select2">
                                 <option @selected(old('is_active', $manager->is_active) == 1) value="1">Active
                                 </option>
                                 <option @selected(old('is_active', $manager->is_active ) == 0) value="0">Inactive
@@ -99,7 +99,7 @@
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
-                            <select name="role" class="form-select"
+                            <select name="role" class="form-select select2"
                                     @if($manager->role->value === 'admin' && !$isAdmin) readonly @endif>
                                 @foreach($roles as $role)
                                     <option
