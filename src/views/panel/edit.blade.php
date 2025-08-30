@@ -115,11 +115,13 @@
                     @if($isAdmin)
                         <div class="col-12 mb-4">
                             <div class="input-group input-group-lg">
-                                <span class="input-group-text cursor-pointer"><i class="icon-base ti ti-refresh"
-                                                                                 id="regenerate"></i></span>
+                                <button type="button" class="btn btn-outline-dark" id="regenerate">
+                                    <i class="icon-base ti ti-refresh"></i>
+                                </button>
                                 <input type="password" class="form-control" name="token" placeholder="Token" readonly/>
-                                <span class="input-group-text cursor-pointer toggle-show-token"><i
-                                        class="icon-base ti ti-eye-off"></i></span>
+                                <button type="button" class="btn btn-outline-dark toggle-show-token">
+                                    <i class="icon-base ti ti-eye-off"></i>
+                                </button>
                             </div>
                             @error('token')
                             <div class="text-danger">{{ $message }}</div> @enderror

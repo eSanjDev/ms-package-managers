@@ -24,18 +24,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    $("#regenerate").on("click", function () {
+    const refreshBtn = document.getElementById('regenerate');
+    refreshBtn.addEventListener('click', function () {
         $.ajax({
             url: `${window.baseUrlApiAdmin}/managers/regenerate`,
             type: 'GET',
             success: function (response) {
-                $("input[name=token]").val(response.data.token)
+                inputToken.value = response.data.token
             },
             error: function () {
                 alert('An error occurred while regenerating the token.');
             }
         });
     })
+
 
     $("select[name=role]").on('change', function () {
         let value = $(this).val();
