@@ -36,7 +36,7 @@ return [
     'cache' => [
         'is_enabled' => env('MANAGER_CACHE_ENABLED', true),
         'prefix' => env("MANAGER_CACHE_PREFIX", 'manager_'),
-        'driver' => env('CACHE_DRIVER', 'file'),
+        'driver' => env('CACHE_STORE', 'file'),
         'ttl' => env('MANAGER_CACHE_TTL', 60 * 24 * 7),
     ],
 
