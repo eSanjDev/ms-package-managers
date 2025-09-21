@@ -68,7 +68,10 @@ class ManagerServiceProvider extends ServiceProvider
      */
     private function registerRoutes(): void
     {
-        $this->loadRoutesFrom($this->packagePath('routes/web.php'));
+        if (!config('esanj.manager.just_api')) {
+            $this->loadRoutesFrom($this->packagePath('routes/web.php'));
+        }
+
         $this->loadRoutesFrom($this->packagePath('routes/api.php'));
     }
 

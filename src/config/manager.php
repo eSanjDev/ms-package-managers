@@ -14,9 +14,9 @@ return [
 
     // Manager route prefixes
     'routes' => [
-        'auth_prefix' => env('MANAGER_AUTH_ROUTE_PREFIX', 'admin/managers'),
-        'panel_prefix' => env('MANAGER_PANEL_ROUTE_PREFIX', 'admin/managers'),
-        'api_prefix' => env('MANAGER_API_ROUTE_PREFIX', 'api/managers'),
+        'auth_prefix' => env('MANAGER_AUTH_ROUTE_PREFIX', 'admin'),
+        'panel_prefix' => env('MANAGER_PANEL_ROUTE_PREFIX', 'admin'),
+        'api_prefix' => env('MANAGER_API_ROUTE_PREFIX', 'api'),
     ],
 
     'middlewares' => [
