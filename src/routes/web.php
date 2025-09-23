@@ -1,16 +1,17 @@
 <?php
 
 use Esanj\Manager\Http\Controllers\ManagerController;
-use Esanj\Manager\Http\Controllers\TokenController;
+use Esanj\Manager\Http\Controllers\ManagerAuthController;
+use Esanj\Manager\Http\Middleware\EnsureRequestIsNotRateLimitedMiddleware;
 use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(config('esanj.manager.middlewares.web'))
-    ->prefix(config('esanj.manager.routes.auth_prefix' . '/managers'))
+    ->prefix(config('esanj.manager.routes.auth_prefix') . '/managers')
     ->name('managers.auth.')
     ->group(function () {
-        Route::get('/token', [TokenController::class, 'index'])->name('index');
-        Route::post('/token', [TokenController::class, 'login'])->name('login');
+        Route::get('/token', [ManagerAuthController::class, 'index'])->name('index');
+        Route::post('/token', [ManagerAuthController::class, 'login'])->middleware([EnsureRequestIsNotRateLimitedMiddleware::class])->name('login');
     });
 
 Route::resource(config('esanj.manager.routes.panel_prefix') . "/managers", ManagerController::class)

@@ -21,6 +21,7 @@ class ManagerResource extends JsonResource
             'esanj_id' => $this->esanj_id,
             'role' => $this->role,
             'is_active' => $this->is_active,
+            'uses_token' => $this->uses_token,
             'last_login' => $this->last_login?->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),

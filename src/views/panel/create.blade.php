@@ -100,6 +100,17 @@
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
+                            <select name="uses_token" class="form-select select2">
+                                <option @selected(old('uses_token') == 1) value="1">Yes
+                                </option>
+                                <option @selected(old('uses_token') == 0) value="0">No
+                                </option>
+                            </select>
+                            <label>Required Token</label>
+                        </div>
+                    </div>
+                    <div class="col-12 position-relative select-box mb-4">
+                        <div class="form-floating">
                             <select name="role" class="form-select select2">
                                 @foreach($roles as $role)
                                     <option value="{{$role}}" selected>{{$role}}</option>

@@ -24,7 +24,7 @@
                         <h1>{{ trans('manager::manager.welcome_back') }}</h1>
                         <p>{{ trans('manager::manager.steps.security.box_sub_title') }}</p>
 
-                        <form method="post" action="{{route("manager.auth.login")}}">
+                        <form method="post" action="{{route("managers.auth.login")}}">
                             @csrf
                             <div class="input-box @error('token') error @enderror">
                                 <p>{{ trans('manager::manager.labels.token') }}</p>

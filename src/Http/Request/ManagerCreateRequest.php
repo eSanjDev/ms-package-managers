@@ -18,6 +18,7 @@ class ManagerCreateRequest extends FormRequest
             'role' => ['required', Rule::in(ManagerRoleEnum::toArray())],
             'token' => ['nullable', 'string', 'max:' . config('esanj.manager.token_length')],
             'is_active' => ['boolean'],
+            'uses_token' => ['boolean'],
             'permissions' => ['array', Rule::requiredIf($isNotAdmin)],
             'permissions.*' => ['exists:permissions,id'],
         ];
@@ -27,6 +28,7 @@ class ManagerCreateRequest extends FormRequest
     {
         $this->merge([
             'is_active' => $this->input('is_active') == 'on',
+            'uses_token' => $this->input('uses_token') == 'on',
         ]);
     }
 }
