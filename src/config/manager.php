@@ -2,14 +2,22 @@
 
 
 return [
+    // Logo path for the manager panel
     'logo_path' => env("MANAGER_LOGO_PATH"),
 
+    // Redirect path after successful login
     'success_redirect' => env('MANAGER_SUCCESS_REDIRECT', '/'),
 
+    // Redirect path when access is denied
     'access_denied_redirect' => env('MANAGER_ACCESS_DENIED_REDIRECT', '/'),
 
+    // Length of the generated token for managers
     'token_length' => 32,
 
+    // Expiration time for access tokens in minutes
+    'access_token_expires_in' => 1440, // Minutes (24 hours)
+
+    // If true, the package will only provide API routes without any web panel
     'just_api' => env('MANAGER_JUST_API', false),
 
     // Manager route prefixes
@@ -19,6 +27,7 @@ return [
         'api_prefix' => env('MANAGER_API_ROUTE_PREFIX', 'api'),
     ],
 
+    // Middlewares for different route types
     'middlewares' => [
         'api' => [
             "api"

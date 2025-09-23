@@ -10,6 +10,7 @@ return [
     'welcome_back' => 'Welcome back',
     'confirm' => 'Confirm',
     'cancel' => 'Cancel',
+    'enter' => 'Enter',
 
     'steps' => [
         'security' => [
@@ -27,7 +28,9 @@ return [
         'too_many_attempts' => 'Too many attempts, please try again later',
         'public_key_not_found' => 'Public key not found',
         'token_incorrect' => 'Token is incorrect',
+        'token_expired' => 'Token is expired',
         'manager_not_active' => 'Manager is not active',
         'role_not_allowed' => 'The selected role is not allowed',
+        'unauthorized' => 'Unauthorized',
     ],
 ];

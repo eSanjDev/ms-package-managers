@@ -10,6 +10,7 @@ return [
     'welcome_back' => 'از بازگشت شما خوشحالیم',
     'confirm' => 'تایید',
     'cancel' => 'انصراف',
+    'enter' => 'ورود',
 
     'steps' => [
         'security' => [
@@ -27,6 +28,8 @@ return [
         'too_many_attempts' => 'تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً بعداً دوباره تلاش کنید.',
         'public_key_not_found' => 'کلید عمومی یافت نشد.',
         'token_incorrect' => 'توکن وارد شده صحیح نمی باشد.',
+        'token_expired' => 'توکن منقضی شده است.',
+        'unauthorized' => 'عدم دسترسی',
         'manager_not_active' => 'مدیر فعال نیست',
         'role_not_allowed' => 'نقش انتخاب شده مجاز نیست',
     ],
