@@ -19,18 +19,31 @@ class Manager extends Authenticatable
         'is_active',
         'last_login',
         'extra',
+        'secret_key',
+        'uses_token'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'uses_token' => 'boolean',
         'last_login' => 'datetime',
         'token' => 'hashed',
         'role' => ManagerRoleEnum::class,
     ];
 
     protected $hidden = [
-        'token'
+        'token',
+        'secret_key',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function ($manager) {
+            if (empty($manager->secret_key)) {
+                $manager->secret_key = bin2hex(random_bytes(16));
+            }
+        });
+    }
 
     public function Permissions(): BelongsToMany
     {
