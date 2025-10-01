@@ -36,7 +36,7 @@
 ### 📥 Step 1: Install the package
 
 ```bash
-composer require esanj/ms-package-managers
+composer require esanj/managers
 ```
 
 ### 📥 Step 2: Run the installer
