@@ -1,4 +1,4 @@
-@extends('layouts.layoutMaster')
+@extends('layouts.master')
 
 @section('title', 'Manager List')
 
@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
         <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables.bootstrap5.css')}}">
         <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.css')}}">
-@stop
+@endsection
 
 <!-- Page Scripts -->
 @section('page-script')
@@ -18,7 +18,7 @@
     <script type="module" src="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
     <script type="module" src="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.js')}}"></script>
     <script type="module" src="{{asset("assets/vendor/manager/js/ManagerTable.js")}}"></script>
-@stop
+@endsection
 
 
 @section('content')

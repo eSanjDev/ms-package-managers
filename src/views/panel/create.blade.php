@@ -1,4 +1,4 @@
-@extends('layouts.layoutMaster')
+@extends('layouts.master')
 
 @section('title', 'Create New Manager')
 
