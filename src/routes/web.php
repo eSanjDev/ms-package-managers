@@ -6,7 +6,7 @@ use Esanj\Manager\Http\Middleware\EnsureRequestIsNotRateLimitedMiddleware;
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware(config('esanj.manager.middlewares.web'))
+Route::middleware('web')
     ->prefix(config('esanj.manager.routes.auth_prefix') . '/managers')
     ->name('managers.auth.')
     ->group(function () {
