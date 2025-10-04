@@ -17,7 +17,7 @@ class CheckManagerPermissionMiddleware
 
         if (!$manager || !$manager->is_active) {
             session()->forget('auth_manager');
-            return redirect()->route('manager.auth.login');
+            return redirect()->route('managers.auth.login');
         }
 
         $hasPermission = $managerService->hasPermission($manager->id, $permission);
