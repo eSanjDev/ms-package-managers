@@ -17,6 +17,8 @@ return new class extends Migration {
             $table->longText('value')->nullable();
 
             $table->unique(['manager_id', 'key']);
+
+            $table->timestamps();
         });
     }
 
