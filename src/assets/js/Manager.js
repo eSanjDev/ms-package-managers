@@ -3,16 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputToken = document.querySelector('input[name=token]');
 
     if (inputToken) {
-        inputToken.addEventListener('click', function () {
-            inputToken.select();
-            inputToken.setSelectionRange(0, 99999);
-
-            navigator.clipboard.writeText(inputToken.value)
-                .then(() => {
-                    alert('Text copied to clipboard!');
-                })
-        });
-
         toggleBtn.addEventListener('click', function () {
             if (inputToken.type === 'password') {
                 inputToken.type = 'text';
