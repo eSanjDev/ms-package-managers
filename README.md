@@ -101,15 +101,29 @@ Front-end assets (JS/CSS):	```php artisan vendor:publish --tag=esanj-manager-ass
 ---
 
 ## 🔐 Middlewares
-Middleware Purpose
 
-```CheckAuthManagerMiddleware```	Ensures a manager is authenticated
+Middleware aliases used across the **Esanj** services to secure routes and APIs.
 
-```CheckManagerPermissionMiddleware```	Validates manager’s permission on routes
+| Alias | Class | Purpose |
+|:------|:-------------------------------------------|:--------------------------------------------------------------|
+| `auth.manager` | `CheckAuthManagerMiddleware` | Ensures that a manager is authenticated before accessing protected routes. |
+| `auth.api` | `AuthenticateTokenMiddleware` | Validates API authentication tokens for secure API requests. |
+| `permission` | `CheckManagerPermissionMiddleware` | Checks if the current manager has the required permissions to access a route. |
 
-Use these to protect your web routes and API endpoints.
+**Usage Example:**
 
----
+
+```php
+// Web routes protected by manager authentication and permission checks
+Route::middleware(['auth.manager', 'permission:manage-users'])->group(function () {
+   Route::get('/dashboard', [DashboardController::class, 'index']);
+});
+
+// API routes protected by token authentication
+Route::middleware('auth.api')->group(function () {
+    Route::get('/api/data', [ApiController::class, 'fetch']);
+});
+```
 
 ## 🧑‍💻 Artisan Commands
 

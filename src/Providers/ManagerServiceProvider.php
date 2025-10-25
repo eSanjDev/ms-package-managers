@@ -5,6 +5,10 @@ namespace Esanj\Manager\Providers;
 use Esanj\Manager\Commands\CreateManagerCommand;
 use Esanj\Manager\Commands\ImportPermissionsCommand;
 use Esanj\Manager\Commands\InstallCommand;
+use Esanj\Manager\Http\Middleware\AuthenticateTokenMiddleware;
+use Esanj\Manager\Http\Middleware\CheckAuthManagerMiddleware;
+use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
 class ManagerServiceProvider extends ServiceProvider
@@ -21,13 +25,21 @@ class ManagerServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(Router $router): void
     {
         $this->registerRoutes();
         $this->registerViews();
         $this->registerTranslations();
         $this->registerMigrations();
         $this->registerPublishing();
+        $this->aliasMiddleware($router);
+    }
+
+    private function aliasMiddleware(Router $router): void
+    {
+        $router->aliasMiddleware('auth.manager', CheckAuthManagerMiddleware::class);
+        $router->aliasMiddleware('auth.api', AuthenticateTokenMiddleware::class);
+        $router->aliasMiddleware('permission', CheckManagerPermissionMiddleware::class);
     }
 
     /**
