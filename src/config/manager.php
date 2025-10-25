@@ -30,11 +30,13 @@ return [
     // Middlewares for different route types
     'middlewares' => [
         'api' => [
-            "api"
+            "api",
+            'auth.api'
         ],
 
         'web' => [
-            'web'
+            'web',
+            'auth.manager'
         ]
     ],
 

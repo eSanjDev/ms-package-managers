@@ -113,8 +113,13 @@ class BaseTable {
                 buttonsStyling: false
             }).then((result) => {
                 if (result.value) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('input[name="csrf"]').val()
+                        }
+                    });
                     $.ajax({
-                        url: `${baseUrlApiAdmin}/${this.resourceName}/${entityId}`,
+                        url: `${baseUrlApi}/${this.resourceName}/${entityId}`,
                         method: 'DELETE',
                         success: () => {
                             Swal.fire({
@@ -164,8 +169,13 @@ class BaseTable {
                 buttonsStyling: false
             }).then((result) => {
                 if (result.value) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('input[name="csrf"]').val()
+                        }
+                    });
                     $.ajax({
-                        url: `${baseUrlApiAdmin}/${this.resourceName}/${entityId}/restore`,
+                        url: `${baseUrlApi}/${this.resourceName}/${entityId}/restore`,
                         method: 'POST',
                         success: (response) => {
                             Swal.fire({
@@ -223,7 +233,8 @@ class BaseTable {
 
         const flagOnlyTrashed = this.params.flagOnlyTrashed || 0;
         const includesRelations = this.params.includesRelations;
-        $.getJSON(`${baseUrlApiAdmin}/${this.resourceName}`, {
+        console.log(`${baseUrlApi}/${this.resourceName}`)
+        $.getJSON(`${baseUrlApi}/${this.resourceName}`, {
             page: page,
             per_page: data.length,
             search: searchValue,
