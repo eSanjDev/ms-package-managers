@@ -3,6 +3,7 @@
 namespace Esanj\Manager\Http\Controllers;
 
 use Esanj\Manager\Http\Request\ManagerCreateRequest;
+use Esanj\Manager\Http\Request\ManagerMetaRequest;
 use Esanj\Manager\Http\Request\ManagerUpdateRequest;
 use Esanj\Manager\Http\Resources\ManagerResource;
 use Esanj\Manager\Models\Manager;
@@ -113,6 +114,38 @@ class ManagerApiController extends BaseController
             'data' => [
                 'token' => $token,
             ],
+        ]);
+    }
+
+    public function getMeta(Manager $manager, string $key): JsonResponse
+    {
+        $meta = $manager->getMeta($key);
+
+        if (!$meta) {
+            return response()->json([
+                'message' => __('manager::manager.errors.meta_not_found'),
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'value' => $meta->value,
+                'created_at' => $meta->created_at->toDateTimeString(),
+                'updated_at' => $meta->updated_at->toDateTimeString(),
+            ]
+        ]);
+    }
+
+    public function setMeta(Manager $manager, ManagerMetaRequest $request): JsonResponse
+    {
+        $manager->setMeta(
+            key: $request->input('key'),
+            value: $request->input('value')
+        );
+
+        return response()->json([
+            'status' => true
         ]);
     }
 }

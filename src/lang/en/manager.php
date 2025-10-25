@@ -32,5 +32,6 @@ return [
         'manager_not_active' => 'Manager is not active',
         'role_not_allowed' => 'The selected role is not allowed',
         'unauthorized' => 'Unauthorized',
+        'meta_not_found' => 'The meta not found.'
     ],
 ];

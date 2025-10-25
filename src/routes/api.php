@@ -22,4 +22,7 @@ Route::middleware(config('esanj.manager.middlewares.api'))
         Route::get('/managers/regenerate', [ManagerApiController::class, 'regenerate']);
 
         Route::apiResource("/managers", ManagerApiController::class);
+
+        Route::get('/managers/{manager}/meta/{key}', [ManagerApiController::class, 'getMeta']);
+        Route::post('/managers/{manager}/meta', [ManagerApiController::class, 'setMeta']);
     });

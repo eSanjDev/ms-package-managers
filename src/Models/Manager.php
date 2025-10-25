@@ -52,7 +52,7 @@ class Manager extends Authenticatable
 
     public function getMeta($key)
     {
-        return $this->meta->where('key', $key)->value('value');
+        return $this->meta->where('key', $key)->first();
     }
 
     public function meta()

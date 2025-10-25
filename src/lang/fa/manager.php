@@ -32,5 +32,6 @@ return [
         'unauthorized' => 'عدم دسترسی',
         'manager_not_active' => 'مدیر فعال نیست',
         'role_not_allowed' => 'نقش انتخاب شده مجاز نیست',
+        'meta_not_found' => 'پارامتر یافت نشد.',
     ],
 ];
