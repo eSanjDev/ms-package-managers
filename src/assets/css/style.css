@@ -309,3 +309,9 @@ table.table-flush-spacing tr td:first-of-type {
 .mb-6 {
     margin-block-end: 1.5rem !important;
 }
+
+.form-floating > .form-select {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    padding-left: 0.9375rem;
+}
