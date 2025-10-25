@@ -88,15 +88,15 @@ Key	Description
 You can customize the package via these publish commands:
 
 ### 🔧 What Command
-Config file:	```php artisan vendor:publish --tag=manager-config```
+Config file:	```php artisan vendor:publish --tag=esanj-manager-config```
 
-Blade views:	```php artisan vendor:publish --tag=manager-views```
+Blade views:	```php artisan vendor:publish --tag=esanj-manager-views```
 
-Language files:	```php artisan vendor:publish --tag=manager-lang```
+Language files:	```php artisan vendor:publish --tag=esanj-manager-lang```
 
-Database migrations:	```php artisan vendor:publish --tag=manager-migrations```
+Database migrations:	```php artisan vendor:publish --tag=esanj-manager-migrations```
 
-Front-end assets (JS/CSS):	```php artisan vendor:publish --tag=manager-assets```
+Front-end assets (JS/CSS):	```php artisan vendor:publish --tag=esanj-manager-assets```
 
 ---
 
