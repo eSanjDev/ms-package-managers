@@ -9,6 +9,7 @@ use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class ManagerAuthController extends Controller
@@ -52,6 +53,14 @@ class ManagerAuthController extends Controller
         }
 
         return $this->handleSuccessLogin($manager);
+    }
+
+    public function logout()
+    {
+        Auth::guard('manager')->logout();
+        Session::forget('auth_bridge');
+
+        return redirect()->route('auth-bridge.redirect');
     }
 
     private function handleFailedLogin(string $message): RedirectResponse

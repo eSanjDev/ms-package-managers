@@ -12,6 +12,7 @@ Route::middleware('web')
     ->group(function () {
         Route::get('/token', [ManagerAuthController::class, 'index'])->name('index');
         Route::post('/token', [ManagerAuthController::class, 'login'])->middleware([EnsureRequestIsNotRateLimitedMiddleware::class])->name('login');
+        Route::post('/logout', [ManagerAuthController::class, 'logout'])->name('logout');
     });
 
 Route::resource(config('esanj.manager.routes.panel_prefix') . "/managers", ManagerController::class)
