@@ -4,6 +4,7 @@ namespace Esanj\Manager\Models;
 
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -20,7 +21,11 @@ class Manager extends Authenticatable
         'last_login',
         'extra',
         'secret_key',
-        'uses_token'
+        'uses_token',
+        'key',
+        'value',
+        'type',
+        'meta'
     ];
 
     protected $casts = [
@@ -66,5 +71,18 @@ class Manager extends Authenticatable
             ['key' => $key],
             ['value' => $value]
         );
+    }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(ManagerActivity::class)->latest();
+    }
+
+    public function setActivity(string $type, array $meta = [])
+    {
+        return $this->activities()->create([
+            'type' => $type,
+            'meta' => $meta
+        ]);
     }
 }

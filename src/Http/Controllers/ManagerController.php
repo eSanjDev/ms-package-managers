@@ -89,6 +89,11 @@ class ManagerController extends BaseController
             ->with('success', trans('manager::manager.success.updated'));
     }
 
+    public function activities(Manager $manager): View
+    {
+        return view('manager::panel.activity', compact('manager'));
+    }
+
     private function currentUserIsAdmin(): bool
     {
         return Auth::guard('manager')->user()?->role === ManagerRoleEnum::Admin;

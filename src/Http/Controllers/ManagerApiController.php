@@ -5,8 +5,10 @@ namespace Esanj\Manager\Http\Controllers;
 use Esanj\Manager\Http\Request\ManagerCreateRequest;
 use Esanj\Manager\Http\Request\ManagerMetaRequest;
 use Esanj\Manager\Http\Request\ManagerUpdateRequest;
+use Esanj\Manager\Http\Resources\ManagerActivityResource;
 use Esanj\Manager\Http\Resources\ManagerResource;
 use Esanj\Manager\Models\Manager;
+use Esanj\Manager\Models\ManagerActivity;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -146,6 +148,36 @@ class ManagerApiController extends BaseController
 
         return response()->json([
             'status' => true
+        ]);
+    }
+
+    public function activities(Manager $manager, Request $request): JsonResponse
+    {
+        $perPage = min((int)$request->get('per_page', 15), 50);
+
+        $query = $manager->activities();
+
+        if ($request->filled('search')) {
+            $query = $query->where("type", $request->get('search'))->orWhere("meta", $request->get('search'));
+        }
+
+        $activities = $query->paginate($perPage);
+
+        return response()->json([
+            'data' => ManagerActivityResource::collection($activities),
+            'meta' => [
+                'total' => $activities->total(),
+                'current_page' => $activities->currentPage(),
+                'per_page' => $activities->perPage(),
+                'last_page' => $activities->lastPage(),
+            ]
+        ]);
+    }
+
+    public function getLog(Manager $manager, ManagerActivity $activity): JsonResponse
+    {
+        return response()->json([
+            'data' => new ManagerActivityResource($activity)
         ]);
     }
 }

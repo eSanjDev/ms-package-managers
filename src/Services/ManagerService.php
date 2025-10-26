@@ -75,4 +75,18 @@ class ManagerService
     {
         return bin2hex(random_bytes($length / 2));
     }
+
+    public function setActivity(string $type, array $meta = [])
+    {
+        return auth()->guard('manager')->user()->setActivity($type, $meta);
+    }
+
+    public function getActivities(int|Manager $manager)
+    {
+        if (is_int($manager)) {
+            $manager = $this->findById($manager);
+        }
+
+        return $manager->activities;
+    }
 }

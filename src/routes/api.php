@@ -24,4 +24,7 @@ Route::middleware(config('esanj.manager.middlewares.api'))
 
         Route::get('/managers/{manager}/meta/{key}', [ManagerApiController::class, 'getMeta']);
         Route::post('/managers/{manager}/meta', [ManagerApiController::class, 'setMeta']);
+
+        Route::get("/managers/{manager}/activities", [ManagerApiController::class, 'activities']);
+        Route::get("/managers/{manager}/activities/{activity}", [ManagerApiController::class, 'getLog']);
     });
