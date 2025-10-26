@@ -233,7 +233,7 @@ class BaseTable {
 
         const flagOnlyTrashed = this.params.flagOnlyTrashed || 0;
         const includesRelations = this.params.includesRelations;
-        console.log(`${baseUrlApi}/${this.resourceName}`)
+
         $.getJSON(`${baseUrlApi}/${this.resourceName}`, {
             page: page,
             per_page: data.length,
