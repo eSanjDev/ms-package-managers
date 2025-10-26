@@ -3,6 +3,7 @@
 namespace Esanj\Manager\Models;
 
 use Esanj\Manager\Enums\ManagerRoleEnum;
+use Esanj\Manager\Facades\Manager as ManagerFacade;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -53,6 +54,11 @@ class Manager extends Authenticatable
     public function Permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'manager_permissions');
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return ManagerFacade::hasPermission($this->id, $permission);
     }
 
     public function getMeta($key)

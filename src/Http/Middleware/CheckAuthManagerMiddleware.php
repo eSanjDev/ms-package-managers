@@ -10,7 +10,9 @@ class CheckAuthManagerMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $manager = Auth::guard("manager")->user();
+        auth()->shouldUse('manager');
+
+        $manager = Auth::user();
 
         if (!$manager || !$manager->is_active) {
             session()->forget('auth_manager');

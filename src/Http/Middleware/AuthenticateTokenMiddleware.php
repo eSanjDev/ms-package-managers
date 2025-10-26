@@ -11,6 +11,8 @@ class AuthenticateTokenMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
+        auth()->shouldUse('manager');
+
         $managerService = app(ManagerService::class);
 
         $authHeader = $request->header('Authorization');
@@ -54,7 +56,7 @@ class AuthenticateTokenMiddleware
             ], 400);
         }
 
-        Auth::guard('manager')->login($manager);
+        Auth::login($manager);
 
 
         return $next($request);

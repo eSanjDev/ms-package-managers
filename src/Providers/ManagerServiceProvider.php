@@ -8,7 +8,9 @@ use Esanj\Manager\Commands\InstallCommand;
 use Esanj\Manager\Http\Middleware\AuthenticateTokenMiddleware;
 use Esanj\Manager\Http\Middleware\CheckAuthManagerMiddleware;
 use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
+use Esanj\Manager\Models\Manager;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class ManagerServiceProvider extends ServiceProvider
@@ -33,6 +35,19 @@ class ManagerServiceProvider extends ServiceProvider
         $this->registerMigrations();
         $this->registerPublishing();
         $this->aliasMiddleware($router);
+        $this->registerPermissions();
+
+    }
+
+    private function registerPermissions(): void
+    {
+        $permissions = config('esanj.manager.permissions');
+
+        foreach ($permissions as $key => $permission) {
+            Gate::define($key, function (Manager $manager) use ($key) {
+                return $manager->hasPermission($key);
+            });
+        }
     }
 
     private function aliasMiddleware(Router $router): void

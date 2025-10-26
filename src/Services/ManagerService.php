@@ -78,7 +78,7 @@ class ManagerService
 
     public function setActivity(string $type, array $meta = [])
     {
-        return auth()->guard('manager')->user()->setActivity($type, $meta);
+        return auth()->user()->setActivity($type, $meta);
     }
 
     public function getActivities(int|Manager $manager)

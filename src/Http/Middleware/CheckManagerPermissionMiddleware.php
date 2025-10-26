@@ -11,9 +11,11 @@ class CheckManagerPermissionMiddleware
 {
     public function handle(Request $request, Closure $next, string $permission = "")
     {
+        auth()->shouldUse('manager');
+
         $managerService = app(ManagerService::class);
 
-        $manager = $managerService->findById(Auth::guard('manager')?->id() ?? 0);
+        $manager = $managerService->findById(id: Auth::id() ?? 0);
 
         if (!$manager || !$manager->is_active) {
             session()->forget('auth_manager');
