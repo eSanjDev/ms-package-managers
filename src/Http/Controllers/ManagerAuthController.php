@@ -24,11 +24,7 @@ class ManagerAuthController extends Controller
     {
         $manager = $this->resolveManagerFromSession();
 
-        if (!$manager) {
-            return redirect()->route('auth-bridge.redirect');
-        }
-
-        if (!$manager->uses_token) {
+        if ($manager && !$manager->uses_token) {
             return $this->handleSuccessLogin($manager);
         }
 
@@ -39,15 +35,11 @@ class ManagerAuthController extends Controller
     {
         $manager = $this->resolveManagerFromSession();
 
-        if (!$manager) {
-            return redirect()->route('auth-bridge.redirect');
-        }
-
         $validated = $request->validate([
             'token' => ['required', 'string', 'max:255'],
         ]);
 
-        if ($manager->uses_token && !$this->managerService->checkManagerToken($manager, $validated['token'] ?? null)) {
+        if (!$manager || ($manager->uses_token && !$this->managerService->checkManagerToken($manager, $validated['token'] ?? null))) {
             $this->managerAuthService->hitRateLimit();
             return $this->handleFailedLogin(trans('manager::manager.errors.token_incorrect'));
         }
