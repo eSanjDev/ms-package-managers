@@ -27,14 +27,14 @@ class ManagerServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(Router $router): void
+    public function boot(): void
     {
         $this->registerRoutes();
         $this->registerViews();
         $this->registerTranslations();
         $this->registerMigrations();
         $this->registerPublishing();
-        $this->aliasMiddleware($router);
+        $this->registerMiddleware();
         $this->registerPermissions();
 
     }
@@ -50,8 +50,10 @@ class ManagerServiceProvider extends ServiceProvider
         }
     }
 
-    private function aliasMiddleware(Router $router): void
+    private function registerMiddleware(): void
     {
+        $router = app(Router::class);
+
         $router->aliasMiddleware('auth.manager', CheckAuthManagerMiddleware::class);
         $router->aliasMiddleware('auth.api', AuthenticateTokenMiddleware::class);
         $router->aliasMiddleware('permission', CheckManagerPermissionMiddleware::class);
