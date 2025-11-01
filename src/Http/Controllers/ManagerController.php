@@ -3,7 +3,6 @@
 namespace Esanj\Manager\Http\Controllers;
 
 use Esanj\Manager\Enums\ManagerRoleEnum;
-use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Http\Request\ManagerCreateRequest;
 use Esanj\Manager\Http\Request\ManagerUpdateRequest;
 use Esanj\Manager\Models\Manager;
@@ -18,9 +17,10 @@ class ManagerController extends BaseController
 {
     public function __construct(protected ManagerService $managerService)
     {
-        $this->middleware(CheckManagerPermissionMiddleware::class . ':managers.list')->only(['index']);
-        $this->middleware(CheckManagerPermissionMiddleware::class . ':managers.create')->only(['create', 'store']);
-        $this->middleware(CheckManagerPermissionMiddleware::class . ':managers.edit')->only(['edit', 'update']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.list'))->only(['index']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.store'))->only(['create', 'store']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.update'))->only(['edit', 'update']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities']);
     }
 
     public function index(): View

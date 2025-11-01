@@ -76,6 +76,16 @@ return [
         ],
     ],
 
+    "access_provider" => [
+        'list' => 'managers.list',
+        'store' => 'managers.create',
+        'update' => 'managers.edit',
+        'delete' => 'managers.delete',
+        'restore' => 'managers.delete',
+        'activity' => 'managers.list',
+        'meta' => 'managers.list',
+    ],
+
     // Blade components that can be used in the manager edit panel
     'extra_field' => [
         // Example: "content.manager.limit",

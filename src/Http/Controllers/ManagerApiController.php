@@ -17,6 +17,13 @@ class ManagerApiController extends BaseController
 {
     public function __construct(protected ManagerService $managerService)
     {
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.list'))->only(['index', 'show']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.store'))->only(['store']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.update'))->only(['update']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.delete'))->only(['destroy']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.delete'))->only(['restore']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.meta'))->only(['getMeta', 'setMeta']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities', 'getLog']);
     }
 
     public function index(Request $request): JsonResponse
