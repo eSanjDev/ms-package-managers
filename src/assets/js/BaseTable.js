@@ -113,13 +113,8 @@ class BaseTable {
                 buttonsStyling: false
             }).then((result) => {
                 if (result.value) {
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('input[name="csrf"]').val()
-                        }
-                    });
                     $.ajax({
-                        url: `${baseUrlApi}/${this.resourceName}/${entityId}`,
+                        url: `/${window.baseUrlApi}/${this.resourceName}/${entityId}`,
                         method: 'DELETE',
                         success: () => {
                             Swal.fire({
@@ -169,13 +164,8 @@ class BaseTable {
                 buttonsStyling: false
             }).then((result) => {
                 if (result.value) {
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('input[name="csrf"]').val()
-                        }
-                    });
                     $.ajax({
-                        url: `${baseUrlApi}/${this.resourceName}/${entityId}/restore`,
+                        url: `/${window.baseUrlApi}/${this.resourceName}/${entityId}/restore`,
                         method: 'POST',
                         success: (response) => {
                             Swal.fire({
@@ -233,8 +223,7 @@ class BaseTable {
 
         const flagOnlyTrashed = this.params.flagOnlyTrashed || 0;
         const includesRelations = this.params.includesRelations;
-
-        $.getJSON(`${baseUrlApi}/${this.resourceName}`, {
+        $.getJSON(`/${window.baseUrlApi}/${this.resourceName}`, {
             page: page,
             per_page: data.length,
             search: searchValue,
@@ -290,7 +279,7 @@ class BaseTable {
     }
 
     getDomLayout() {
-        return '<"row me-2 my-3"<"col-md-6 mb-2 mb-sm-0 text-start d-flex align-items-center justify-content-center justify-content-md-start"<"dt-search"f><"dt-length ms-3">><"col-md-6 dt-action-buttons text-end d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"B>>' +
+        return '<"row me-2 my-3"<"col-md-6 mb-2 mb-sm-0 text-start d-flex align-items-center justify-content-center justify-content-md-start px-3"<"dt-search"f><"dt-length ms-3">><"col-md-6 dt-action-buttons text-end d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"B>>' +
             't' +
             '<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>';
     }

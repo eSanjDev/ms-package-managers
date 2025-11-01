@@ -97,7 +97,7 @@ $(document).on('click', '.tabler-eye', function () {
         }
     });
     $.ajax({
-        url: `${window.baseUrlApi}/managers/${window.manager_id}/activities/${id}`,
+        url: `/${window.baseUrlApi}/managers/${window.manager_id}/activities/${id}`,
         method: 'GET',
         success: (res) => {
             Swal.close()

@@ -7,19 +7,17 @@
     <link rel="stylesheet"
           href="{{asset('assets/vendor/manager/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
     <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables.bootstrap5.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.css')}}">
 @endsection
 
 <!-- Page Scripts -->
 @section('page-script')
     <script>
-        window.baseUrlApi = "{{config('esanj.manager.routes.panel_prefix').'/api'}}"
-        window.baseUrlWeb = "{{config('esanj.manager.routes.panel_prefix')}}"
+        window.baseUrlApi = "{{config('esanj.manager.routes.api_prefix')}}"
+        window.baseUrl = "{{config('esanj.manager.routes.panel_prefix')}}"
         window.manager_id = {{$manager->id}}
     </script>
     <script type="module"
             src="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
-    <script type="module" src="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.js')}}"></script>
     <script type="module" src="{{asset("assets/vendor/manager/js/ManagerActivityTable.js")}}"></script>
 @endsection
 
@@ -40,10 +38,11 @@
         <div class="modal-dialog modal-dialog-centered modal-simple">
             <div class="modal-content">
                 <div class="modal-body">
-                    <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     <div class="text-center mb-6">
                         <h2 class="mb-2"></h2>
-                        <span>2025-05-07 14:32:10</span>
+                        <span></span>
                     </div>
                     <p class="mb-6" style="justify-self: center"></p>
                 </div>

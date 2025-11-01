@@ -3,21 +3,28 @@
 use Esanj\Manager\Http\Controllers\ManagerApiController;
 use Esanj\Manager\Http\Controllers\ManagerAuthApiController;
 use Esanj\Manager\Http\Middleware\EnsureRequestIsNotRateLimitedMiddleware;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
 
-Route::prefix(config('esanj.manager.routes.api_prefix') . '/managers')->name('api.managers.')->group(function () {
+Route::prefix(config('esanj.manager.routes.api_prefix') . '/managers')->middleware('web')->group(function () {
     Route::get('/redirect', [ManagerAuthApiController::class, 'redirectToAuthBridge']);
     Route::get('/verify', [ManagerAuthApiController::class, 'verifyManagerCode']);
-    Route::post('/authenticate', [ManagerAuthApiController::class, 'authenticateViaBridge'])
-        ->middleware([EnsureRequestIsNotRateLimitedMiddleware::class]);
+    Route::post('/authenticate', [ManagerAuthApiController::class, 'authenticateViaBridge'])->middleware([EnsureRequestIsNotRateLimitedMiddleware::class]);
 });
 
-Route::middleware(config('esanj.manager.middlewares.api'))
-    ->prefix(config('esanj.manager.routes.api_prefix'))
-    ->name('api.managers.')
+
+Route::prefix(config('esanj.manager.routes.api_prefix'))
+    ->middleware(array_merge([
+        'api',
+        EncryptCookies::class,
+        AddQueuedCookiesToResponse::class,
+        StartSession::class
+    ], config('esanj.manager.middlewares.api')))
     ->group(function () {
-        Route::apiResource("/managers", ManagerApiController::class);
+        Route::apiResource("/managers", ManagerApiController::class)->names("api.managers");
 
         Route::post('/managers/{manager}/restore', [ManagerApiController::class, 'restore']);
         Route::get('/managers/regenerate', [ManagerApiController::class, 'regenerate']);

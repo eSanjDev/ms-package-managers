@@ -5,13 +5,13 @@ namespace Esanj\Manager\Providers;
 use Esanj\Manager\Commands\CreateManagerCommand;
 use Esanj\Manager\Commands\ImportPermissionsCommand;
 use Esanj\Manager\Commands\InstallCommand;
-use Esanj\Manager\Http\Middleware\AuthenticateTokenMiddleware;
 use Esanj\Manager\Http\Middleware\CheckAuthManagerMiddleware;
 use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Models\Manager;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+
 
 class ManagerServiceProvider extends ServiceProvider
 {
@@ -54,9 +54,8 @@ class ManagerServiceProvider extends ServiceProvider
     {
         $router = app(Router::class);
 
-        $router->aliasMiddleware('auth.manager', CheckAuthManagerMiddleware::class);
-        $router->aliasMiddleware('auth.api', AuthenticateTokenMiddleware::class);
-        $router->aliasMiddleware('permission', CheckManagerPermissionMiddleware::class);
+        $router->aliasMiddleware('manager.auth', CheckAuthManagerMiddleware::class);
+        $router->aliasMiddleware('manager.permission', CheckManagerPermissionMiddleware::class);
     }
 
     /**
@@ -69,7 +68,7 @@ class ManagerServiceProvider extends ServiceProvider
         config([
             'auth.providers.managers' => [
                 'driver' => 'eloquent',
-                'model' => \Esanj\Manager\Models\Manager::class,
+                'model' => Manager::class,
             ],
             'auth.guards.manager' => [
                 'driver' => 'session',

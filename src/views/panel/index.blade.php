@@ -7,24 +7,22 @@
     <link rel="stylesheet"
           href="{{asset('assets/vendor/manager/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
     <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables.bootstrap5.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.css')}}">
 @endsection
 
 <!-- Page Scripts -->
 @section('page-script')
     <script>
-        window.baseUrlApi = "{{config('esanj.manager.routes.panel_prefix').'/api'}}"
-        window.baseUrlWeb = "{{config('esanj.manager.routes.panel_prefix')}}"
+        window.baseUrlApi = "{{config('esanj.manager.routes.api_prefix')}}"
+        window.baseUrl = "{{config('esanj.manager.routes.panel_prefix')}}"
     </script>
     <script type="module"
             src="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
-    <script type="module" src="{{asset('assets/vendor/manager/libs/sweetalert2/sweetalert2.js')}}"></script>
     <script type="module" src="{{asset("assets/vendor/manager/js/ManagerTable.js")}}"></script>
 @endsection
 
 
 @section('content')
-    <h4>
+    <h4>{{config('esanj.manager.routes.panel_prefix')}}
         <span class="fw-light">Manager List</span>
     </h4>
 

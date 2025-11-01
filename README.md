@@ -77,8 +77,8 @@ The installer (`InstallCommand.php`) ensures each of these keys exists in `.env`
 
 ```php
 'middlewares' => [
-  'api' => ['api', 'auth.api'],
-  'web' => ['web', 'auth.manager'],
+  'api' => ['manager.auth:api'],
+  'web' => ['manager.auth:web'],
 ],
 ```
 
@@ -173,24 +173,23 @@ Use header:
 Authorization: Bearer {access_token}
 ```
 
-
 All endpoints are located within the prefix defined in your config  
-(`config('manager.routes.api_prefix')`, default: `/api`) + `/admin/managers`  
-and are guarded by `auth.api` middleware (Bearer token required).
+(`config('manager.routes.api_prefix')`, default:`/api`)+`/admin/managers`  
+and are guarded by `auth.api` middleware (Bearer token required).
 
-| Method | URI | Description / Behavior |
-|:-------|:----|:-----------------------|
-| **GET** | `/api/admin/managers` | Retrieve paginated list of all managers (active + optional trashed). |
-| **POST** | `/api/admin/managers` | Create a new manager record (name, email, role, token). |
-| **GET** | `/api/admin/managers/{manager}` | Get details of a specific manager including permissions and meta. |
-| **PUT** | `/api/admin/managers/{manager}` | Update manager’s profile, email, status, or permissions. Automatically syncs permissions. |
-| **DELETE** | `/api/admin/managers/{manager}` | Soft‑delete a manager record. |
-| **POST** | `/api/admin/managers/{id}/restore` | Restore a previously soft‑deleted manager. Returns 404 if not found. |
-| **GET** | `/api/admin/managers/regenerate` | Generate a new static token (uses `token_length` from config). |
-| **GET** | `/api/admin/managers/{manager}/meta/{key}` | Retrieve a single meta key for given manager. Returns 404 if not set. |
-| **POST** | `/api/admin/managers/{manager}/meta` | Store or update a meta key/value pair for that manager. |
-| **GET** | `/api/admin/managers/{manager}/activities` | Return paginated activity logs for manager. Supports `search` by type or meta. |
-| **GET** | `/api/admin/managers/{manager}/activities/{activity}` | Return a single activity entry with full metadata. Used by UI modal viewer. |
+| Method     | URI                                                   | Description / Behavior                                                                    |
+|:-----------|:------------------------------------------------------|:------------------------------------------------------------------------------------------|
+| **GET**    | `/api/admin/managers`                                 | Retrieve paginated list of all managers (active + optional trashed).                      |
+| **POST**   | `/api/admin/managers`                                 | Create a new manager record (name, email, role, token).                                   |
+| **GET**    | `/api/admin/managers/{manager}`                       | Get details of a specific manager including permissions and meta.                         |
+| **PUT**    | `/api/admin/managers/{manager}`                       | Update manager’s profile, email, status, or permissions. Automatically syncs permissions. |
+| **DELETE** | `/api/admin/managers/{manager}`                       | Soft‑delete a manager record.                                                             |
+| **POST**   | `/api/admin/managers/{id}/restore`                    | Restore a previously soft‑deleted manager. Returns 404 if not found.                      |
+| **GET**    | `/api/admin/managers/regenerate`                      | Generate a new static token (uses `token_length` from config).                            |
+| **GET**    | `/api/admin/managers/{manager}/meta/{key}`            | Retrieve a single meta key for given manager. Returns 404 if not set.                     |
+| **POST**   | `/api/admin/managers/{manager}/meta`                  | Store or update a meta key/value pair for that manager.                                   |
+| **GET**    | `/api/admin/managers/{manager}/activities`            | Return paginated activity logs for manager. Supports `search` by type or meta.            |
+| **GET**    | `/api/admin/managers/{manager}/activities/{activity}` | Return a single activity entry with full metadata. Used by UI modal viewer.               |
 
 ---
 
@@ -198,31 +197,31 @@ and are guarded by `auth.api` middleware (Bearer token required).
 
 Middleware aliases used across the **Esanj** services to secure routes and APIs.
 
-| Alias | Class | Purpose |
-|:------|:-------------------------------------------|:--------------------------------------------------------------|
-| `auth.manager` | `CheckAuthManagerMiddleware` | Ensures that a manager is authenticated before accessing protected routes. |
-| `auth.api` | `AuthenticateTokenMiddleware` | Validates API authentication tokens for secure API requests. |
-| `permission` | `CheckManagerPermissionMiddleware` | Checks if the current manager has the required permissions to access a route. |
+| Alias                    | Class                              | Purpose                                                                       |
+|:-------------------------|:-----------------------------------|:------------------------------------------------------------------------------|
+| `manager.auth:{api/web}` | `CheckAuthManagerMiddleware`       | Ensures that a manager is authenticated before accessing protected routes.    |
+| `manager.permission`     | `CheckManagerPermissionMiddleware` | Checks if the current manager has the required permissions to access a route. |
 
 **Usage Example:**
 
-
 ```php
 // Web routes protected by manager authentication and permission checks
-Route::middleware(['auth.manager', 'permission:manage-users'])->group(function () {
+Route::middleware(['auth.manager', 'manager.permission:manage-users'])->group(function () {
    Route::get('/dashboard', [DashboardController::class, 'index']);
 });
 
 // API routes protected by token authentication
-Route::middleware('auth.api')->group(function () {
+Route::middleware('manager.auth:api')->group(function () {
     Route::get('/api/data', [ApiController::class, 'fetch']);
 });
 ```
 
 ### 🧩 Using `@can` for Authorization
 
-The **Esanj Manager Package** provides a full role‑based and permission‑based authorization layer on top of Laravel’s native `Gate` system.  
-At the Blade level, all **permission checks** are made using the `@can` directive, but internally these checks respect the **Manager guard** and **manager‑specific permissions** defined in `config/esanj/manager.php`.
+The **Esanj Manager Package** provides a full role‑based and permission‑based authorization layer on top of Laravel’s
+native `Gate` system.  
+At the Blade level, all **permission checks** are made using the `@can`directive, but internally these checks respect
+the **Manager guard** and **manager‑specific permissions** defined in `config/esanj/manager.php`.
 
 ---
 

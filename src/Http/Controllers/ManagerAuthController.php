@@ -24,6 +24,10 @@ class ManagerAuthController extends Controller
     {
         $manager = $this->resolveManagerFromSession();
 
+        if (!$manager instanceof Manager) {
+            return $manager;
+        }
+
         if ($manager && !$manager->uses_token) {
             return $this->handleSuccessLogin($manager);
         }
@@ -34,6 +38,10 @@ class ManagerAuthController extends Controller
     public function login(Request $request): RedirectResponse
     {
         $manager = $this->resolveManagerFromSession();
+
+        if (!$manager instanceof Manager) {
+            return $manager;
+        }
 
         $validated = $request->validate([
             'token' => ['required', 'string', 'max:255'],
@@ -73,11 +81,11 @@ class ManagerAuthController extends Controller
         return redirect()->to(config('esanj.manager.success_redirect'));
     }
 
-    private function resolveManagerFromSession(): ?Manager
+    private function resolveManagerFromSession()
     {
         $accessToken = session('auth_bridge.access_token');
         if (!$accessToken) {
-            return null;
+            return redirect()->route('auth-bridge.redirect');
         }
 
         $esanjId = $this->managerAuthService->extractEsanjIdFromJwt($accessToken);
