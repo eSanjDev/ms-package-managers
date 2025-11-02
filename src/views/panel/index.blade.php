@@ -22,7 +22,7 @@
 
 
 @section('content')
-    <h4>{{config('esanj.manager.routes.panel_prefix')}}
+    <h4>
         <span class="fw-light">Manager List</span>
     </h4>
 
