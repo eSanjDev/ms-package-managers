@@ -2,16 +2,22 @@
 
 namespace Esanj\Manager\Services;
 
+use Carbon\Carbon;
 use Esanj\Manager\Models\Manager;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
 class ManagerAuthService
 {
+    public function __construct(protected ManagerService $managerService)
+    {
+    }
+
     public function extractEsanjIdFromJwt(string $jwt): string|null
     {
         $publicKeyPath = config('esanj.manager.public_key_path');
@@ -64,5 +70,49 @@ class ManagerAuthService
             'access_token' => $base64 . '.' . $signature,
             'expires_in' => $expiresAt,
         ];
+    }
+
+    public function authenticateWithToken(): Manager|JsonResponse|null
+    {
+        $token = request()->bearerToken();
+
+        if (!$token) {
+            return $this->errorResponse('manager::manager.errors.unauthorized', 401);
+        }
+
+        [$base64, $signature] = explode('.', $token);
+
+        if (!$base64 || !$signature) {
+            return $this->errorResponse('manager::manager.errors.token_incorrect', 400);
+        }
+
+        $payload = json_decode(base64_decode($base64), true);
+
+        if (empty($payload['manager_id']) || empty($payload['issued_at']) || empty($payload['expires_at'])) {
+            return $this->errorResponse('manager::manager.errors.token_incorrect', 400);
+        }
+
+        $manager = $this->managerService->findById($payload['manager_id']);
+        if (!$manager) {
+            return $this->errorResponse('manager::manager.errors.token_incorrect', 400);
+        }
+
+        if (Carbon::createFromTimestamp($payload['expires_at'])->isPast()) {
+            return $this->errorResponse('manager::manager.errors.token_expired', 400);
+        }
+
+        $validSignature = hash_hmac('sha256', $base64, $manager->secret_key . config('app.key'));
+        if (!hash_equals($validSignature, $signature)) {
+            return $this->errorResponse('manager::manager.errors.token_incorrect', 400);
+        }
+
+        return $manager;
+    }
+
+    private function errorResponse(string $messageKey, int $status): JsonResponse
+    {
+        return response()->json([
+            'message' => trans($messageKey)
+        ], $status);
     }
 }
