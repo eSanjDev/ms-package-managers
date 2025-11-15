@@ -3,14 +3,15 @@
 @section('title', 'Edit Manager')
 
 @section('page-style')
-    <link rel="stylesheet" href="{{asset('assets/vendor/manager/css/style.css')}}">
+    @vite([
+    'resources/assets/css/manager.css'
+])
 @endsection
 
 @section('page-script')
-    <script>
-        window.baseUrlApiAdmin = "{{config('esanj.manager.routes.api_prefix')}}"
-    </script>
-    <script src="{{asset('assets/vendor/manager/js/Manager.js')}}"></script>
+    @vite([
+    'resources/assets/js/pages/Manager.js'
+])
 @endsection
 
 @section('content')

@@ -5,6 +5,8 @@ namespace Esanj\Manager\Services;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Repositories\ManagerRepository;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,6 +16,25 @@ class ManagerService
         protected ManagerRepository $repository
     )
     {
+    }
+
+    public function getManagersWithPaginate(Request $request): LengthAwarePaginator
+    {
+        $perPage = min((int)$request->get('per_page', 15), 50);
+
+        $query = Manager::query();
+
+        if ($request->boolean('only_trash')) {
+            $query->onlyTrashed();
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function ($query) use ($request) {
+                return $query->where('name', 'like', '%' . $request->get('search') . '%');
+            });
+        }
+
+        return $query->paginate($perPage);
     }
 
     public function findByEsanjId(int $esanjId): ?Manager

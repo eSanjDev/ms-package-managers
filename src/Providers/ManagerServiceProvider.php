@@ -136,7 +136,7 @@ class ManagerServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                $this->packagePath('assets') => public_path('assets/vendor/manager'),
+                $this->packagePath('assets') => resource_path('/assets'),
             ], 'esanj-manager-assets');
 
             $this->publishes([

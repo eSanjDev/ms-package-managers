@@ -5,10 +5,12 @@ namespace Esanj\Manager\Http\Controllers;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Http\Request\ManagerCreateRequest;
 use Esanj\Manager\Http\Request\ManagerUpdateRequest;
+use Esanj\Manager\Http\Resources\ManagerResource;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Models\Permission;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -20,11 +22,28 @@ class ManagerController extends BaseController
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.list'))->only(['index']);
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.store'))->only(['create', 'store']);
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.update'))->only(['edit', 'update']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.delete'))->only(['destroy']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.restore'))->only(['restore']);
+
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities']);
     }
 
-    public function index(): View
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+            $managers = $this->managerService->getManagersWithPaginate($request);
+
+            return response()->json([
+                'data' => ManagerResource::collection($managers),
+                'meta' => [
+                    'total' => $managers->total(),
+                    'current_page' => $managers->currentPage(),
+                    'per_page' => $managers->perPage(),
+                    'last_page' => $managers->lastPage(),
+                ]
+            ]);
+        }
+
         return view('manager::panel.index');
     }
 
@@ -34,7 +53,7 @@ class ManagerController extends BaseController
 
         $roles = $this->getAvailableRoles($isAdmin);
         $permissions = $this->getGroupedPermissions();
-        $token = $this->managerService->generateToken(config('esanj.manager.token_length'));
+        $token = $this->managerService->generateToken();
 
         return view('manager::panel.create', compact('roles', 'isAdmin', 'permissions', 'token'));
     }
@@ -50,7 +69,7 @@ class ManagerController extends BaseController
         }
 
         $requestData = $request->only(['name', 'esanj_id', 'role', 'is_active', 'uses_token']);
-        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken(config('esanj.manager.token_length'));
+        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken();
 
         $manager = $this->managerService->createManager($requestData);
 
@@ -87,6 +106,33 @@ class ManagerController extends BaseController
 
         return redirect()->route('managers.edit', $manager->id)
             ->with('success', trans('manager::manager.success.updated'));
+    }
+
+    public function destroy(Request $request, Manager $manager)
+    {
+        if ($request->ajax()) {
+            $this->managerService->delete($manager->id);
+
+            return response()->json([
+                'message' => 'Manager deleted successfully.',
+            ]);
+        }
+
+        return redirect()->route('managers.index');
+    }
+
+    public function restore(Request $request, int $id)
+    {
+        if ($request->ajax()) {
+            $manager = $this->managerService->restoreManager($id);
+
+            return response()->json([
+                'message' => 'Manager restored successfully.',
+                'data' => new ManagerResource($manager),
+            ]);
+        }
+
+        return redirect()->route('managers.index');
     }
 
     public function activities(Manager $manager): View

@@ -16,16 +16,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const refreshBtn = document.getElementById('regenerate');
     refreshBtn.addEventListener('click', function () {
-        $.ajax({
-            url: `${window.baseUrlApiAdmin}/managers/regenerate`,
-            type: 'GET',
-            success: function (response) {
-                inputToken.value = response.data.token
-            },
-            error: function () {
-                alert('An error occurred while regenerating the token.');
-            }
+        const length = 16;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+        const array = new Uint32Array(length);
+        window.crypto.getRandomValues(array);
+
+        let result = '';
+        array.forEach(num => {
+            result += chars.charAt(num % chars.length);
         });
+        inputToken.value = result
     })
 
 
