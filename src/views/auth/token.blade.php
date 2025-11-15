@@ -7,7 +7,7 @@
 
     {{-- Styles --}}
     @vite([
-    'resources/assets/vendor/packages/manager/css/auth-style.css'
+    'resources/assets/packages/manager/css/auth-style.css'
 ])
 
 
