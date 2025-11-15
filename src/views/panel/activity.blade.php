@@ -17,12 +17,9 @@
 
 <!-- Page Scripts -->
 @section('page-script')
-{{--    <script>--}}
-{{--        window.manager_id = {{$manager->id}}--}}
-{{--    </script>--}}
     @vite([
     'resources/assets/js/pages/BaseTable.js',
-    'resources/assets/js/pages/ManagerActivityTable.js',
+    'resources/assets/packages/manager/js/ManagerActivityTable.js',
 ])
 @endsection
 

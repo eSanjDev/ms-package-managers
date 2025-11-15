@@ -1,4 +1,4 @@
-import BaseTable from './BaseTable.js';
+import BaseTable from '@js/pages/BaseTable.js';
 import {data} from "autoprefixer";
 
 class ManagerTable extends BaseTable {

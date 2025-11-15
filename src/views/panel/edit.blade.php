@@ -4,13 +4,13 @@
 
 @section('page-style')
     @vite([
-    'resources/assets/css/manager.css'
+    'resources/assets/packages/manager/css/manager.css'
 ])
 @endsection
 
 @section('page-script')
     @vite([
-    'resources/assets/js/pages/Manager.js'
+    'resources/assets/packages/manager/js/Manager.js'
 ])
 @endsection
 

@@ -20,7 +20,7 @@
 @section('page-script')
     @vite([
     'resources/assets/js/pages/BaseTable.js',
-    'resources/assets/js/pages/ManagerTable.js',
+    'resources/assets/packages/manager/js/ManagerTable.js',
 ])
 @endsection
 
