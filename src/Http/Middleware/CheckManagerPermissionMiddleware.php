@@ -23,15 +23,6 @@ class CheckManagerPermissionMiddleware
     {
         auth()->shouldUse('manager');
 
-        if ($request->wantsJson()) {
-            $manager = $this->authService->authenticateWithToken();
-
-            if ($manager instanceof JsonResponse) {
-                return $manager;
-            }
-            Auth::login($manager);
-        }
-
         $manager = Auth::user();
 
         if (!$this->isValidManager($manager)) {

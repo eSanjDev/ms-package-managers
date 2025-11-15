@@ -68,7 +68,6 @@ The installer (`InstallCommand.php`) ensures each of these keys exists in `.env`
 ### 🔩 Behavioral options
 
 ```php
-'token_length' => 32,
 'access_token_expires_in' => 1440, // 24 h
 'just_api' => env('MANAGER_JUST_API', false),
 ```
@@ -185,7 +184,6 @@ and are guarded by `auth.api` middleware (Bearer token required).
 | **PUT**    | `/api/admin/managers/{manager}`                       | Update manager’s profile, email, status, or permissions. Automatically syncs permissions. |
 | **DELETE** | `/api/admin/managers/{manager}`                       | Soft‑delete a manager record.                                                             |
 | **POST**   | `/api/admin/managers/{id}/restore`                    | Restore a previously soft‑deleted manager. Returns 404 if not found.                      |
-| **GET**    | `/api/admin/managers/regenerate`                      | Generate a new static token (uses `token_length` from config).                            |
 | **GET**    | `/api/admin/managers/{manager}/meta/{key}`            | Retrieve a single meta key for given manager. Returns 404 if not set.                     |
 | **POST**   | `/api/admin/managers/{manager}/meta`                  | Store or update a meta key/value pair for that manager.                                   |
 | **GET**    | `/api/admin/managers/{manager}/activities`            | Return paginated activity logs for manager. Supports `search` by type or meta.            |

@@ -11,9 +11,6 @@ return [
     // Redirect path when access is denied
     'access_denied_redirect' => env('MANAGER_ACCESS_DENIED_REDIRECT', '/'),
 
-    // Length of the generated token for managers
-    'token_length' => 32,
-
     // Expiration time for access tokens in minutes
     'access_token_expires_in' => 1440, // Minutes (24 hours)
 
@@ -30,10 +27,12 @@ return [
     // Middlewares for different route types
     'middlewares' => [
         'api' => [
+            'api',
             'manager.auth:api'
         ],
 
         'web' => [
+            'web',
             'manager.auth:web',
         ]
     ],

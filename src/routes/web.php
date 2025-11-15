@@ -14,8 +14,10 @@ Route::prefix(config('esanj.manager.routes.auth_prefix') . '/managers')->middlew
 
 
 Route::prefix(config('esanj.manager.routes.panel_prefix'))
-    ->middleware(array_merge(['web'],config('esanj.manager.middlewares.web')))
+    ->middleware(config('esanj.manager.middlewares.web'))
     ->group(function () {
-        Route::resource("/managers", ManagerController::class)->except(['show', 'destroy']);
-        Route::get('/managers/{manager}/activities', [ManagerController::class, 'activities'])->name('activities');
+        Route::resource("/managers", ManagerController::class)->except(['show']);
+        Route::post('/managers/{manager}/restore', [ManagerController::class, 'restore'])->name('managers.restore');
+
+        Route::get('/managers/{manager}/activities', [ManagerController::class, 'activities'])->name('managers.activities');
     });
