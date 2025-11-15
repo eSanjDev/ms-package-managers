@@ -6,7 +6,10 @@
     <title>{{__("manager::manager.title")}} | {{ config('app.name') }}</title>
 
     {{-- Styles --}}
-    <link href="{{asset("/assets/vendor/manager/css/auth-style.css")}}" rel="stylesheet">
+    @vite([
+    'resources/assets/vendor/packages/manager/css/auth-style.css'
+])
+
 
 </head>
 <body>
@@ -15,7 +18,7 @@
         <div class="form-box">
             <section class="form-box-content">
                 <header class="logo-box">
-                    <img src="{{ config('esanj.manager.logo_path')??asset('assets/vendor/manager/img/logo.png') }}"
+                    <img src="{{ config('esanj.manager.logo_path')??asset('assets/vendor/layout-master/images/logo-esanj.png') }}"
                          alt="{{ trans('app.logo_alt') }}">
                 </header>
 
@@ -31,7 +34,7 @@
                                 <div class="form-input">
                                     <input type="password" name="token" required
                                            placeholder="{{ trans('manager::manager.steps.security.token_placeholder') }}">
-                                    <i onclick="AuthScripts.showHidePass(this)" class="icon-password"></i>
+                                    <i class="icon-password"></i>
                                 </div>
                                 <span data-message="{{$errors->first('token')}}"></span>
                             </div>
@@ -48,6 +51,26 @@
     </div>
 </main>
 
-<script src="{{asset("/assets/vendor/manager/js/auth-script.js")}}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("icon-password")) {
+                const t = event.target;
+                t.classList.toggle("show");
+
+                const e = document.querySelector("input[name='token']");
+                if (e) {
+                    if (e.type === "password") {
+                        e.type = "text";
+                        t.classList.add("active");
+                    } else {
+                        e.type = "password";
+                        t.classList.remove("active");
+                    }
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
