@@ -148,15 +148,7 @@ class ManagerApiController extends BaseController
 
     public function activities(Manager $manager, Request $request): JsonResponse
     {
-        $perPage = min((int)$request->get('per_page', 15), 50);
-
-        $query = $manager->activities();
-
-        if ($request->filled('search')) {
-            $query = $query->where("type", $request->get('search'))->orWhere("meta", $request->get('search'));
-        }
-
-        $activities = $query->paginate($perPage);
+        $activities = $this->managerService->getActivitiesWithPaginate($manager);
 
         return response()->json([
             'data' => ManagerActivityResource::collection($activities),

@@ -20,4 +20,5 @@ Route::prefix(config('esanj.manager.routes.panel_prefix'))
         Route::post('/managers/{manager}/restore', [ManagerController::class, 'restore'])->name('managers.restore');
 
         Route::get('/managers/{manager}/activities', [ManagerController::class, 'activities'])->name('managers.activities');
+        Route::get("/managers/{manager}/activities/{activity}", [ManagerController::class, 'getLog'])->name('managers.activities.log');
     });

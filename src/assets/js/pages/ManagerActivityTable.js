@@ -1,4 +1,5 @@
 import BaseTable from './BaseTable.js';
+import {data} from "autoprefixer";
 
 class ManagerTable extends BaseTable {
     constructor() {
@@ -79,6 +80,14 @@ class ManagerTable extends BaseTable {
             actions: ''
         }))
     }
+
+    getUrl(...data) {
+        let baseUrl = window.location.href.split('?')[0]
+
+        return {
+            index: `${baseUrl}`,
+        }
+    }
 }
 
 const managerTable = new ManagerTable();
@@ -91,13 +100,8 @@ $(document).on('click', '.tabler-eye', function () {
 
     Swal.showLoading()
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('input[name="csrf"]').val()
-        }
-    });
     $.ajax({
-        url: `/${window.baseUrlApi}/managers/${window.manager_id}/activities/${id}`,
+        url: `${window.location.href.split('?')[0]}/${id}`,
         method: 'GET',
         success: (res) => {
             Swal.close()

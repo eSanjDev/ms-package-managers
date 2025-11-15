@@ -5,10 +5,13 @@ namespace Esanj\Manager\Http\Controllers;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Http\Request\ManagerCreateRequest;
 use Esanj\Manager\Http\Request\ManagerUpdateRequest;
+use Esanj\Manager\Http\Resources\ManagerActivityResource;
 use Esanj\Manager\Http\Resources\ManagerResource;
 use Esanj\Manager\Models\Manager;
+use Esanj\Manager\Models\ManagerActivity;
 use Esanj\Manager\Models\Permission;
 use Esanj\Manager\Services\ManagerService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,13 +28,13 @@ class ManagerController extends BaseController
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.delete'))->only(['destroy']);
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.restore'))->only(['restore']);
 
-        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities']);
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities'], 'getLog');
     }
 
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $managers = $this->managerService->getManagersWithPaginate($request);
+            $managers = $this->managerService->getManagersWithPaginate();
 
             return response()->json([
                 'data' => ManagerResource::collection($managers),
@@ -135,9 +138,30 @@ class ManagerController extends BaseController
         return redirect()->route('managers.index');
     }
 
-    public function activities(Manager $manager): View
+    public function activities(Request $request, Manager $manager)
     {
+        if ($request->ajax()) {
+            $activities = $this->managerService->getActivitiesWithPaginate($manager);
+
+            return response()->json([
+                'data' => ManagerActivityResource::collection($activities),
+                'meta' => [
+                    'total' => $activities->total(),
+                    'current_page' => $activities->currentPage(),
+                    'per_page' => $activities->perPage(),
+                    'last_page' => $activities->lastPage(),
+                ]
+            ]);
+        }
+
         return view('manager::panel.activity', compact('manager'));
+    }
+
+    public function getLog(Manager $manager, ManagerActivity $activity): JsonResponse
+    {
+        return response()->json([
+            'data' => new ManagerActivityResource($activity)
+        ]);
     }
 
     private function currentUserIsAdmin(): bool

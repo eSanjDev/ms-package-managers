@@ -5,7 +5,6 @@ namespace Esanj\Manager\Services;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Repositories\ManagerRepository;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -18,8 +17,10 @@ class ManagerService
     {
     }
 
-    public function getManagersWithPaginate(Request $request): LengthAwarePaginator
+    public function getManagersWithPaginate(): LengthAwarePaginator
     {
+        $request = \request();
+
         $perPage = min((int)$request->get('per_page', 15), 50);
 
         $query = Manager::query();
@@ -95,6 +96,21 @@ class ManagerService
     public function generateToken(int $length = 32): string
     {
         return bin2hex(random_bytes($length / 2));
+    }
+
+    public function getActivitiesWithPaginate(Manager $manager): LengthAwarePaginator
+    {
+        $request = \request();
+
+        $perPage = min((int)$request->get('per_page', 15), 50);
+
+        $query = $manager->activities();
+
+        if ($request->filled('search')) {
+            $query = $query->where("type", $request->get('search'))->orWhere("meta", $request->get('search'));
+        }
+
+        return $query->paginate($perPage);
     }
 
     public function setActivity(string $type, array $meta = [])
