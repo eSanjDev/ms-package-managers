@@ -4,20 +4,24 @@
 
 <!-- Vendor Styles -->
 @section('vendor-style')
-    <link rel="stylesheet"
-          href="{{asset('assets/vendor/manager/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables.bootstrap5.css')}}">
+    @vite([
+    'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',
+    'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
+])
+@endsection
+
+@section('vendor-script')
+    @vite([
+    'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
+])
 @endsection
 
 <!-- Page Scripts -->
 @section('page-script')
-    <script>
-        window.baseUrlApi = "{{config('esanj.manager.routes.api_prefix')}}"
-        window.baseUrl = "{{config('esanj.manager.routes.panel_prefix')}}"
-    </script>
-    <script type="module"
-            src="{{asset('assets/vendor/manager/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
-    <script type="module" src="{{asset("assets/vendor/manager/js/ManagerTable.js")}}"></script>
+    @vite([
+    'resources/assets/js/pages/BaseTable.js',
+    'resources/assets/js/pages/ManagerTable.js',
+])
 @endsection
 
 
@@ -28,7 +32,6 @@
 
     <div class="card">
         <div class="card-datatable text-nowrap px-2">
-            <input type="hidden" value="{{csrf_token()}}" name="csrf">
             <table class="datatables-ajax table"></table>
         </div>
     </div>

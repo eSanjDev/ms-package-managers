@@ -1,4 +1,4 @@
-import BaseTable from './BaseTable.js';
+import BaseTable from '@js/pages/BaseTable.js';
 
 class ManagerTable extends BaseTable {
     constructor() {
@@ -21,10 +21,6 @@ class ManagerTable extends BaseTable {
         columns.push({data: 'actions'});
 
         return columns;
-    }
-
-    getCustomFilters() {
-        return {}
     }
 
     getColumnDefinitions() {
@@ -100,6 +96,16 @@ class ManagerTable extends BaseTable {
             deleted_at: entityItem.deleted_at,
             actions: ''
         }))
+    }
+
+    getUrl(...data) {
+        let baseUrl = window.location.href.split('?')[0]
+
+        return {
+            index: `${baseUrl}/`,
+            delete: `${baseUrl}/${data[0]}`,
+            restore: `${baseUrl}/${data[0]}/restore`
+        }
     }
 }
 
