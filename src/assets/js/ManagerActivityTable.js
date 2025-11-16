@@ -82,7 +82,8 @@ class ManagerTable extends BaseTable {
     }
 
     getUrl(...data) {
-        let baseUrl = window.location.href.split('?')[0]
+        const currentUrl = new URL(window.location.href);
+        const baseUrl = currentUrl.origin + currentUrl.pathname.replace(/\/$/, "");
 
         return {
             index: `${baseUrl}`,
