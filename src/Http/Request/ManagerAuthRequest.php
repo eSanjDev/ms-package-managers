@@ -9,7 +9,7 @@ class ManagerAuthRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['required', 'string'],
+            'auth_code' => ['required', 'string'],
             'token' => ['nullable', 'string'],
         ];
     }
