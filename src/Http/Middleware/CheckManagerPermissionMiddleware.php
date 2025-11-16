@@ -48,7 +48,7 @@ class CheckManagerPermissionMiddleware
 
     private function unauthorizedResponse(Request $request): Response
     {
-        session()->forget('auth_manager');
+        session()->forget('auth_bridge');
 
         if ($request->wantsJson()) {
             return response()->json([

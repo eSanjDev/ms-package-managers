@@ -43,7 +43,7 @@ class CheckAuthManagerMiddleware
         $manager = Auth::user();
 
         if (!$manager || !$manager->is_active) {
-            session()->forget('auth_manager');
+            session()->forget('auth_bridge');
 
             return redirect()->route('auth-bridge.redirect');
         }
