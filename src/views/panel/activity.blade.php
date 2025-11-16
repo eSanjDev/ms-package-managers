@@ -18,7 +18,6 @@
 <!-- Page Scripts -->
 @section('page-script')
     @vite([
-    'resources/assets/js/pages/BaseTable.js',
     'resources/assets/packages/manager/js/ManagerActivityTable.js',
 ])
 @endsection
