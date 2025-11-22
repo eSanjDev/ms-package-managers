@@ -24,7 +24,7 @@ class ManagerAuthController extends Controller
     {
         $manager = $this->resolveManagerFromSession();
 
-        if (!$manager instanceof Manager) {
+        if ($manager && !$manager instanceof Manager) {
             return $manager;
         }
 
