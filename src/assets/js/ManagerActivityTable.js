@@ -80,15 +80,6 @@ class ManagerTable extends BaseTable {
             actions: ''
         }))
     }
-
-    getUrl(...data) {
-        const currentUrl = new URL(window.location.href);
-        const baseUrl = currentUrl.origin + currentUrl.pathname.replace(/\/$/, "");
-
-        return {
-            index: `${baseUrl}`,
-        }
-    }
 }
 
 const managerTable = new ManagerTable();
