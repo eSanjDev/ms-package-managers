@@ -77,6 +77,10 @@ class ManagerAuthController extends BaseController
 
         Auth::guard('manager')->loginUsingId($manager->id);
 
+        $this->managerService->setActivity('manager.login', [
+            'login_type' => 'web',
+        ]);
+
         return redirect()->to(config('esanj.manager.success_redirect'));
     }
 

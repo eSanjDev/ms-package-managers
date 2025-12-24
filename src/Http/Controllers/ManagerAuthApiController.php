@@ -93,6 +93,10 @@ class ManagerAuthApiController extends BaseController
 
         $this->managerService->updateLastLogin($manager->id);
 
+        $this->managerService->logActivityFor($manager, 'manager.login', [
+            'login_type' => 'api',
+        ]);
+
         $accessData = $this->authService->generateAccessToken($manager);
 
         return response()->json([

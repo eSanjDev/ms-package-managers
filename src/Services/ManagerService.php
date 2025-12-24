@@ -50,22 +50,58 @@ class ManagerService
 
     public function createManager(array $data): Manager
     {
-        return $this->repository->create($data);
+        $manager = $this->repository->create($data);
+
+        $this->logActivity('manager.created', [
+            'target_id' => $manager->id,
+            'target_name' => $manager->name,
+        ]);
+
+        return $manager;
     }
 
     public function updateManager(int $id, array $data): ?Manager
     {
-        return $this->repository->update($id, $data);
+        $manager = $this->repository->update($id, $data);
+
+        if ($manager) {
+            $this->logActivity('manager.updated', [
+                'target_id' => $manager->id,
+                'target_name' => $manager->name,
+                'changes' => array_keys($data),
+            ]);
+        }
+
+        return $manager;
     }
 
     public function delete(int $id): bool
     {
-        return $this->repository->delete($id);
+        $manager = $this->findById($id);
+        $result = $this->repository->delete($id);
+
+        if ($result && $manager) {
+            $this->logActivity('manager.deleted', [
+                'target_id' => $manager->id,
+                'target_name' => $manager->name,
+            ]);
+        }
+
+        return $result;
     }
 
     public function restoreManager(int $id): ?Manager
     {
-        return $this->repository->restore($id);
+        $manager = $this->repository->restore($id);
+
+        if ($manager) {
+            $this->logActivity('manager.restored', [
+                'target_id' => $manager->id,
+                'target_name' => $manager->name,
+            ]);
+        }
+
+        return $manager;
     }
 
     public function checkManagerToken(?Manager $manager, string $token): bool
@@ -118,7 +154,7 @@ class ManagerService
 
     public function setActivity(string $type, array $meta = [])
     {
-        return auth()->user()->setActivity($type, $meta);
+        return $this->logActivity($type, $meta);
     }
 
     public function getActivities(int|Manager $manager)
@@ -128,5 +164,29 @@ class ManagerService
         }
 
         return $manager->activities;
+    }
+
+    public function logActivityFor(Manager $manager, string $type, array $meta = []): void
+    {
+        $meta['ip_address'] = request()->ip();
+        $meta['user_agent'] = request()->userAgent();
+
+        $manager->setActivity($type, $meta);
+    }
+
+    protected function logActivity(string $type, array $meta = []): void
+    {
+        $currentUser = auth('manager')->user();
+
+        if (!$currentUser instanceof Manager) {
+            return;
+        }
+
+        $meta['performed_by'] = [
+            'id' => $currentUser->id,
+            'name' => $currentUser->name,
+        ];
+
+        $this->logActivityFor($currentUser, $type, $meta);
     }
 }

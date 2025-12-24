@@ -80,9 +80,14 @@ class ManagerAuthService
             return $this->errorResponse('manager::manager.errors.unauthorized', 401);
         }
 
-        [$base64, $signature] = explode('.', $token);
+        $parts = explode('.', $token);
+        if (count($parts) !== 2) {
+            return $this->errorResponse('manager::manager.errors.token_incorrect', 400);
+        }
 
-        if (!$base64 || !$signature) {
+        [$base64, $signature] = $parts;
+
+        if (empty($base64) || empty($signature)) {
             return $this->errorResponse('manager::manager.errors.token_incorrect', 400);
         }
 
