@@ -26,8 +26,8 @@ class ManagerUpdateRequest extends FormRequest
     public function prepareForValidation(): void
     {
         $this->merge([
-            'is_active' => $this->input('is_active') == '1',
-            'uses_token' => $this->input('uses_token') == '1',
+            'is_active' => $this->boolean('is_active'),
+            'uses_token' => $this->boolean('uses_token'),
         ]);
     }
 }
