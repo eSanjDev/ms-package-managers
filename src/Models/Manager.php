@@ -23,10 +23,6 @@ class Manager extends Authenticatable
         'extra',
         'secret_key',
         'uses_token',
-        'key',
-        'value',
-        'type',
-        'meta'
     ];
 
     protected $casts = [
@@ -51,7 +47,7 @@ class Manager extends Authenticatable
         });
     }
 
-    public function Permissions(): BelongsToMany
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'manager_permissions');
     }
