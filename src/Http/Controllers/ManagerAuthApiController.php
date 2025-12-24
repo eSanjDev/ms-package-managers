@@ -2,7 +2,6 @@
 
 namespace Esanj\Manager\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Esanj\AuthBridge\Services\AuthBridgeService;
 use Esanj\Manager\Http\Request\ManagerAuthRequest;
 use Esanj\Manager\Http\Request\ManagerVerifyRequest;
@@ -10,7 +9,7 @@ use Esanj\Manager\Services\ManagerAuthService;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\JsonResponse;
 
-class ManagerAuthApiController extends Controller
+class ManagerAuthApiController extends BaseController
 {
     public function __construct(
         protected ManagerService     $managerService,

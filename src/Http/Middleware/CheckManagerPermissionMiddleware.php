@@ -3,9 +3,7 @@
 namespace Esanj\Manager\Http\Middleware;
 
 use Closure;
-use Esanj\Manager\Services\ManagerAuthService;
 use Esanj\Manager\Services\ManagerService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,10 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckManagerPermissionMiddleware
 {
     public function __construct(
-        protected  ManagerService     $managerService,
-        protected  ManagerAuthService $authService
-    )
-    {
+        protected ManagerService $managerService
+    ) {
     }
 
     public function handle(Request $request, Closure $next, string $permission = ''): Response

@@ -11,7 +11,6 @@ use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Models\ManagerActivity;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ManagerApiController extends BaseController
 {
@@ -26,17 +25,9 @@ class ManagerApiController extends BaseController
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities', 'getLog']);
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $perPage = min((int)$request->get('per_page', 15), 50);
-
-        $query = Manager::query();
-
-        if ($request->boolean('only_trash')) {
-            $query->onlyTrashed();
-        }
-
-        $managers = $query->paginate($perPage);
+        $managers = $this->managerService->getManagersWithPaginate();
 
         return response()->json([
             'data' => ManagerResource::collection($managers),
@@ -146,7 +137,7 @@ class ManagerApiController extends BaseController
         ]);
     }
 
-    public function activities(Manager $manager, Request $request): JsonResponse
+    public function activities(Manager $manager): JsonResponse
     {
         $activities = $this->managerService->getActivitiesWithPaginate($manager);
 

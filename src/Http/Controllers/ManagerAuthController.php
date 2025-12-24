@@ -2,7 +2,6 @@
 
 namespace Esanj\Manager\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Services\ManagerAuthService;
 use Esanj\Manager\Services\ManagerService;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
-class ManagerAuthController extends Controller
+class ManagerAuthController extends BaseController
 {
     public function __construct(
         protected ManagerService     $managerService,
