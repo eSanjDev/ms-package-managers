@@ -1,73 +1,142 @@
 <?php
 
+declare(strict_types=1);
 
 return [
-    // Logo path for the manager panel
-    'logo_path' => env("MANAGER_LOGO_PATH"),
+    /*
+    |--------------------------------------------------------------------------
+    | Logo Path
+    |--------------------------------------------------------------------------
+    |
+    | Path to the logo image displayed in the manager panel.
+    |
+    */
+    'logo_path' => env('MANAGER_LOGO_PATH'),
 
-    // Redirect path after successful login
+    /*
+    |--------------------------------------------------------------------------
+    | Redirect URLs
+    |--------------------------------------------------------------------------
+    |
+    | URLs for redirecting after login success or access denial.
+    |
+    */
     'success_redirect' => env('MANAGER_SUCCESS_REDIRECT', '/'),
-
-    // Redirect path when access is denied
     'access_denied_redirect' => env('MANAGER_ACCESS_DENIED_REDIRECT', '/'),
 
-    // Expiration time for access tokens in minutes
-    'access_token_expires_in' => 1440, // Minutes (24 hours)
+    /*
+    |--------------------------------------------------------------------------
+    | Access Token Expiration
+    |--------------------------------------------------------------------------
+    |
+    | Expiration time for access tokens in minutes.
+    | Default: 1440 minutes (24 hours)
+    |
+    */
+    'access_token_expires_in' => (int) env('MANAGER_ACCESS_TOKEN_TTL', 1440),
 
-    // If true, the package will only provide API routes without any web panel
+    /*
+    |--------------------------------------------------------------------------
+    | API Only Mode
+    |--------------------------------------------------------------------------
+    |
+    | If true, the package will only provide API routes without any web panel.
+    |
+    */
     'just_api' => env('MANAGER_JUST_API', false),
 
-    // Manager route prefixes
+    /*
+    |--------------------------------------------------------------------------
+    | Route Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Prefixes for different route types.
+    |
+    */
     'routes' => [
         'auth_prefix' => env('MANAGER_AUTH_ROUTE_PREFIX', 'admin'),
         'panel_prefix' => env('MANAGER_PANEL_ROUTE_PREFIX', 'admin'),
         'api_prefix' => env('MANAGER_API_ROUTE_PREFIX', 'api'),
     ],
 
-    // Middlewares for different route types
+    /*
+    |--------------------------------------------------------------------------
+    | Middleware Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Middleware stacks for API and web routes.
+    |
+    */
     'middlewares' => [
         'api' => [
             'api',
-            'manager.auth:api'
+            'manager.auth:api',
         ],
-
         'web' => [
             'web',
             'manager.auth:web',
-        ]
+        ],
     ],
 
-    // Public key path for OAuth manager authentication
-    'public_key_path' => env("MANAGER_PUBLIC_KEY_PATH", storage_path('oauth-public.key')),
+    /*
+    |--------------------------------------------------------------------------
+    | OAuth Public Key
+    |--------------------------------------------------------------------------
+    |
+    | Path to the public key file for OAuth manager authentication.
+    |
+    */
+    'public_key_path' => env('MANAGER_PUBLIC_KEY_PATH', storage_path('oauth-public.key')),
 
-    // Private key path for OAuth manager authentication
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for caching manager data.
+    |
+    */
     'cache' => [
         'is_enabled' => env('MANAGER_CACHE_ENABLED', true),
-        'prefix' => env("MANAGER_CACHE_PREFIX", 'manager_'),
+        'prefix' => env('MANAGER_CACHE_PREFIX', 'manager_'),
         'driver' => env('CACHE_STORE', 'file'),
-        'ttl' => env('MANAGER_CACHE_TTL', 60 * 24 * 7),
+        'ttl' => (int) env('MANAGER_CACHE_TTL', 60 * 24 * 7), // 7 days in minutes
     ],
 
-    // Rate limiting configuration for manager actions
+    /*
+    |--------------------------------------------------------------------------
+    | Rate Limiting
+    |--------------------------------------------------------------------------
+    |
+    | Rate limiting configuration for manager authentication and actions.
+    |
+    */
     'rate_limit' => [
         'is_enabled' => env('MANAGER_RATE_LIMIT_ENABLED', true),
-        'max_attempts' => env('MANAGER_RATE_LIMIT_MAX_ATTEMPTS', 10),
-        'decay_seconds' => env('MANAGER_RATE_LIMIT_DECAY_SECONDS', 10 * 60), // 10 minutes
+        'max_attempts' => (int) env('MANAGER_RATE_LIMIT_MAX_ATTEMPTS', 10),
+        'decay_seconds' => (int) env('MANAGER_RATE_LIMIT_DECAY_SECONDS', 600), // 10 minutes
     ],
 
-    // Permissions for managers
-    "permissions" => [
-        'managers.edit' => [
-            'display_name' => 'Edit Managers',
-            'description' => 'Allows editing of manager details',
-        ],
+    /*
+    |--------------------------------------------------------------------------
+    | Permissions
+    |--------------------------------------------------------------------------
+    |
+    | Available permissions for manager roles.
+    |
+    */
+    'permissions' => [
         'managers.list' => [
             'display_name' => 'List Managers',
             'description' => 'Allows viewing the list of managers',
         ],
         'managers.create' => [
             'display_name' => 'Create Manager',
-            'description' => 'Allows create new manager',
+            'description' => 'Allows creating new managers',
+        ],
+        'managers.edit' => [
+            'display_name' => 'Edit Managers',
+            'description' => 'Allows editing manager details',
         ],
         'managers.delete' => [
             'display_name' => 'Delete Managers',
@@ -75,7 +144,15 @@ return [
         ],
     ],
 
-    "access_provider" => [
+    /*
+    |--------------------------------------------------------------------------
+    | Access Provider Mapping
+    |--------------------------------------------------------------------------
+    |
+    | Maps controller actions to required permissions.
+    |
+    */
+    'access_provider' => [
         'list' => 'managers.list',
         'store' => 'managers.create',
         'update' => 'managers.edit',
@@ -85,8 +162,16 @@ return [
         'meta' => 'managers.list',
     ],
 
-    // Blade components that can be used in the manager edit panel
+    /*
+    |--------------------------------------------------------------------------
+    | Extra Fields
+    |--------------------------------------------------------------------------
+    |
+    | Blade components to be included in the manager edit panel.
+    | Example: 'content.manager.limit'
+    |
+    */
     'extra_field' => [
-        // Example: "content.manager.limit",
+        // 'content.manager.limit',
     ],
 ];
