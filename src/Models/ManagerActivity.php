@@ -2,10 +2,10 @@
 
 namespace Esanj\Manager\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class ManagerActivity extends Authenticatable
+class ManagerActivity extends Model
 {
     protected $fillable = [
         'manager_id',
@@ -14,12 +14,11 @@ class ManagerActivity extends Authenticatable
     ];
 
     protected $casts = [
-        'meta' => 'json',
+        'meta' => 'array',
     ];
 
     public function manager(): BelongsTo
     {
         return $this->belongsTo(Manager::class);
     }
-
 }
