@@ -100,14 +100,17 @@ class ManagerService
 
     public function getActivitiesWithPaginate(Manager $manager): LengthAwarePaginator
     {
-        $request = \request();
-
-        $perPage = min((int)$request->get('per_page', 15), 50);
+        $request = request();
+        $perPage = min((int) $request->get('per_page', 15), 50);
 
         $query = $manager->activities();
 
         if ($request->filled('search')) {
-            $query = $query->where("type", $request->get('search'))->orWhere("meta", $request->get('search'));
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('type', 'like', '%' . $search . '%')
+                  ->orWhereJsonContains('meta', $search);
+            });
         }
 
         return $query->paginate($perPage);
