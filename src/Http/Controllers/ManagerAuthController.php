@@ -2,6 +2,10 @@
 
 namespace Esanj\Manager\Http\Controllers;
 
+use Esanj\AuthBridge\Exceptions\ExtractJWTException;
+use Esanj\AuthBridge\Services\ClientCredentialsService;
+use Esanj\Manager\Exceptions\ManagerAccessDenied;
+use Esanj\Manager\Exceptions\ManagerException;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Services\ManagerAuthService;
 use Esanj\Manager\Services\ManagerService;
@@ -14,20 +18,21 @@ use Illuminate\View\View;
 class ManagerAuthController extends BaseController
 {
     public function __construct(
-        protected ManagerService     $managerService,
-        protected ManagerAuthService $managerAuthService)
+        protected ManagerService           $managerService,
+        protected ManagerAuthService       $managerAuthService,
+        protected ClientCredentialsService $clientCredentialsService,
+    )
     {
     }
 
+    /**
+     * @return RedirectResponse|View
+     */
     public function index(): RedirectResponse|View
     {
         $manager = $this->resolveManagerFromSession();
 
-        if ($manager && !$manager instanceof Manager) {
-            return $manager;
-        }
-
-        if ($manager && !$manager->uses_token) {
+        if (!$manager->needToken()) {
             return $this->handleSuccessLogin($manager);
         }
 
@@ -38,17 +43,19 @@ class ManagerAuthController extends BaseController
     {
         $manager = $this->resolveManagerFromSession();
 
-        if (!$manager instanceof Manager) {
-            return $manager;
-        }
-
-        $validated = $request->validate([
+        $request->validate([
             'token' => ['required', 'string', 'max:255'],
         ]);
 
-        if (!$manager || ($manager->uses_token && !$this->managerService->checkManagerToken($manager, $validated['token'] ?? null))) {
-            $this->managerAuthService->hitRateLimit();
-            return $this->handleFailedLogin(trans('manager::manager.errors.token_incorrect'));
+        $token = $request->input('token', "");
+
+        if ($manager->needToken()) {
+            try {
+                $this->managerService->checkManagerToken($manager, $token);
+            } catch (ManagerAccessDenied $e) {
+                $this->managerAuthService->hitRateLimit();
+                return $this->abort($e->getCode(), $e->getMessage());
+            }
         }
 
         return $this->handleSuccessLogin($manager);
@@ -62,17 +69,8 @@ class ManagerAuthController extends BaseController
         return redirect()->route('auth-bridge.redirect');
     }
 
-    private function handleFailedLogin(string $message): RedirectResponse
-    {
-        return redirect()->route('managers.auth.index')->withErrors(['token' => $message]);
-    }
-
     private function handleSuccessLogin(Manager $manager)
     {
-        if (!$manager->is_active) {
-            return $this->handleFailedLogin(trans('manager::manager.errors.manager_not_active'));
-        }
-
         $this->managerService->updateLastLogin($manager->id);
 
         Auth::guard('manager')->loginUsingId($manager->id);
@@ -84,18 +82,44 @@ class ManagerAuthController extends BaseController
         return redirect()->to(config('esanj.manager.success_redirect'));
     }
 
-    private function resolveManagerFromSession()
+    /**
+     * @throws ExtractJWTException
+     */
+    private function extractAccessToken(): mixed
     {
         $accessToken = session('auth_bridge.access_token');
+
         if (!$accessToken) {
             return redirect()->route('auth-bridge.redirect');
         }
 
-        $esanjId = $this->managerAuthService->extractEsanjIdFromJwt($accessToken);
-        if (!$esanjId) {
-            return null;
-        }
+        $decoded = $this->clientCredentialsService->extractJwt($accessToken);
 
-        return $this->managerService->findByEsanjId($esanjId);
+        return $decoded->sub;
+    }
+
+
+    private function resolveManagerFromSession()
+    {
+        try {
+            $esanjId = $this->extractAccessToken();
+
+            $manager = $this->managerService->findByEsanjId($esanjId);
+
+            if (!$manager) {
+                throw ManagerAccessDenied::managerNotFound();
+            } elseif (!$manager->isActive()) {
+                throw ManagerAccessDenied::managerNotActive();
+            }
+
+            return $manager;
+        } catch (ManagerException|ExtractJWTException $e) {
+            return $this->abort($e->getCode(), $e->getMessage());
+        }
+    }
+
+    private function abort(int $code, ?string $message = ""): RedirectResponse
+    {
+        abort($code, $message);
     }
 }

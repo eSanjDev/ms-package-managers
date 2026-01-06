@@ -87,4 +87,14 @@ class Manager extends Authenticatable
             'meta' => $meta
         ]);
     }
+
+    public function isActive(): bool
+    {
+        return $this->is_active;
+    }
+
+    public function needToken(): bool
+    {
+        return $this->uses_token;
+    }
 }

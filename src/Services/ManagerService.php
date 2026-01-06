@@ -3,6 +3,7 @@
 namespace Esanj\Manager\Services;
 
 use Esanj\Manager\Enums\ManagerRoleEnum;
+use Esanj\Manager\Exceptions\ManagerAccessDenied;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Repositories\ManagerRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -104,9 +105,16 @@ class ManagerService
         return $manager;
     }
 
-    public function checkManagerToken(?Manager $manager, string $token): bool
+    /**
+     * @throws ManagerAccessDenied
+     */
+    public function checkManagerToken(Manager $manager, string $token): bool
     {
-        return $manager && Hash::check($token, $manager->token);
+        if (Hash::check($token, $manager->token)) {
+            return true;
+        }
+
+        throw ManagerAccessDenied::wrongToken();
     }
 
     public function updateLastLogin(int $id): ?Manager
@@ -137,7 +145,7 @@ class ManagerService
     public function getActivitiesWithPaginate(Manager $manager): LengthAwarePaginator
     {
         $request = request();
-        $perPage = min((int) $request->get('per_page', 15), 50);
+        $perPage = min((int)$request->get('per_page', 15), 50);
 
         $query = $manager->activities();
 
@@ -145,7 +153,7 @@ class ManagerService
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
                 $q->where('type', 'like', '%' . $search . '%')
-                  ->orWhereJsonContains('meta', $search);
+                    ->orWhereJsonContains('meta', $search);
             });
         }
 

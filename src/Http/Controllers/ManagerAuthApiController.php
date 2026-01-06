@@ -2,9 +2,13 @@
 
 namespace Esanj\Manager\Http\Controllers;
 
+use Esanj\AuthBridge\Exceptions\AuthBridgeException;
 use Esanj\AuthBridge\Services\AuthBridgeService;
+use Esanj\AuthBridge\Services\ClientCredentialsService;
+use Esanj\Manager\Exceptions\ManagerAccessDenied;
 use Esanj\Manager\Http\Request\ManagerAuthRequest;
 use Esanj\Manager\Http\Request\ManagerVerifyRequest;
+use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Services\ManagerAuthService;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\JsonResponse;
@@ -12,9 +16,10 @@ use Illuminate\Http\JsonResponse;
 class ManagerAuthApiController extends BaseController
 {
     public function __construct(
-        protected ManagerService     $managerService,
-        protected ManagerAuthService $authService,
-        protected AuthBridgeService  $bridgeService,
+        protected ManagerService           $managerService,
+        protected ManagerAuthService       $authService,
+        protected AuthBridgeService        $bridgeService,
+        protected ClientCredentialsService $clientCredentialsService,
     )
     {
     }
@@ -37,30 +42,30 @@ class ManagerAuthApiController extends BaseController
      */
     public function verifyAuthorizationCode(ManagerVerifyRequest $request): JsonResponse
     {
-        $authCode = $request->get('code');
-        $response = $this->bridgeService->exchangeAuthorizationCodeForAccessToken($authCode);
+        $authCode = $request->input('code');
 
-        $responseData = $response->json();
+        try {
+            $response = $this->bridgeService->exchangeAuthorizationCodeForAccessToken($authCode);
 
-        if (!$response->successful()) {
-            $message = $responseData['error_description'] ?? __('manager::manager.errors.invalid_request');
-            return response()->json(['message' => $message], 403);
+            $decoded = $this->clientCredentialsService->extractJwt($response->accessToken);
+        } catch (AuthBridgeException $e) {
+            return $this->response($e->getMessage(), false, $e->getCode());
         }
 
-        $esanjId = $this->authService->extractEsanjIdFromJwt($responseData['access_token']);
-        $manager = $this->managerService->findByEsanjId($esanjId ?? 0);
+        try {
+            $manager = $this->getManager($decoded->sub);
 
-        if (!$manager) {
-            return response()->json(['message' => __('manager::manager.errors.token_incorrect')], 400);
+            return response()->json([
+                'status' => true,
+                'data' => [
+                    'requires_token' => $manager->needToken(),
+                    'auth_code' => $response->accessToken,
+                ],
+            ]);
+
+        } catch (ManagerAccessDenied $e) {
+            return $this->response($e->getMessage(), false, $e->getCode());
         }
-
-        return response()->json([
-            'status' => true,
-            'data' => [
-                'requires_token' => $manager->uses_token,
-                'auth_code' => $responseData['access_token'],
-            ],
-        ]);
     }
 
     /**
@@ -68,28 +73,27 @@ class ManagerAuthApiController extends BaseController
      */
     public function authenticateFromBridge(ManagerAuthRequest $request): JsonResponse
     {
-        $authCode = $request->string('auth_code')->value();
-        $token = $request->string('token', '')->value();
+        $authCode = $request->input('auth_code');
+        $token = $request->input('token', "");
 
-        $esanjId = $this->authService->extractEsanjIdFromJwt($authCode);
-        if (!$esanjId) {
-            return response()->json(['message' => __('manager::manager.errors.token_expired')], 400);
+        try {
+            $decoded = $this->clientCredentialsService->extractJwt($authCode);
+        } catch (AuthBridgeException $e) {
+            return $this->response($e->getMessage(), false, $e->getCode());
         }
 
-        $manager = $this->managerService->findByEsanjId($esanjId);
-        if (!$manager) {
+        try {
+            $manager = $this->getManager($decoded->sub);
+
+            if ($manager->needToken()) {
+                $this->managerService->checkManagerToken($manager, $token);
+            }
+
+        } catch (ManagerAccessDenied $e) {
             $this->authService->hitRateLimit();
-            return response()->json(['message' => __('manager::manager.errors.token_incorrect')], 401);
+            return $this->response($e->getMessage(), false, $e->getCode());
         }
 
-        if ($manager->uses_token && !$this->managerService->checkManagerToken($manager, $token)) {
-            $this->authService->hitRateLimit();
-            return response()->json(['message' => __('manager::manager.errors.token_incorrect')], 401);
-        }
-
-        if (!$manager->is_active) {
-            return response()->json(['message' => __('manager::manager.errors.manager_not_active')], 400);
-        }
 
         $this->managerService->updateLastLogin($manager->id);
 
@@ -107,5 +111,29 @@ class ManagerAuthApiController extends BaseController
                 'expires_in' => $accessData['expires_in'],
             ],
         ]);
+    }
+
+    /**
+     * @throws ManagerAccessDenied
+     */
+    private function getManager(int $esanj_id): Manager
+    {
+        $manager = $this->managerService->findByEsanjId($esanj_id);
+
+        if (!$manager) {
+            throw ManagerAccessDenied::managerNotFound();
+        } elseif (!$manager->isActive()) {
+            throw ManagerAccessDenied::managerNotActive();
+        }
+
+        return $manager;
+    }
+
+    private function response(string $message, bool $success = true, int $code = 200): JsonResponse
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+        ], $code);
     }
 }

@@ -4,11 +4,7 @@ namespace Esanj\Manager\Services;
 
 use Carbon\Carbon;
 use Esanj\Manager\Models\Manager;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
@@ -16,28 +12,6 @@ class ManagerAuthService
 {
     public function __construct(protected ManagerService $managerService)
     {
-    }
-
-    public function extractEsanjIdFromJwt(string $jwt): string|null
-    {
-        $publicKeyPath = config('esanj.manager.public_key_path');
-
-        throw_if(
-            !File::exists($publicKeyPath),
-            FileNotFoundException::class,
-            trans('manager::manager.errors.public_key_not_found')
-        );
-
-        $publicKey = file_get_contents($publicKeyPath);
-
-        try {
-            $decoded = JWT::decode($jwt, new Key($publicKey, 'RS256'));
-        } catch (\Throwable $e) {
-            session()->forget('auth_bridge');
-            return null;
-        }
-
-        return $decoded->sub ?? '';
     }
 
     public function hitRateLimit(): void

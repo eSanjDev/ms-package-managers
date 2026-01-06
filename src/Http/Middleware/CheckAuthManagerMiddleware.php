@@ -14,14 +14,16 @@ class CheckAuthManagerMiddleware
 {
     public function __construct(
         protected ManagerAuthService $authService
-    ) {}
+    )
+    {
+    }
 
     /**
      * Handle an incoming request.
      *
-     * @param  Request  $request
-     * @param  Closure(Request): Response  $next
-     * @param  string  $guard
+     * @param Request $request
+     * @param Closure(Request): Response $next
+     * @param string $guard
      * @return Response|RedirectResponse|JsonResponse
      */
     public function handle(Request $request, Closure $next, string $guard = 'web'): Response
@@ -42,7 +44,7 @@ class CheckAuthManagerMiddleware
     {
         $manager = Auth::user();
 
-        if (!$manager || !$manager->is_active) {
+        if (!$manager || !$manager->isActive()) {
             session()->forget('auth_bridge');
 
             return redirect()->route('auth-bridge.redirect');

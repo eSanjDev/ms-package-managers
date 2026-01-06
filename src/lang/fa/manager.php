@@ -26,7 +26,6 @@ return [
 
     'errors' => [
         'too_many_attempts' => 'تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً بعداً دوباره تلاش کنید.',
-        'public_key_not_found' => 'کلید عمومی یافت نشد.',
         'token_incorrect' => 'توکن وارد شده صحیح نمی باشد.',
         'token_expired' => 'توکن منقضی شده است.',
         'unauthorized' => 'عدم دسترسی',
