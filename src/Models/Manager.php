@@ -3,15 +3,15 @@
 namespace Esanj\Manager\Models;
 
 use Esanj\Manager\Enums\ManagerRoleEnum;
-use Esanj\Manager\Facades\Manager as ManagerFacade;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Esanj\Manager\Traits\HasManagerActivities;
+use Esanj\Manager\Traits\HasManagerMeta;
+use Esanj\Manager\Traits\HasManagerPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Manager extends Authenticatable
 {
-    use SoftDeletes;
+    use SoftDeletes, HasManagerPermissions, HasManagerActivities, HasManagerMeta;
 
     protected $fillable = [
         'esanj_id',
@@ -45,47 +45,6 @@ class Manager extends Authenticatable
                 $manager->secret_key = bin2hex(random_bytes(16));
             }
         });
-    }
-
-    public function permissions(): BelongsToMany
-    {
-        return $this->belongsToMany(Permission::class, 'manager_permissions');
-    }
-
-    public function hasPermission(string $permission): bool
-    {
-        return ManagerFacade::hasPermission($this->id, $permission);
-    }
-
-    public function getMeta($key)
-    {
-        return $this->meta->where('key', $key)->first();
-    }
-
-    public function meta()
-    {
-        return $this->hasMany(ManagerMeta::class);
-    }
-
-    public function setMeta(string $key, $value)
-    {
-        return $this->meta()->updateOrCreate(
-            ['key' => $key],
-            ['value' => $value]
-        );
-    }
-
-    public function activities(): HasMany
-    {
-        return $this->hasMany(ManagerActivity::class)->latest();
-    }
-
-    public function setActivity(string $type, array $meta = [])
-    {
-        return $this->activities()->create([
-            'type' => $type,
-            'meta' => $meta
-        ]);
     }
 
     public function isActive(): bool
