@@ -34,7 +34,7 @@ class ManagerAuthApiController extends BaseController
             'data' => [
                 'redirect_url' => route('auth-bridge.redirect'),
             ],
-        ], 301);
+        ], 302);
     }
 
     /**
