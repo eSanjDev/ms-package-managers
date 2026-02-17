@@ -9,12 +9,12 @@ use Illuminate\Support\Str;
 
 class CreateManagerCommand extends Command
 {
-    protected $signature = 'manager:create';
+    protected $signature = 'manager:create {esanj_id?}';
     protected $description = 'Create a new manager (admin) with static token';
 
     public function handle(ManagerService $service): int
     {
-        $esanjId = $this->ask('Esanj ID');
+        $esanjId = $this->argument('esanj_id') ?? $this->ask('Esanj ID');
 
         if (!$esanjId) {
             $this->error('Esanj id are required.');
