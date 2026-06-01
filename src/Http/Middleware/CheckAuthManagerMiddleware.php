@@ -45,7 +45,7 @@ class CheckAuthManagerMiddleware
         $manager = Auth::user();
 
         if (!$manager || !$manager->isActive()) {
-            session()->forget('auth_bridge');
+            session()->forget(config('esanj.auth_bridge.session_token_key'));
 
             return redirect()->route('auth-bridge.redirect');
         }
