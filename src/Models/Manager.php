@@ -49,11 +49,11 @@ class Manager extends Authenticatable
 
     public function isActive(): bool
     {
-        return $this->is_active;
+        return (bool) $this->is_active;
     }
 
     public function needToken(): bool
     {
-        return $this->uses_token;
+        return (bool) $this->uses_token;
     }
 }
