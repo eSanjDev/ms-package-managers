@@ -28,7 +28,7 @@ class ManagerController extends BaseController
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.delete'))->only(['destroy']);
         $this->middleware("manager.permission:" . config('esanj.manager.access_provider.restore'))->only(['restore']);
 
-        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities'], 'getLog');
+        $this->middleware("manager.permission:" . config('esanj.manager.access_provider.activity'))->only(['activities', 'getLog']);
     }
 
     public function index(Request $request)

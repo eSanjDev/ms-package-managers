@@ -22,8 +22,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('managers', function (Blueprint $table) {
-            $table->dropColumn('secret_key');
-            $table->dropForeign('uses_token');
+            $table->dropColumn(['secret_key', 'uses_token']);
         });
     }
 };
