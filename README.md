@@ -164,9 +164,9 @@ permission checks.
 | Method   | URI                                                | Description                                          | Permission        |
 |----------|----------------------------------------------------|------------------------------------------------------|-------------------|
 | `GET`    | `/{api_prefix}/managers`                           | Paginated list (supports `search`, `only_trash`).    | `managers.list`   |
-| `POST`   | `/{api_prefix}/managers`                           | Create a manager (+ sync permissions).               | `managers.create` |
-| `GET`    | `/{api_prefix}/managers/{manager}`                 | Show a manager.                                       | `managers.list`   |
-| `PUT`    | `/{api_prefix}/managers/{manager}`                 | Update a manager (+ sync permissions).               | `managers.edit`   |
+| `POST`   | `/{api_prefix}/managers`                           | Create a manager (+ sync `permissions` by key).      | `managers.create` |
+| `GET`    | `/{api_prefix}/managers/{manager}`                 | Show a manager (includes its `permissions`).         | `managers.list`   |
+| `PUT`    | `/{api_prefix}/managers/{manager}`                 | Update a manager (+ sync `permissions` by key).      | `managers.edit`   |
 | `DELETE` | `/{api_prefix}/managers/{manager}`                 | Soft‑delete a manager.                               | `managers.delete` |
 | `POST`   | `/{api_prefix}/managers/{id}/restore`              | Restore a soft‑deleted manager (`404` if not found). | `managers.delete` |
 | `GET`    | `/{api_prefix}/managers/{manager}/meta/{key}`      | Read one meta value (`404` if unset).                | `managers.list`   |

@@ -5,6 +5,7 @@ namespace Esanj\Manager\Services;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Exceptions\ManagerAccessDenied;
 use Esanj\Manager\Models\Manager;
+use Esanj\Manager\Models\Permission;
 use Esanj\Manager\Repositories\ManagerRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
@@ -51,7 +52,13 @@ class ManagerService
 
     public function createManager(array $data): Manager
     {
+        $permissionKeys = $this->pullPermissionKeys($data);
+
         $manager = $this->repository->create($data);
+
+        if (is_array($permissionKeys)) {
+            $this->syncPermissions($manager, $permissionKeys);
+        }
 
         $this->logActivity('manager.created', [
             'target_id' => $manager->id,
@@ -63,9 +70,15 @@ class ManagerService
 
     public function updateManager(int $id, array $data): ?Manager
     {
+        $permissionKeys = $this->pullPermissionKeys($data);
+
         $manager = $this->repository->update($id, $data);
 
         if ($manager) {
+            if (is_array($permissionKeys)) {
+                $this->syncPermissions($manager, $permissionKeys);
+            }
+
             $this->logActivity('manager.updated', [
                 'target_id' => $manager->id,
                 'target_name' => $manager->name,
@@ -74,6 +87,32 @@ class ManagerService
         }
 
         return $manager;
+    }
+
+    /**
+     * @return array<int, string>|null
+     */
+    protected function pullPermissionKeys(array &$data): ?array
+    {
+        if (!array_key_exists('permissions', $data)) {
+            return null;
+        }
+
+        $permissions = $data['permissions'];
+        unset($data['permissions']);
+
+        return is_array($permissions) ? $permissions : [];
+    }
+
+    /**
+     * @param array<int, string> $permissionKeys
+     */
+    protected function syncPermissions(Manager $manager, array $permissionKeys): void
+    {
+        $permissionIds = Permission::whereIn('key', $permissionKeys)->pluck('id');
+
+        $manager->permissions()->sync($permissionIds);
+        $manager->load('permissions');
     }
 
     public function delete(int $id): bool

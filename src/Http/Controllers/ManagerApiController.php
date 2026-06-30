@@ -42,6 +42,8 @@ class ManagerApiController extends BaseController
 
     public function show(Manager $manager): JsonResponse
     {
+        $manager->load(['permissions']);
+
         return response()->json([
             'data' => new ManagerResource($manager),
         ]);
@@ -49,12 +51,13 @@ class ManagerApiController extends BaseController
 
     public function store(ManagerCreateRequest $request): JsonResponse
     {
-        $requestData = $request->only(['esanj_id', 'role', 'is_active', 'uses_token']);
-        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken();
+        $requestData = $request->validated();
+
+        if (empty($requestData['token'])) {
+            $requestData['token'] = $this->managerService->generateToken();
+        }
 
         $manager = $this->managerService->createManager($requestData);
-
-        $manager->permissions()->sync($request->input('permissions', []));
 
         return response()->json([
             'data' => new ManagerResource($manager),
@@ -64,15 +67,13 @@ class ManagerApiController extends BaseController
 
     public function update(Manager $manager, ManagerUpdateRequest $request): JsonResponse
     {
-        $updateData = $request->only(['role', 'is_active', 'name', 'uses_token']);
+        $updateData = $request->validated();
 
-        if ($request->filled('token')) {
-            $updateData['token'] = $request->input('token');
+        if (empty($updateData['token'])) {
+            unset($updateData['token']);
         }
 
         $manager = $this->managerService->updateManager($manager->id, $updateData);
-
-        $manager->permissions()->sync($request->input('permissions', []));
 
         return response()->json([
             'data' => new ManagerResource($manager),

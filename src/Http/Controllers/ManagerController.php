@@ -65,18 +65,19 @@ class ManagerController extends BaseController
     {
         $isAdmin = $this->currentUserIsAdmin();
 
-        if (!$isAdmin && $request->input('role') === ManagerRoleEnum::Admin) {
+        if (!$isAdmin && $request->input('role') === ManagerRoleEnum::Admin->value) {
             return back()->withErrors([
                 'role' => trans('manager::manager.errors.role_not_allowed')
             ]);
         }
 
-        $requestData = $request->only(['name', 'esanj_id', 'role', 'is_active', 'uses_token']);
-        $requestData['token'] = $request->input('token') ?? $this->managerService->generateToken();
+        $requestData = $request->validated();
+
+        if (empty($requestData['token'])) {
+            $requestData['token'] = $this->managerService->generateToken();
+        }
 
         $manager = $this->managerService->createManager($requestData);
-
-        $manager->permissions()->sync($request->input('permissions', []));
 
         return redirect()->route('managers.edit', $manager->id)
             ->with('success', trans('manager::manager.success.stored'));
@@ -88,7 +89,7 @@ class ManagerController extends BaseController
 
         $roles = $this->getAvailableRoles($isAdmin);
         $permissions = $this->getGroupedPermissions();
-        $managerPermissions = $manager->permissions->pluck('id')->toArray();
+        $managerPermissions = $manager->permissions->pluck('key')->toArray();
 
         return view('manager::panel.edit', compact(
             'manager', 'isAdmin', 'roles', 'permissions', 'managerPermissions'
@@ -97,15 +98,13 @@ class ManagerController extends BaseController
 
     public function update(ManagerUpdateRequest $request, Manager $manager): RedirectResponse
     {
-        $updateData = $request->only(['role', 'is_active', 'name', 'uses_token']);
+        $updateData = $request->validated();
 
-        if ($request->filled('token')) {
-            $updateData['token'] = $request->input('token');
+        if (empty($updateData['token'])) {
+            unset($updateData['token']);
         }
 
         $this->managerService->updateManager($manager->id, $updateData);
-
-        $manager->permissions()->sync($request->input('permissions', []));
 
         return redirect()->route('managers.edit', $manager->id)
             ->with('success', trans('manager::manager.success.updated'));
@@ -181,7 +180,7 @@ class ManagerController extends BaseController
         return Permission::all()->reduce(function ($grouped, $permission) {
             $prefix = Str::before($permission->key, '.');
 
-            $grouped[$prefix][$permission->id] = $permission->display_name;
+            $grouped[$prefix][$permission->key] = $permission->display_name;
 
             return $grouped;
         }, []);

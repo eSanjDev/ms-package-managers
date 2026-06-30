@@ -187,6 +187,30 @@ You don't write the login — the package and the Auth Bridge handle it. Here's 
   if (Gate::allows('managers.edit')) { /* ... */ }
   ```
 
+### Assigning permissions to a manager
+
+Permissions are attached to a manager by their **`key`** (e.g. `managers.edit`), not by their numeric id. This
+applies to both the web panel form and the JSON API:
+
+- **Web panel:** tick the permission checkboxes on the **create/edit** screen — each checkbox submits a key.
+- **API:** send a `permissions` array of keys when creating or updating a manager. The keys must already exist in
+  the `permissions` table (validated with `exists:permissions,key`), and the package **syncs** them — the list you
+  send fully replaces the manager's current permissions.
+
+  ```jsonc
+  // POST /api/managers  or  PUT /api/managers/{manager}
+  {
+      "esanj_id": 1001,
+      "name": "Jane",
+      "role": "operator",
+      "permissions": ["managers.list", "managers.edit"]
+  }
+  ```
+
+> `admin` managers pass every check regardless, so `permissions` is optional for them and required for the other
+> roles. When you load a manager (e.g. `GET /api/managers/{manager}`), its `permissions` are returned as objects
+> with `key`, `display_name`, and `description`.
+
 ---
 
 ## 8. Protecting your own pages & routes

@@ -19,7 +19,7 @@ class ManagerUpdateRequest extends FormRequest
             'is_active' => ['boolean'],
             'uses_token' => ['boolean'],
             'permissions' => ['array', Rule::requiredIf($isNotAdmin)],
-            'permissions.*' => ['exists:permissions,id'],
+            'permissions.*' => ['exists:permissions,key'],
         ];
     }
 
