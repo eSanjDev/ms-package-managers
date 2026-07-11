@@ -153,11 +153,20 @@ You don't write the login — the package and the Auth Bridge handle it. Here's 
 | 1    | `GET /api/managers/redirect`                      | —                    | `redirect_url` → open it so the user logs in.      |
 | 2    | `POST /api/managers/verify`                       | `{ "code": "..." }`  | `{ requires_token, auth_code }`                     |
 | 3    | `POST /api/managers/authenticate`                 | `{ "auth_code": "...", "token": "..." }` | `{ access_token, token_type, expires_in }` |
-| 4    | Any `/api/managers...` call                       | header `Authorization: Bearer {access_token}` | the data |
+| 4    | Any `/api/managers...` call                       | header `Authorization: Bearer {access_token}` | the data (+ a renewed‑token header when needed) |
 
 - `code` in step 2 is the authorization code the Bridge gave the user.
 - `requires_token` tells you whether to ask the user for their static `token` in step 3 (omit it if `false`).
-- The `access_token` is valid for `access_token_expires_in` minutes (default 24h).
+- The `access_token` is valid for `access_token_expires_in` minutes (default **15 min** — deliberately short).
+
+**Silent renewal — no refresh token, no refresh route.** The access token secretly carries the manager's
+**accounting** refresh token (encrypted). When you hit any protected endpoint with an expired access token, the
+middleware asks accounting to refresh it: if accounting still accepts the manager, a new access token is issued
+automatically and returned in the `X-Manager-Access-Token` (and `X-Manager-Token-Expires-In`) response header —
+your request still succeeds. If accounting has **blocked/restricted** the manager, the refresh fails and you get
+`401`. That means a block at accounting removes API access within one 15‑minute cycle, and no refresh token can
+revive it. The only client‑side duty: when a response includes `X-Manager-Access-Token`, store it and use it next
+time (accounting rotates the underlying refresh token, so the previous one won't work twice).
 
 > 🔒 Steps 3 and the web token form are **rate‑limited** (default: 10 attempts / 10 minutes per IP) to slow down
 > brute‑forcing the static token.
@@ -414,7 +423,7 @@ File: `config/esanj/manager.php` (read internally as `esanj.manager`).
 | `logo_path`                | `null`                        | `MANAGER_LOGO_PATH`                   | Panel logo image.                             |
 | `success_redirect`         | `/`                           | `MANAGER_SUCCESS_REDIRECT`            | Redirect after login.                         |
 | `access_denied_redirect`   | `/`                           | `MANAGER_ACCESS_DENIED_REDIRECT`      | Redirect on missing permission (web).         |
-| `access_token_expires_in`  | `1440`                        | `MANAGER_ACCESS_TOKEN_TTL`            | API token lifetime (minutes).                 |
+| `access_token_expires_in`  | `15`                          | `MANAGER_ACCESS_TOKEN_TTL`            | API access‑token lifetime (minutes; auto‑renewed against accounting). |
 | `token_length`             | `128`                         | `MANAGER_TOKEN_LENGTH`                | Max static‑token length (validation).         |
 | `just_api`                 | `false`                       | `MANAGER_JUST_API`                    | API‑only mode.                                |
 | `routes.auth_prefix`       | `admin`                       | `MANAGER_AUTH_ROUTE_PREFIX`           | Web auth routes prefix.                       |

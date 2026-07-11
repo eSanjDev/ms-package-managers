@@ -29,11 +29,13 @@ return [
     | Access Token Expiration
     |--------------------------------------------------------------------------
     |
-    | Expiration time for access tokens in minutes.
-    | Default: 1440 minutes (24 hours)
+    | Lifetime of a manager API access token, in minutes. Kept short so a
+    | manager blocked at accounting loses access quickly: once the token
+    | expires it is renewed only if the embedded accounting refresh token is
+    | still valid, otherwise access is cut. Default: 15 minutes.
     |
     */
-    'access_token_expires_in' => (int) env('MANAGER_ACCESS_TOKEN_TTL', 1440),
+    'access_token_expires_in' => (int) env('MANAGER_ACCESS_TOKEN_TTL', 15),
 
     /*
     |--------------------------------------------------------------------------

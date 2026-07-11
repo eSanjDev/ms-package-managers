@@ -87,7 +87,7 @@ php artisan vendor:publish --tag=esanj-manager-config
 | `logo_path`                      | `null`                        | Logo shown in the panel.                                          |
 | `success_redirect`               | `/`                           | Redirect after a successful login.                               |
 | `access_denied_redirect`         | `/`                           | Redirect when a manager lacks a permission (web).                |
-| `access_token_expires_in`        | `1440` (minutes)              | Lifetime of an API access token.                                 |
+| `access_token_expires_in`        | `15` (minutes)                | Lifetime of an API access token (short; auto-renewed against accounting). |
 | `token_length`                   | `128`                         | Max length accepted for a static token (validation).            |
 | `just_api`                       | `false`                       | API‑only mode — disables the web panel, views, and web routes.  |
 | `routes.auth_prefix`             | `admin`                       | Prefix for the web **auth** routes (`/token`, `/logout`).       |
@@ -140,11 +140,28 @@ Imported into the `permissions` table with `php artisan manager:permissions-impo
 | 1    | `GET  /{api_prefix}/managers/redirect`             | —                   | `{ data: { redirect_url } }` — send the user there. |
 | 2    | `POST /{api_prefix}/managers/verify`               | `{ code }`          | `{ data: { requires_token, auth_code } }`           |
 | 3    | `POST /{api_prefix}/managers/authenticate`         | `{ auth_code, token? }` | `{ data: { access_token, token_type, expires_in } }` |
-| 4    | Call the API with `Authorization: Bearer {access_token}` | —             | —                                                   |
+| 4    | Call the API with `Authorization: Bearer {access_token}` | —             | the data (+ a renewed token header when applicable) |
 
 - `code` (step 2) is the authorization code the Auth Bridge gives the user after OAuth login.
 - `requires_token` tells you whether this manager needs to supply their static `token` in step 3.
-- The `access_token` is an HMAC‑signed token (not a JWT), valid for `access_token_expires_in` minutes.
+- The `access_token` is a short‑lived HMAC‑signed token (not a JWT). It carries the manager's **accounting refresh
+  token, encrypted**, so it can be renewed silently — the client never sees or handles a separate refresh token, and
+  there is **no** refresh route.
+
+**Silent, automatic renewal (no route).** When you call any protected API with an **expired** access token, the
+`manager.auth:api` middleware transparently:
+1. verifies the token's signature and that the manager is locally active;
+2. asks accounting to refresh the embedded accounting refresh token (`grant_type=refresh_token`);
+3. **if accounting still accepts it** → issues a fresh manager access token, serves the request, and returns the new
+   token in the response headers `X-Manager-Access-Token` and `X-Manager-Token-Expires-In`;
+4. **if accounting rejects it** (the manager was blocked/restricted there) → responds `401` and grants no access.
+
+So a manager blocked at accounting loses **all** API access within one access‑token lifetime (default 15 min), even
+though their token had not yet expired at block time — once it expires it can no longer be renewed.
+
+> The client's only job is to replace its stored token when a response carries `X-Manager-Access-Token`. Because
+> accounting **rotates** refresh tokens, reusing the old (expired) token after a renewal will fail — always adopt the
+> latest one.
 
 ### Web flow
 
@@ -153,6 +170,14 @@ Imported into the `permissions` table with `php artisan manager:permissions-impo
    token form.
 3. `POST /{auth_prefix}/managers/token` validates the static token and logs them into the `manager` session guard.
 4. `POST /{auth_prefix}/managers/logout` logs out.
+
+> 🔒 **Access is tied to the accounting session.** On every web request, `manager.auth:web` checks that the
+> accounting (Auth Bridge) token is still alive — the bridge silently refreshes the short‑lived accounting access
+> token behind the scenes. The moment accounting **blocks or restricts** the manager, that refresh fails; the
+> middleware then logs the manager out of the `manager` guard, clears the session token, and sends them back to
+> `auth-bridge.redirect`. This is how a block at accounting propagates and cuts access here. For **API** clients the
+> equivalent is the short access‑token lifetime plus re‑authenticating through the bridge once accounting stops
+> issuing tokens.
 
 ---
 

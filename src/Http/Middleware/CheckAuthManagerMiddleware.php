@@ -3,6 +3,7 @@
 namespace Esanj\Manager\Http\Middleware;
 
 use Closure;
+use Esanj\AuthBridge\Facades\AuthBridge;
 use Esanj\Manager\Services\ManagerAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -44,7 +45,8 @@ class CheckAuthManagerMiddleware
     {
         $manager = Auth::user();
 
-        if (!$manager || !$manager->isActive()) {
+        if (!$manager || !$manager->isActive() || !$this->accountingAccessIsAlive()) {
+            Auth::guard('manager')->logout();
             session()->forget(config('esanj.auth_bridge.session_token_key'));
 
             return redirect()->route('auth-bridge.redirect');
@@ -54,18 +56,35 @@ class CheckAuthManagerMiddleware
     }
 
     /**
+     * The manager's web session is only alive while the accounting token can
+     * still be (silently) refreshed. When accounting blocks/revokes the user,
+     * the refresh fails and this returns false — cutting access here too.
+     */
+    protected function accountingAccessIsAlive(): bool
+    {
+        return AuthBridge::hasToken();
+    }
+
+    /**
      * Handle API guard authentication.
      */
     protected function handleApiGuard(Request $request, Closure $next): Response
     {
-        $manager = $this->authService->authenticateWithToken();
+        $result = $this->authService->authenticate();
 
-        if ($manager instanceof JsonResponse) {
-            return $manager;
+        if ($result instanceof JsonResponse) {
+            return $result;
         }
 
-        Auth::login($manager);
+        Auth::login($result['manager']);
 
-        return $next($request);
+        $response = $next($request);
+        
+        if (!empty($result['access_token'])) {
+            $response->headers->set('X-Manager-Access-Token', $result['access_token']);
+            $response->headers->set('X-Manager-Token-Expires-In', (string) $result['expires_in']);
+        }
+
+        return $response;
     }
 }

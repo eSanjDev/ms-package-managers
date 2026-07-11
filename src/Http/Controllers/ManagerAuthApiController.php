@@ -12,6 +12,7 @@ use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Services\ManagerAuthService;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class ManagerAuthApiController extends BaseController
 {
@@ -54,6 +55,8 @@ class ManagerAuthApiController extends BaseController
 
         try {
             $manager = $this->getManager($decoded->sub);
+            
+            $this->stashAccountingRefreshToken($decoded->jti ?? null, $response->refreshToken);
 
             return response()->json([
                 'status' => true,
@@ -101,7 +104,8 @@ class ManagerAuthApiController extends BaseController
             'login_type' => 'api',
         ]);
 
-        $accessData = $this->authService->generateAccessToken($manager);
+        $accountingRefreshToken = $this->pullAccountingRefreshToken($decoded->jti ?? null);
+        $accessData = $this->authService->generateAccessToken($manager, $accountingRefreshToken);
 
         return response()->json([
             'status' => true,
@@ -111,6 +115,29 @@ class ManagerAuthApiController extends BaseController
                 'expires_in' => $accessData['expires_in'],
             ],
         ]);
+    }
+
+    private function stashAccountingRefreshToken(?string $jti, ?string $refreshToken): void
+    {
+        if (empty($jti) || empty($refreshToken)) {
+            return;
+        }
+
+        Cache::put($this->accountingRefreshCacheKey($jti), $refreshToken, now()->addMinutes(15));
+    }
+
+    private function pullAccountingRefreshToken(?string $jti): ?string
+    {
+        if (empty($jti)) {
+            return null;
+        }
+
+        return Cache::pull($this->accountingRefreshCacheKey($jti));
+    }
+
+    private function accountingRefreshCacheKey(string $jti): string
+    {
+        return 'manager_acc_rt_' . hash('sha256', $jti);
     }
 
     /**
