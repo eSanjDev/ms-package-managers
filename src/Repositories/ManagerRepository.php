@@ -101,7 +101,7 @@ class ManagerRepository
     private function getCacheTtlInSeconds(): int
     {
         return config('esanj.manager.cache.is_enabled', true)
-            ? config('esanj.manager.cache.ttl', 60)
+            ? (int) config('esanj.manager.cache.ttl', 60) * 60
             : 1;
     }
 

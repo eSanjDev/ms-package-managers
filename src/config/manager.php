@@ -102,7 +102,7 @@ return [
         'is_enabled' => env('MANAGER_CACHE_ENABLED', true),
         'prefix' => env('MANAGER_CACHE_PREFIX', 'manager_'),
         'driver' => env('CACHE_STORE', 'file'),
-        'ttl' => (int) env('MANAGER_CACHE_TTL', 60 * 24 * 7), // 7 days in minutes
+        'ttl' => (int) env('MANAGER_CACHE_TTL', 60 * 24 * 7), // in minutes (default 7 days)
     ],
 
     /*
