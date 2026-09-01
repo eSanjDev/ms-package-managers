@@ -32,6 +32,7 @@ return [
         'role_not_allowed' => 'The selected role is not allowed',
         'unauthorized' => 'Unauthorized',
         'meta_not_found' => 'The meta not found.',
+        'activity_not_found' => 'Activity not found.',
         'access_denied' => 'Access denied',
     ],
 ];

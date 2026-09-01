@@ -158,6 +158,12 @@ class ManagerController extends BaseController
 
     public function getLog(Manager $manager, ManagerActivity $activity): JsonResponse
     {
+        if ($activity->manager_id !== $manager->id) {
+            return response()->json([
+                'message' => __('manager::manager.errors.activity_not_found'),
+            ], 404);
+        }
+
         return response()->json([
             'data' => new ManagerActivityResource($activity)
         ]);

@@ -32,6 +32,7 @@ return [
         'manager_not_active' => 'مدیر فعال نیست',
         'role_not_allowed' => 'نقش انتخاب شده مجاز نیست',
         'meta_not_found' => 'پارامتر یافت نشد.',
+        'activity_not_found' => 'فعالیت یافت نشد.',
         'access_denied' => 'دسترسی غیرمجاز',
     ],
 ];
