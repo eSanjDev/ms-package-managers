@@ -97,6 +97,7 @@ class ManagerAuthApiController extends BaseController
             return $this->response($e->getMessage(), false, $e->getCode());
         }
 
+        $this->authService->clearRateLimit();
 
         $this->managerService->updateLastLogin($manager->id);
 

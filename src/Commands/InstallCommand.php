@@ -11,10 +11,10 @@ class InstallCommand extends Command
 
     public function handle(): int
     {
-        $this->info('Publishing configuration...');
+        $this->info('Publishing configuration and assets...');
         $this->call('vendor:publish', [
             '--provider' => "Esanj\\Manager\\Providers\\ManagerServiceProvider",
-            '--tag' => ['esanj-manager-assets'],
+            '--tag' => ['esanj-manager-assets', 'esanj-manager-config'],
             '--force' => true,
         ]);
 

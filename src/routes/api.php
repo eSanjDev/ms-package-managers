@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix(config('esanj.manager.routes.api_prefix') . '/managers')->middleware(['api'])->group(function () {
     Route::get('/redirect', [ManagerAuthApiController::class, 'redirectToBridge']);
-    Route::post('/verify', [ManagerAuthApiController::class, 'verifyAuthorizationCode']);
+    Route::post('/verify', [ManagerAuthApiController::class, 'verifyAuthorizationCode'])->middleware([EnsureRequestIsNotRateLimitedMiddleware::class]);
     Route::post('/authenticate', [ManagerAuthApiController::class, 'authenticateFromBridge'])->middleware([EnsureRequestIsNotRateLimitedMiddleware::class]);
 });
 

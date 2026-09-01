@@ -6,9 +6,11 @@ use Esanj\AuthBridge\Exceptions\ExtractJWTException;
 use Esanj\AuthBridge\Services\ClientCredentialsService;
 use Esanj\Manager\Exceptions\ManagerAccessDenied;
 use Esanj\Manager\Exceptions\ManagerException;
+use Esanj\Manager\Exceptions\SessionExpiredException;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Services\ManagerAuthService;
 use Esanj\Manager\Services\ManagerService;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +60,8 @@ class ManagerAuthController extends BaseController
             }
         }
 
+        $this->managerAuthService->clearRateLimit();
+
         return $this->handleSuccessLogin($manager);
     }
 
@@ -85,12 +89,12 @@ class ManagerAuthController extends BaseController
     /**
      * @throws ExtractJWTException
      */
-    private function extractAccessToken(): mixed
+    private function extractAccessToken(): int
     {
         $accessToken = session('auth_bridge.access_token');
 
         if (!$accessToken) {
-            return redirect()->route('auth-bridge.redirect');
+            throw SessionExpiredException::make();
         }
 
         $decoded = $this->clientCredentialsService->extractJwt($accessToken);
@@ -113,6 +117,8 @@ class ManagerAuthController extends BaseController
             }
 
             return $manager;
+        } catch (SessionExpiredException $e) {
+            throw new HttpResponseException(redirect()->route('auth-bridge.redirect'));
         } catch (ManagerException|ExtractJWTException $e) {
             return $this->abort($e->getCode(), $e->getMessage());
         }

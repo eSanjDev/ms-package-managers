@@ -26,6 +26,11 @@ class ManagerAuthService
         RateLimiter::hit($this->getRateLimitKey(), (int) config('esanj.manager.rate_limit.decay_seconds', 600));
     }
 
+    public function clearRateLimit(): void
+    {
+        RateLimiter::clear($this->getRateLimitKey());
+    }
+
     public function getRateLimitKey(): string
     {
         return 'manager-' . request()->ip();
