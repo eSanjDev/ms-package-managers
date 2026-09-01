@@ -1,6 +1,15 @@
 import BaseTable from '@js/pages/BaseTable.js';
 import {data} from "autoprefixer";
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
 class ManagerTable extends BaseTable {
     constructor() {
         super('managers', 'managers', {
@@ -44,7 +53,7 @@ class ManagerTable extends BaseTable {
                 data: 'type',
                 title: 'Type',
                 render(data, type, full) {
-                    return `<span>${full.type}</span>`;
+                    return `<span>${escapeHtml(full.type)}</span>`;
                 }
             },
             {
@@ -52,7 +61,7 @@ class ManagerTable extends BaseTable {
                 data: 'created_at',
                 title: 'Created AT',
                 render(data, type, full) {
-                    return `<span>${full.created_at}</span>`;
+                    return `<span>${escapeHtml(full.created_at)}</span>`;
                 }
             },
             {
@@ -100,9 +109,9 @@ $(document).on('click', '.tabler-eye', function () {
 
             let data = res.data
 
-            modal.find('.modal-body h2').html(`Log ${data.id}`)
-            modal.find('.modal-body span').html(data.created_at + " | " + data.type)
-            modal.find('.modal-body p').html(JSON.stringify(data.meta))
+            modal.find('.modal-body h2').text(`Log ${data.id}`)
+            modal.find('.modal-body span').text(data.created_at + " | " + data.type)
+            modal.find('.modal-body p').text(JSON.stringify(data.meta))
 
             modal.modal("show")
         },

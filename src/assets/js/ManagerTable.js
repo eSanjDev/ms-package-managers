@@ -1,5 +1,14 @@
 import BaseTable from '@js/pages/BaseTable.js';
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
 class ManagerTable extends BaseTable {
     constructor() {
         super('managers', 'manager');
@@ -34,7 +43,7 @@ class ManagerTable extends BaseTable {
                 data: 'name',
                 title: 'Name',
                 render(data, type, full) {
-                    return `<strong>${full.name}</strong>`;
+                    return `<strong>${escapeHtml(full.name)}</strong>`;
                 }
             },
             {
@@ -42,7 +51,7 @@ class ManagerTable extends BaseTable {
                 data: 'role',
                 title: 'Role',
                 render(data, type, full) {
-                    return `<span>${full.role}</span>`;
+                    return `<span>${escapeHtml(full.role)}</span>`;
                 }
             },
             {
@@ -50,7 +59,7 @@ class ManagerTable extends BaseTable {
                 data: 'last_login',
                 title: 'Last Login',
                 render(data, type, full) {
-                    return `<span>${full.last_login}</span>`;
+                    return `<span>${escapeHtml(full.last_login)}</span>`;
                 }
             },
             {
