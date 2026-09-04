@@ -24,7 +24,7 @@
         "php": "^8.2|^8.3|^8.4",
         "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
         "firebase/php-jwt": "^6.11",
-        "esanj/auth-bridge": ">=0.2.0 <0.3.0"
+        "esanj/auth-bridge": ">=1.0.0 <2.0.0"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
