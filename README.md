@@ -163,6 +163,11 @@ though their token had not yet expired at block time — once it expires it can 
 > accounting **rotates** refresh tokens, reusing the old (expired) token after a renewal will fail — always adopt the
 > latest one.
 
+> **Cross‑origin clients:** a browser hides these headers from an SPA on another origin unless CORS exposes them —
+> add them to the host's `config/cors.php`, or renewal stays invisible and the client is logged out after one
+> token lifetime:
+> `'exposed_headers' => ['X-Manager-Access-Token', 'X-Manager-Token-Expires-In'],`
+
 ### Web flow
 
 1. Unauthenticated managers are redirected to the Auth Bridge (`auth-bridge.redirect`).
