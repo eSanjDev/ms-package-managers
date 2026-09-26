@@ -83,6 +83,8 @@ class ManagerApiController extends BaseController
 
     public function destroy(Manager $manager): JsonResponse
     {
+        $this->authorize('delete', $manager);
+
         $this->managerService->delete($manager->id);
 
         return response()->json([
@@ -90,9 +92,11 @@ class ManagerApiController extends BaseController
         ]);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore(Manager $manager): JsonResponse
     {
-        $manager = $this->managerService->restoreManager($id);
+        $this->authorize('restore', $manager);
+
+        $manager = $this->managerService->restoreManager($manager->id);
 
         if (!$manager) {
             return response()->json([

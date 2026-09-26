@@ -55,6 +55,7 @@
                                                 <div class="form-check mb-0 ">
                                                     <input class="form-check-input" name="permissions[]"
                                                            @checked(in_array($key,old('permissions',[]))) type="checkbox"
+                                                           @disabled($assignablePermissions !== null && !in_array($key, $assignablePermissions))
                                                            value="{{$key}}" id="permission-{{$key}}">
                                                 </div>
                                             </div>

@@ -18,7 +18,7 @@ Route::prefix(config('esanj.manager.routes.api_prefix'))
     ->group(function () {
         Route::apiResource("/managers", ManagerApiController::class)->names("api.managers");
 
-        Route::post('/managers/{manager}/restore', [ManagerApiController::class, 'restore']);
+        Route::post('/managers/{manager}/restore', [ManagerApiController::class, 'restore'])->withTrashed();
 
         Route::get('/managers/{manager}/meta/{key}', [ManagerApiController::class, 'getMeta']);
         Route::post('/managers/{manager}/meta', [ManagerApiController::class, 'setMeta']);

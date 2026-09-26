@@ -56,4 +56,9 @@ class Manager extends Authenticatable
     {
         return (bool) $this->uses_token;
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === ManagerRoleEnum::Admin;
+    }
 }

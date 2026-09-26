@@ -56,6 +56,7 @@
                                                 <div class="form-check mb-0 ">
                                                     <input class="form-check-input" name="permissions[]"
                                                            @checked(in_array($key,old('permissions',$managerPermissions))) type="checkbox"
+                                                           @disabled($assignablePermissions !== null && !in_array($key, $assignablePermissions))
                                                            value="{{$key}}" id="permission-{{$key}}">
                                                 </div>
                                             </div>
@@ -111,8 +112,7 @@
                     </div>
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
-                            <select name="role" class="form-select select2"
-                                    @if($manager->role->value === 'admin' && !$isAdmin) readonly @endif>
+                            <select name="role" class="form-select select2">
                                 @foreach($roles as $role)
                                     <option
                                         @selected($manager->role->value === $role) value="{{$role}}">{{$role}}</option>

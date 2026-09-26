@@ -2,34 +2,24 @@
 
 namespace Esanj\Manager\Http\Request;
 
-use Esanj\Manager\Enums\ManagerRoleEnum;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Esanj\Manager\Models\Manager;
 
-class ManagerCreateRequest extends FormRequest
+class ManagerCreateRequest extends ManagerRequest
 {
-    public function rules(): array
+    public function authorize(): bool
     {
-        $isNotAdmin = $this->input('role') !== ManagerRoleEnum::Admin->value;
-
-        return [
-            'esanj_id' => ['required', 'integer', 'unique:managers,esanj_id'],
-            'name' => ['required', 'string', 'max:255'],
-            'role' => ['required', Rule::in(ManagerRoleEnum::toArray())],
-            'token' => ['nullable', 'string', 'max:' . config('esanj.manager.token_length', 128)],
-            'is_active' => ['boolean'],
-            'uses_token' => ['boolean'],
-            'permissions' => ['array', Rule::requiredIf($isNotAdmin)],
-            'permissions.*' => ['exists:permissions,key'],
-        ];
+        return (bool) $this->user('manager')?->can('create', [
+            Manager::class,
+            $this->requestedRole(),
+            $this->requestedPermissions(),
+        ]);
     }
 
-    public function prepareForValidation(): void
+    public function rules(): array
     {
-        foreach (['is_active', 'uses_token'] as $field) {
-            if ($this->has($field)) {
-                $this->merge([$field => $this->boolean($field)]);
-            }
-        }
+        return [
+            'esanj_id' => ['required', 'integer', 'unique:managers,esanj_id'],
+            ...parent::rules(),
+        ];
     }
 }

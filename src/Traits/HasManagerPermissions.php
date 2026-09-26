@@ -17,4 +17,9 @@ trait HasManagerPermissions
     {
         return ManagerFacade::hasPermission($this->id, $permission);
     }
+
+    public function permissionKeys(): array
+    {
+        return $this->permissions->pluck('key')->all();
+    }
 }

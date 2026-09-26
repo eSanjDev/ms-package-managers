@@ -17,7 +17,7 @@ Route::prefix(config('esanj.manager.routes.panel_prefix'))
     ->middleware(config('esanj.manager.middlewares.web'))
     ->group(function () {
         Route::resource("/managers", ManagerController::class)->except(['show']);
-        Route::post('/managers/{manager}/restore', [ManagerController::class, 'restore'])->name('managers.restore');
+        Route::post('/managers/{manager}/restore', [ManagerController::class, 'restore'])->withTrashed()->name('managers.restore');
 
         Route::get('/managers/{manager}/activities', [ManagerController::class, 'activities'])->name('managers.activities');
         Route::get("/managers/{manager}/activities/{activity}", [ManagerController::class, 'getLog'])->name('managers.activities.log');

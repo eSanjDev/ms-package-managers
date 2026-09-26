@@ -45,7 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (selectAll) {
         selectAll.addEventListener('change', t => {
             checkboxList.forEach(e => {
-                e.checked = t.target.checked;
+                if (!e.disabled) {
+                    e.checked = t.target.checked;
+                }
             });
         });
     }

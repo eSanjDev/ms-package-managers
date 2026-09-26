@@ -56,21 +56,14 @@ class ManagerController extends BaseController
 
         $roles = $this->getAvailableRoles($isAdmin);
         $permissions = $this->getGroupedPermissions();
+        $assignablePermissions = $this->assignablePermissions();
         $token = $this->managerService->generateToken();
 
-        return view('manager::panel.create', compact('roles', 'isAdmin', 'permissions', 'token'));
+        return view('manager::panel.create', compact('roles', 'isAdmin', 'permissions', 'assignablePermissions', 'token'));
     }
 
     public function store(ManagerCreateRequest $request): RedirectResponse
     {
-        $isAdmin = $this->currentUserIsAdmin();
-
-        if (!$isAdmin && $request->input('role') === ManagerRoleEnum::Admin->value) {
-            return back()->withErrors([
-                'role' => trans('manager::manager.errors.role_not_allowed')
-            ]);
-        }
-
         $requestData = $request->validated();
 
         if (empty($requestData['token'])) {
@@ -85,14 +78,17 @@ class ManagerController extends BaseController
 
     public function edit(Manager $manager): View
     {
+        $this->authorize('update', $manager);
+
         $isAdmin = $this->currentUserIsAdmin();
 
         $roles = $this->getAvailableRoles($isAdmin);
         $permissions = $this->getGroupedPermissions();
+        $assignablePermissions = $this->assignablePermissions();
         $managerPermissions = $manager->permissions->pluck('key')->toArray();
 
         return view('manager::panel.edit', compact(
-            'manager', 'isAdmin', 'roles', 'permissions', 'managerPermissions'
+            'manager', 'isAdmin', 'roles', 'permissions', 'assignablePermissions', 'managerPermissions'
         ));
     }
 
@@ -112,6 +108,8 @@ class ManagerController extends BaseController
 
     public function destroy(Request $request, Manager $manager)
     {
+        $this->authorize('delete', $manager);
+
         if ($request->ajax()) {
             $this->managerService->delete($manager->id);
 
@@ -123,10 +121,12 @@ class ManagerController extends BaseController
         return redirect()->route('managers.index');
     }
 
-    public function restore(Request $request, int $id)
+    public function restore(Request $request, Manager $manager)
     {
+        $this->authorize('restore', $manager);
+
         if ($request->ajax()) {
-            $manager = $this->managerService->restoreManager($id);
+            $manager = $this->managerService->restoreManager($manager->id);
 
             return response()->json([
                 'message' => 'Manager restored successfully.',
@@ -171,7 +171,14 @@ class ManagerController extends BaseController
 
     private function currentUserIsAdmin(): bool
     {
-        return Auth::guard('manager')->user()?->role === ManagerRoleEnum::Admin;
+        return (bool)Auth::guard('manager')->user()?->isAdmin();
+    }
+
+    private function assignablePermissions(): ?array
+    {
+        $manager = Auth::guard('manager')->user();
+
+        return $manager->isAdmin() ? null : $manager->permissionKeys();
     }
 
     private function getAvailableRoles(bool $isAdmin): array

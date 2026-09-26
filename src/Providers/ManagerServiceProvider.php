@@ -8,6 +8,7 @@ use Esanj\Manager\Commands\InstallCommand;
 use Esanj\Manager\Http\Middleware\CheckAuthManagerMiddleware;
 use Esanj\Manager\Http\Middleware\CheckManagerPermissionMiddleware;
 use Esanj\Manager\Models\Manager;
+use Esanj\Manager\Policies\ManagerPolicy;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -41,6 +42,8 @@ class ManagerServiceProvider extends ServiceProvider
 
     private function registerPermissions(): void
     {
+        Gate::policy(Manager::class, ManagerPolicy::class);
+
         $permissions = config('esanj.manager.permissions');
 
         foreach ($permissions as $key => $permission) {

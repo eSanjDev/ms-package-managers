@@ -29,7 +29,6 @@ return [
         'token_incorrect' => 'Token is incorrect',
         'token_expired' => 'Token is expired',
         'manager_not_active' => 'Manager is not active',
-        'role_not_allowed' => 'The selected role is not allowed',
         'unauthorized' => 'Unauthorized',
         'meta_not_found' => 'The meta not found.',
         'activity_not_found' => 'Activity not found.',

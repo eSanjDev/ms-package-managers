@@ -2,7 +2,6 @@
 
 namespace Esanj\Manager\Services;
 
-use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Exceptions\ManagerAccessDenied;
 use Esanj\Manager\Models\Manager;
 use Esanj\Manager\Models\Permission;
@@ -109,6 +108,16 @@ class ManagerService
      */
     protected function syncPermissions(Manager $manager, array $permissionKeys): void
     {
+        $actor = $this->actor();
+
+        // A non-admin only controls the permissions they hold; the target keeps the rest.
+        if ($actor && !$actor->isAdmin()) {
+            $permissionKeys = array_unique([
+                ...$permissionKeys,
+                ...array_diff($manager->permissionKeys(), $actor->permissionKeys()),
+            ]);
+        }
+
         $permissionIds = Permission::whereIn('key', $permissionKeys)->pluck('id');
 
         $manager->permissions()->sync($permissionIds);
@@ -171,9 +180,7 @@ class ManagerService
             return false;
         }
 
-        // Admin has all permissions
-        return $manager->role === ManagerRoleEnum::Admin ||
-            $manager->permissions->contains('key', $permission);
+        return $manager->isAdmin() || $manager->permissions->contains('key', $permission);
     }
 
     public function generateToken(int $length = 32): string
@@ -206,6 +213,13 @@ class ManagerService
         return $perPage < 1 ? 15 : min($perPage, 50);
     }
 
+    private function actor(): ?Manager
+    {
+        $manager = auth('manager')->user();
+
+        return $manager instanceof Manager ? $manager : null;
+    }
+
     public function setActivity(string $type, array $meta = [])
     {
         return $this->logActivity($type, $meta);
@@ -230,9 +244,9 @@ class ManagerService
 
     protected function logActivity(string $type, array $meta = []): void
     {
-        $currentUser = auth('manager')->user();
+        $currentUser = $this->actor();
 
-        if (!$currentUser instanceof Manager) {
+        if (!$currentUser) {
             return;
         }
 
