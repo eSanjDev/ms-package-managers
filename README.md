@@ -243,6 +243,18 @@ Route::middleware('manager.auth:api')->group(function () {
 
 ---
 
+## ⬆️ Upgrading to 1.0.1
+
+- **Non‑admins are limited** (see [API Endpoints](#-api-endpoints)): giving the `admin` role, touching an admin's
+  record, or granting a permission they don't hold now returns `403` — on the web and the API alike.
+- **An omitted `is_active` / `uses_token` no longer turns false** on the API: a `PUT` leaves it unchanged, a `POST`
+  uses the column default (active, static token required).
+- **Writing meta needs `managers.edit`** (`access_provider.meta_write`); reading still needs `managers.list`. A
+  published config without the new key falls back to `managers.edit`.
+- **Republish and rebuild the assets:** `php artisan vendor:publish --tag=esanj-manager-assets --force`, then
+  `npm run build`.
+- **Requires `esanj/auth-bridge` 1.0.1+** (php-jwt 7).
+
 ## 📚 Documentation
 
 For a complete, beginner‑friendly, step‑by‑step walkthrough — installing, the auth flows explained simply,
