@@ -94,6 +94,20 @@ class ManagerTable extends BaseTable {
         ];
     }
 
+    // Responsive inserts the modal header as HTML, and the inherited one embeds the raw name.
+    getResponsiveSettings() {
+        const settings = super.getResponsiveSettings();
+
+        settings.details.display = $.fn.dataTable.Responsive.display.modal({
+            header(row) {
+                const data = row.data();
+                return `Details of ${escapeHtml(data.name || data.id)}`;
+            }
+        });
+
+        return settings;
+    }
+
     transformResponse(response) {
         return response.data.map(entityItem => ({
             id: entityItem.id,
