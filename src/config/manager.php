@@ -162,6 +162,7 @@ return [
         'restore' => 'managers.delete',
         'activity' => 'managers.list',
         'meta' => 'managers.list',
+        'meta_write' => 'managers.edit',
     ],
 
     /*
