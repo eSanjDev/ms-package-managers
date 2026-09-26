@@ -216,9 +216,15 @@ applies to both the web panel form and the JSON API:
       "esanj_id": 1001,
       "name": "Jane",
       "role": "operator",
+      "is_active": true,
+      "uses_token": true,
       "permissions": ["managers.list", "managers.edit"]
   }
   ```
+
+  `is_active` and `uses_token` are optional: a `PUT` without them leaves them as they are, and a `POST` without them
+  creates an active manager who must enter a static `token` at web login — send one (`"token": "..."`) or set it
+  later from the panel, because a generated token is never returned.
 
 > `admin` managers pass every check regardless, so `permissions` is optional for them and required for the other
 > roles. When you load a manager (e.g. `GET /api/managers/{manager}`), its `permissions` are returned as objects
