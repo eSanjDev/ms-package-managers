@@ -23,7 +23,7 @@
     "require": {
         "php": "^8.2|^8.3|^8.4",
         "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
-        "firebase/php-jwt": "^6.11",
+        "firebase/php-jwt": "^7.0",
         "esanj/auth-bridge": ">=1.0.0 <2.0.0"
     },
     "minimum-stability": "stable",
