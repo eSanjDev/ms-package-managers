@@ -179,6 +179,10 @@ time (accounting rotates the underlying refresh token, so the previous one won't
   roles only have the permissions you explicitly attach to them.
 - **Permissions:** named strings (e.g. `managers.edit`) stored in the `permissions` table. The package ships four
   by default (`managers.list/create/edit/delete`).
+- **What a non‑admin can change:** only an `admin` can hand out the `admin` role or edit, delete or restore an
+  admin. A non‑admin with `managers.create`/`managers.edit` can grant or revoke only the permissions they hold
+  themselves — the target's other permissions stay as they are (the form shows them disabled). Anything else is
+  refused with `403`.
 - **Two ways to check a permission** — both respect the rules above:
 
   **Middleware** (protect a whole route):
@@ -481,6 +485,7 @@ Your `ACCOUNTING_BRIDGE_*` values are wrong or the Bridge is unreachable. Verify
 **`403` / "Access denied" for a manager who should have access.**
 They lack the permission. Either attach it on their **edit** page, or give them the `admin` role (admins bypass all
 checks). Remember new permissions must be added to config **and** imported with `manager:permissions-import`.
+A non‑admin also gets `403` when acting on an admin or granting a permission they don't hold themselves.
 
 **My new permission doesn't appear in the panel.**
 You added it to config but didn't import it. Run `php artisan manager:permissions-import`, then reload the edit page.

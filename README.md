@@ -201,6 +201,9 @@ permission checks.
 
 > With defaults that means `/api/managers`, `/api/managers/{manager}`, etc.
 
+> Only an `admin` can hand out the `admin` role or edit, delete or restore an admin. A non‑admin can grant or revoke
+> only the permissions they hold themselves; the target's other permissions stay as they are. Anything else is `403`.
+
 ---
 
 ## 🛡️ Middleware & Authorization
