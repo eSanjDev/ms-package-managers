@@ -1,5 +1,4 @@
 import BaseTable from '@js/pages/BaseTable.js';
-import {data} from "autoprefixer";
 
 function escapeHtml(value) {
     return String(value ?? '')
