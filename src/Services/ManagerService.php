@@ -23,7 +23,7 @@ class ManagerService
     {
         $request = \request();
 
-        $perPage = min((int)$request->get('per_page', 15), 50);
+        $perPage = $this->perPage();
 
         $query = Manager::query();
 
@@ -184,7 +184,7 @@ class ManagerService
     public function getActivitiesWithPaginate(Manager $manager): LengthAwarePaginator
     {
         $request = request();
-        $perPage = min((int)$request->get('per_page', 15), 50);
+        $perPage = $this->perPage();
 
         $query = $manager->activities();
 
@@ -197,6 +197,13 @@ class ManagerService
         }
 
         return $query->paginate($perPage);
+    }
+
+    private function perPage(): int
+    {
+        $perPage = (int) request()->get('per_page', 15);
+
+        return $perPage < 1 ? 15 : min($perPage, 50);
     }
 
     public function setActivity(string $type, array $meta = [])
