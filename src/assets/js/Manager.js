@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.querySelector('.toggle-show-token');
     const inputToken = document.querySelector('input[name=token]');
 
-    if (inputToken) {
+    if (inputToken && toggleBtn) {
         toggleBtn.addEventListener('click', function () {
             if (inputToken.type === 'password') {
                 inputToken.type = 'text';
@@ -15,19 +15,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const refreshBtn = document.getElementById('regenerate');
-    refreshBtn.addEventListener('click', function () {
-        const length = 16;
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    if (inputToken && refreshBtn) {
+        refreshBtn.addEventListener('click', function () {
+            const length = 16;
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-        const array = new Uint32Array(length);
-        window.crypto.getRandomValues(array);
+            const array = new Uint32Array(length);
+            window.crypto.getRandomValues(array);
 
-        let result = '';
-        array.forEach(num => {
-            result += chars.charAt(num % chars.length);
-        });
-        inputToken.value = result
-    })
+            let result = '';
+            array.forEach(num => {
+                result += chars.charAt(num % chars.length);
+            });
+            inputToken.value = result
+        })
+    }
 
 
     $("select[name=role]").on('change', function () {
