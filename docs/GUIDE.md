@@ -379,8 +379,8 @@ echo $meta->value;
 ```
 
 Via the API:
-- `POST /api/managers/{manager}/meta` with `{ "key": "...", "value": "..." }`
-- `GET  /api/managers/{manager}/meta/{key}`
+- `POST /api/managers/{manager}/meta` with `{ "key": "...", "value": "..." }` — needs `managers.edit`
+- `GET  /api/managers/{manager}/meta/{key}` — needs `managers.list`
 
 **Activity log** = an audit trail. The package automatically logs `manager.created/updated/deleted/restored/login`.
 Each entry stores the actor, IP, and user agent. You can add your own entries:

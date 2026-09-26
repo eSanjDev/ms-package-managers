@@ -195,7 +195,7 @@ permission checks.
 | `DELETE` | `/{api_prefix}/managers/{manager}`                 | Soft‑delete a manager.                               | `managers.delete` |
 | `POST`   | `/{api_prefix}/managers/{id}/restore`              | Restore a soft‑deleted manager (`404` if not found). | `managers.delete` |
 | `GET`    | `/{api_prefix}/managers/{manager}/meta/{key}`      | Read one meta value (`404` if unset).                | `managers.list`   |
-| `POST`   | `/{api_prefix}/managers/{manager}/meta`            | Create/update a meta key/value.                      | `managers.list`   |
+| `POST`   | `/{api_prefix}/managers/{manager}/meta`            | Create/update a meta key/value.                      | `managers.edit`   |
 | `GET`    | `/{api_prefix}/managers/{manager}/activities`      | Paginated activity log (supports `search`).          | `managers.list`   |
 | `GET`    | `/{api_prefix}/managers/{manager}/activities/{id}` | One activity entry.                                  | `managers.list`   |
 
