@@ -25,9 +25,10 @@ class ManagerUpdateRequest extends FormRequest
 
     public function prepareForValidation(): void
     {
-        $this->merge([
-            'is_active' => $this->boolean('is_active'),
-            'uses_token' => $this->boolean('uses_token'),
-        ]);
+        foreach (['is_active', 'uses_token'] as $field) {
+            if ($this->has($field)) {
+                $this->merge([$field => $this->boolean($field)]);
+            }
+        }
     }
 }
