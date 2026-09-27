@@ -34,7 +34,7 @@ class ManagerService
             $query->where('name', 'like', '%' . $search . '%');
         }
 
-        return $query->paginate($perPage);
+        return $query->orderByDesc('id')->paginate($perPage);
     }
 
     public function findByEsanjId(int $esanjId): ?Manager
