@@ -76,7 +76,8 @@ php artisan manager:install
 ```
 
 It will:
-1. Publish the package **assets** to `resources/assets/packages/manager`.
+1. Publish the package **assets** to `resources/assets/packages/manager`, and the config to
+   `config/esanj/manager.php` (asking first if you already have one).
 2. Ask *"Should migrations be performed?"* — answer **yes** the first time. This creates the `managers`,
    `permissions`, `manager_permissions`, `manager_metas`, and `manager_activities` tables, then imports the
    default permissions.

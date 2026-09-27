@@ -37,7 +37,7 @@ php artisan manager:install
 
 The installer will:
 
-1. Publish assets (`vendor:publish --tag=esanj-manager-assets`).
+1. Publish the assets and the config — it asks before overwriting an existing `config/esanj/manager.php`.
 2. Optionally run `php artisan migrate`, then import default permissions (`manager:permissions-import`).
 3. Append any missing `.env` keys (listed below) so you can fill them in.
 
