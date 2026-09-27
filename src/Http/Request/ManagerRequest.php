@@ -16,13 +16,18 @@ abstract class ManagerRequest extends FormRequest
             'token' => ['nullable', 'string', 'max:' . config('esanj.manager.token_length', 128)],
             'is_active' => ['boolean'],
             'uses_token' => ['boolean'],
-            'permissions' => ['array', Rule::requiredIf($this->requestedRole() !== ManagerRoleEnum::Admin)],
+            'permissions' => ['array'],
             'permissions.*' => ['exists:permissions,key'],
         ];
     }
 
     public function prepareForValidation(): void
     {
+        // The forms send an empty "permissions" when nothing is ticked.
+        if ($this->exists('permissions') && in_array($this->input('permissions'), [null, ''], true)) {
+            $this->merge(['permissions' => []]);
+        }
+
         foreach (['is_active', 'uses_token'] as $field) {
             if ($this->has($field)) {
                 $this->merge([$field => $this->boolean($field)]);

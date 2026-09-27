@@ -22,6 +22,7 @@
             <div class="col-lg-8" id="permissions">
                 <div class="card p-6 mb-6">
                     <h3 class="mb-6">Permissions</h3>
+                    <input type="hidden" name="permissions" value="">
                     @error('permissions')
                     <div class="text-danger">{{ $message }}</div> @enderror
                     <div class="table-responsive">
