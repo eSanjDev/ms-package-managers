@@ -30,10 +30,8 @@ class ManagerService
             $query->onlyTrashed();
         }
 
-        if ($request->filled('search')) {
-            $query->where(function ($query) use ($request) {
-                return $query->where('name', 'like', '%' . $request->get('search') . '%');
-            });
+        if (($search = $this->searchTerm()) !== null) {
+            $query->where('name', 'like', '%' . $search . '%');
         }
 
         return $query->paginate($perPage);
@@ -190,13 +188,11 @@ class ManagerService
 
     public function getActivitiesWithPaginate(Manager $manager): LengthAwarePaginator
     {
-        $request = request();
         $perPage = $this->perPage();
 
         $query = $manager->activities();
 
-        if ($request->filled('search')) {
-            $search = $request->get('search');
+        if (($search = $this->searchTerm()) !== null) {
             $query->where(function ($q) use ($search) {
                 $q->where('type', 'like', '%' . $search . '%')
                     ->orWhereJsonContains('meta', $search);
@@ -204,6 +200,13 @@ class ManagerService
         }
 
         return $query->paginate($perPage);
+    }
+
+    private function searchTerm(): ?string
+    {
+        $search = request()->input('search');
+
+        return is_string($search) && trim($search) !== '' ? trim($search) : null;
     }
 
     private function perPage(): int
