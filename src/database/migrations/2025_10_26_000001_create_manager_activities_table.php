@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('manager_activities', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('manager_id')->constrained("managers");
+            $table->foreignId('manager_id')->constrained("managers")->cascadeOnDelete();
             $table->string('type');
             $table->json('meta')->nullable();
 
