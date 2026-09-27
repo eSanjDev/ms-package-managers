@@ -243,6 +243,21 @@ Route::middleware('manager.auth:api')->group(function () {
 
 ---
 
+## ⬆️ Upgrading to 1.0.2
+
+- **Writing a manager's meta follows the edit rules:** a non‑admin gets `403` on an admin's meta.
+- **`permissions` is optional for every role.** Leave it out and the manager's permissions stay as they are; send an
+  empty value (the panel form with nothing ticked) to remove them all.
+- **Parallel requests with the same expired API token all succeed** and carry the same renewed
+  `X-Manager-Access-Token`; before, only the first one did.
+- **Logging out revokes the accounting token** (when `ACCOUNTING_BRIDGE_REVOKE_PATH` is set) and clears every copy of it.
+- **Deleting a manager or permission row takes its links with it** (cascading foreign keys). This is in the create
+  migrations, so rebuild an older database (`php artisan migrate:fresh`).
+- **The manager cache uses the application's default store**; set `MANAGER_CACHE_STORE` to pick another. Before, it
+  fell back to `file` when `CACHE_STORE` was unset.
+- **`manager:install` asks before overwriting** `config/esanj/manager.php`.
+- **Republish the assets and any published views** (`--tag=esanj-manager-assets --force`, then `npm run build`).
+
 ## ⬆️ Upgrading to 1.0.1
 
 - **Laravel 12 or 13 is required.** 10 and 11 are past their security support, and Composer 2.9+ refuses to
