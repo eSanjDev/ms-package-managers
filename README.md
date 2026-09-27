@@ -68,7 +68,7 @@ The installer ensures these keys exist in `.env`:
 
 Other optional keys (all have sensible defaults — see [Configuration](#️-configuration)):
 `MANAGER_AUTH_ROUTE_PREFIX`, `MANAGER_LOGO_PATH`, `MANAGER_ACCESS_TOKEN_TTL`, `MANAGER_TOKEN_LENGTH`,
-`MANAGER_JUST_API`, `MANAGER_CACHE_ENABLED`, `MANAGER_CACHE_PREFIX`, `MANAGER_CACHE_TTL`,
+`MANAGER_JUST_API`, `MANAGER_CACHE_ENABLED`, `MANAGER_CACHE_STORE`, `MANAGER_CACHE_PREFIX`, `MANAGER_CACHE_TTL`,
 `MANAGER_RATE_LIMIT_ENABLED`, `MANAGER_RATE_LIMIT_MAX_ATTEMPTS`, `MANAGER_RATE_LIMIT_DECAY_SECONDS`.
 
 ---
@@ -97,7 +97,7 @@ php artisan vendor:publish --tag=esanj-manager-config
 | `middlewares.web`                | `['web', 'manager.auth:web']` | Middleware stack for web panel routes.                          |
 | `cache.is_enabled`               | `true`                        | Cache manager lookups.                                          |
 | `cache.prefix`                   | `manager_`                    | Cache key prefix.                                               |
-| `cache.driver`                   | `env('CACHE_STORE','file')`   | Cache store used for manager data.                             |
+| `cache.driver`                   | `null` (the app's store)      | Cache store for manager data (`MANAGER_CACHE_STORE`).          |
 | `cache.ttl`                      | `10080` (7 days, minutes)     | Manager cache TTL.                                             |
 | `rate_limit.is_enabled`          | `true`                        | Throttle the auth/login endpoints.                            |
 | `rate_limit.max_attempts`        | `10`                          | Allowed attempts before `429`.                               |

@@ -444,7 +444,7 @@ File: `config/esanj/manager.php` (read internally as `esanj.manager`).
 | `middlewares.web`          | `['web','manager.auth:web']`  | —                                     | Web route middleware.                         |
 | `cache.is_enabled`         | `true`                        | `MANAGER_CACHE_ENABLED`               | Enable manager caching.                       |
 | `cache.prefix`             | `manager_`                    | `MANAGER_CACHE_PREFIX`                | Cache key prefix.                             |
-| `cache.driver`             | `file`                        | `CACHE_STORE`                         | Cache store.                                  |
+| `cache.driver`             | `null` (the app's store)      | `MANAGER_CACHE_STORE`                 | Cache store.                                  |
 | `cache.ttl`                | `10080`                       | `MANAGER_CACHE_TTL`                   | Cache TTL (minutes, 7 days).                  |
 | `rate_limit.is_enabled`    | `true`                        | `MANAGER_RATE_LIMIT_ENABLED`          | Enable throttling.                            |
 | `rate_limit.max_attempts`  | `10`                          | `MANAGER_RATE_LIMIT_MAX_ATTEMPTS`     | Attempts before `429`.                        |
