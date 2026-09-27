@@ -12,9 +12,18 @@ class InstallCommand extends Command
     public function handle(): int
     {
         $this->info('Publishing configuration and assets...');
+        $tags = ['esanj-manager-assets'];
+
+        if (
+            ! file_exists(config_path('esanj/manager.php'))
+            || $this->confirm('config/esanj/manager.php already exists. Overwrite it?', false)
+        ) {
+            $tags[] = 'esanj-manager-config';
+        }
+
         $this->call('vendor:publish', [
             '--provider' => "Esanj\\Manager\\Providers\\ManagerServiceProvider",
-            '--tag' => ['esanj-manager-assets', 'esanj-manager-config'],
+            '--tag' => $tags,
             '--force' => true,
         ]);
 
