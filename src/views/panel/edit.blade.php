@@ -20,7 +20,7 @@
         @csrf
         @method('put')
         <div class="row">
-            <div class="col-lg-8 {{$manager->role->value == 'admin' ? "d-none":""}}" id="permissions">
+            <div class="col-lg-8 {{ old('role', $manager->role->value) === 'admin' ? 'd-none' : '' }}" id="permissions">
                 <div class="card p-6 mb-6">
                     <h3 class="mb-6">Permissions</h3>
                     <input type="hidden" name="permissions" value="">
@@ -116,7 +116,7 @@
                             <select name="role" class="form-select select2">
                                 @foreach($roles as $role)
                                     <option
-                                        @selected($manager->role->value === $role) value="{{$role}}">{{$role}}</option>
+                                        @selected(old('role', $manager->role->value) === $role) value="{{$role}}">{{$role}}</option>
                                 @endforeach
                             </select>
                             <label>Role</label>

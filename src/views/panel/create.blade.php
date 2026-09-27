@@ -19,7 +19,7 @@
     <form action="{{route('managers.store')}}" class="row form-setting" method="post">
         @csrf
         <div class="row">
-            <div class="col-lg-8" id="permissions">
+            <div class="col-lg-8 {{ old('role') === 'admin' ? 'd-none' : '' }}" id="permissions">
                 <div class="card p-6 mb-6">
                     <h3 class="mb-6">Permissions</h3>
                     <input type="hidden" name="permissions" value="">
@@ -93,9 +93,9 @@
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
                             <select name="is_active" class="form-select select2">
-                                <option @selected(old('is_active') == 1) value="1">Active
+                                <option @selected(old('is_active', 1) == 1) value="1">Active
                                 </option>
-                                <option @selected(old('is_active') == 0) value="0">Inactive
+                                <option @selected(old('is_active', 1) == 0) value="0">Inactive
                                 </option>
                             </select>
                             <label>Status</label>
@@ -104,9 +104,9 @@
                     <div class="col-12 position-relative select-box mb-4">
                         <div class="form-floating">
                             <select name="uses_token" class="form-select select2">
-                                <option @selected(old('uses_token') == 1) value="1">Yes
+                                <option @selected(old('uses_token', 1) == 1) value="1">Yes
                                 </option>
-                                <option @selected(old('uses_token') == 0) value="0">No
+                                <option @selected(old('uses_token', 1) == 0) value="0">No
                                 </option>
                             </select>
                             <label>Required Token</label>
@@ -116,7 +116,7 @@
                         <div class="form-floating">
                             <select name="role" class="form-select select2">
                                 @foreach($roles as $role)
-                                    <option value="{{$role}}" selected>{{$role}}</option>
+                                    <option value="{{$role}}" @selected(old('role', 'operator') === $role)>{{$role}}</option>
                                 @endforeach
                             </select>
                             <label>Role</label>
