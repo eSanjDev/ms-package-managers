@@ -6,7 +6,10 @@ use Carbon\Carbon;
 use Esanj\AuthBridge\Contracts\AuthBridgeServiceInterface;
 use Esanj\AuthBridge\Exceptions\TokenExchangeException;
 use Esanj\Manager\Models\Manager;
+use Illuminate\Contracts\Cache\LockProvider;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -14,6 +17,11 @@ use Throwable;
 
 class ManagerAuthService
 {
+    private const RENEWAL_PREFIX = 'manager_renewal_';
+    private const RENEWAL_SHARE_SECONDS = 30;
+    private const RENEWAL_LOCK_SECONDS = 15;
+    private const RENEWAL_WAIT_SECONDS = 10;
+
     public function __construct(
         protected ManagerService $managerService,
         protected AuthBridgeServiceInterface $authBridge,
@@ -111,6 +119,65 @@ class ManagerAuthService
      * @return array{manager: Manager, access_token: string, expires_in: int}|JsonResponse
      */
     private function renewAgainstAccounting(Manager $manager, array $payload): array|JsonResponse
+    {
+        $jti = is_string($payload['jti'] ?? null) ? $payload['jti'] : null;
+
+        if ($jti === null) {
+            return $this->renew($manager, $payload);
+        }
+
+        // Accounting spends a refresh token on first use: parallel requests carrying the same expired token share one renewal.
+        $key = self::RENEWAL_PREFIX . hash('sha256', $jti);
+
+        if (($shared = $this->sharedRenewal($manager, $key)) !== null) {
+            return $shared;
+        }
+
+        if (!Cache::getStore() instanceof LockProvider) {
+            return $this->renewAndShare($manager, $payload, $key);
+        }
+
+        $lock = Cache::lock($key . ':lock', self::RENEWAL_LOCK_SECONDS);
+
+        try {
+            $lock->block(self::RENEWAL_WAIT_SECONDS);
+        } catch (LockTimeoutException) {
+            $lock = null;
+        }
+
+        try {
+            return $this->sharedRenewal($manager, $key) ?? $this->renewAndShare($manager, $payload, $key);
+        } finally {
+            $lock?->release();
+        }
+    }
+
+    private function sharedRenewal(Manager $manager, string $key): ?array
+    {
+        $shared = Cache::get($key);
+
+        if (!is_array($shared) || !is_string($shared['access_token'] ?? null)) {
+            return null;
+        }
+
+        return ['manager' => $manager, 'access_token' => $shared['access_token'], 'expires_in' => (int) ($shared['expires_in'] ?? 0)];
+    }
+
+    private function renewAndShare(Manager $manager, array $payload, string $key): array|JsonResponse
+    {
+        $result = $this->renew($manager, $payload);
+
+        if (is_array($result)) {
+            Cache::put($key, [
+                'access_token' => $result['access_token'],
+                'expires_in' => $result['expires_in'],
+            ], self::RENEWAL_SHARE_SECONDS);
+        }
+
+        return $result;
+    }
+
+    private function renew(Manager $manager, array $payload): array|JsonResponse
     {
         $encrypted = $payload['acc_rt'] ?? null;
         if (empty($encrypted)) {
