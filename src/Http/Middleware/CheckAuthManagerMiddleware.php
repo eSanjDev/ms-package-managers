@@ -47,7 +47,7 @@ class CheckAuthManagerMiddleware
 
         if (!$manager || !$manager->isActive() || !$this->accountingAccessIsAlive()) {
             Auth::guard('manager')->logout();
-            session()->forget(config('esanj.auth_bridge.session_token_key'));
+            AuthBridge::clearToken();
 
             return redirect()->route('auth-bridge.redirect');
         }

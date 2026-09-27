@@ -2,6 +2,7 @@
 
 namespace Esanj\Manager\Http\Controllers;
 
+use Esanj\AuthBridge\Contracts\AuthBridgeServiceInterface;
 use Esanj\AuthBridge\Exceptions\ExtractJWTException;
 use Esanj\AuthBridge\Services\ClientCredentialsService;
 use Esanj\Manager\Exceptions\ManagerAccessDenied;
@@ -14,7 +15,6 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class ManagerAuthController extends BaseController
@@ -23,6 +23,7 @@ class ManagerAuthController extends BaseController
         protected ManagerService           $managerService,
         protected ManagerAuthService       $managerAuthService,
         protected ClientCredentialsService $clientCredentialsService,
+        protected AuthBridgeServiceInterface $authBridge,
     )
     {
     }
@@ -68,7 +69,7 @@ class ManagerAuthController extends BaseController
     public function logout()
     {
         Auth::guard('manager')->logout();
-        Session::forget('auth_bridge');
+        $this->authBridge->revokeToken();
 
         return redirect()->route('auth-bridge.redirect');
     }
@@ -91,7 +92,7 @@ class ManagerAuthController extends BaseController
      */
     private function extractAccessToken(): int
     {
-        $accessToken = session('auth_bridge.access_token');
+        $accessToken = $this->authBridge->getValidAccessToken();
 
         if (!$accessToken) {
             throw SessionExpiredException::make();

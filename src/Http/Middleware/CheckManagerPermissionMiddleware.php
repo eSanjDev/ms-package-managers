@@ -3,6 +3,7 @@
 namespace Esanj\Manager\Http\Middleware;
 
 use Closure;
+use Esanj\AuthBridge\Facades\AuthBridge;
 use Esanj\Manager\Services\ManagerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,7 @@ class CheckManagerPermissionMiddleware
 
     private function unauthorizedResponse(Request $request): Response
     {
-        session()->forget('auth_bridge');
+        AuthBridge::clearToken();
 
         if ($request->wantsJson()) {
             return response()->json([
