@@ -7,6 +7,11 @@ use Illuminate\Validation\Rule;
 
 class ManagerMetaRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return (bool) $this->user('manager')?->can('update', $this->route('manager'));
+    }
+
     public function rules(): array
     {
         $manager = $this->route('manager');
