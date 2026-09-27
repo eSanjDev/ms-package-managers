@@ -16,11 +16,12 @@ class CreateManagerCommand extends Command
     {
         $esanjId = $this->argument('esanj_id') ?? $this->ask('Esanj ID');
 
-        if (!$esanjId) {
-            $this->error('Esanj id are required.');
+        if (!ctype_digit((string) $esanjId) || (int) $esanjId < 1) {
+            $this->error('The Esanj ID must be a positive integer.');
             return self::FAILURE;
         }
 
+        $esanjId = (int) $esanjId;
         $manager = $service->findByEsanjId($esanjId);
 
         if ($manager) {
