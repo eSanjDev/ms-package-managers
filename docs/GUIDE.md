@@ -227,9 +227,9 @@ applies to both the web panel form and the JSON API:
   creates an active manager who must enter a static `token` at web login — send one (`"token": "..."`) or set it
   later from the panel, because a generated token is never returned.
 
-> `admin` managers pass every check regardless, so `permissions` is optional for them and required for the other
-> roles. When you load a manager (e.g. `GET /api/managers/{manager}`), its `permissions` are returned as objects
-> with `key`, `display_name`, and `description`.
+> `permissions` is optional: leave it out and the manager's permissions stay as they are; send `[]` to remove them
+> all. `admin` managers pass every check regardless. When you load a manager (e.g. `GET /api/managers/{manager}`),
+> its `permissions` are returned as objects with `key`, `display_name`, and `description`.
 
 ---
 
