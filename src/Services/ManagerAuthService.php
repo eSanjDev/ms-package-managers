@@ -253,7 +253,10 @@ class ManagerAuthService
         }
 
         $payload = json_decode(base64_decode($base64), true);
-        if (!is_array($payload) || empty($payload['manager_id']) || empty($payload['issued_at']) || empty($payload['expires_at'])) {
+        if (!is_array($payload)
+            || !is_int($payload['manager_id'] ?? null) || $payload['manager_id'] < 1
+            || !is_int($payload['issued_at'] ?? null)
+            || !is_int($payload['expires_at'] ?? null)) {
             return null;
         }
 
