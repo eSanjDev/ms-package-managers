@@ -55,7 +55,7 @@ the web panel and JSON API.
 ## 2. Requirements & dependencies
 
 - **PHP** 8.2+
-- **Laravel** 10, 11, 12, or 13
+- **Laravel** 12 or 13
 - **`esanj/auth-bridge`** — installed automatically as a dependency. It handles the OAuth handshake, so you must
   configure its `ACCOUNTING_BRIDGE_*` env values too (see [section 4](#4-filling-in-your-env)).
 

@@ -4,7 +4,7 @@ A microservice‑friendly Laravel package that adds a secure, configurable **Man
 OAuth login delegated to the **Esanj Auth Bridge**, static/expirable access tokens, and granular,
 role‑based permissions.
 
-**Supports:** Laravel 10 · 11 · 12 · 13 — PHP 8.2+
+**Supports:** Laravel 12 · 13 — PHP 8.2+
 
 ---
 
@@ -245,6 +245,8 @@ Route::middleware('manager.auth:api')->group(function () {
 
 ## ⬆️ Upgrading to 1.0.1
 
+- **Laravel 12 or 13 is required.** 10 and 11 are past their security support, and Composer 2.9+ refuses to
+  install any of their releases.
 - **Non‑admins are limited** (see [API Endpoints](#-api-endpoints)): giving the `admin` role, touching an admin's
   record, or granting a permission they don't hold now returns `403` — on the web and the API alike.
 - **An omitted `is_active` / `uses_token` no longer turns false** on the API: a `PUT` leaves it unchanged, a `POST`
