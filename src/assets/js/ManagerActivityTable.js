@@ -117,7 +117,7 @@ $(document).on('click', '.tabler-eye', function () {
         error: () => {
             Swal.fire({
                 title: 'Error!',
-                text: `Error deleting ${this.entityName}.`,
+                text: 'The activity could not be loaded.',
                 icon: 'error',
                 customClass: {
                     confirmButton: 'btn btn-success waves-effect waves-light'

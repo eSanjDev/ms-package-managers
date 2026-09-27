@@ -131,7 +131,7 @@
                                 <button type="button" class="btn btn-outline-dark" id="regenerate">
                                     <i class="icon-base ti ti-refresh"></i>
                                 </button>
-                                <input type="password" class="form-control" name="token" placeholder="Token"/>
+                                <input type="password" class="form-control" name="token" placeholder="Token" value="{{ old('token', $token) }}"/>
                                 <button type="button" class="btn btn-outline-dark toggle-show-token">
                                     <i class="icon-base ti ti-eye-off"></i>
                                 </button>

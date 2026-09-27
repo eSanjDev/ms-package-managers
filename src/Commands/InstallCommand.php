@@ -84,7 +84,7 @@ class InstallCommand extends Command
         if (!empty($newLines)) {
             $envContent = rtrim($envContent) . "\n" . implode("\n", $newLines) . "\n";
             file_put_contents($envPath, $envContent);
-            $this->info('.env keys added: ' . implode(', ', $keys));
+            $this->info('.env keys added: ' . implode(', ', array_map(fn ($line) => rtrim($line, '='), $newLines)));
         } else {
             $this->info('All env keys already exist.');
         }
