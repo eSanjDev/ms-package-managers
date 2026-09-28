@@ -18,9 +18,13 @@ trait HasManagerMeta
 
     public function setMeta(string $key, $value)
     {
-        return $this->meta()->updateOrCreate(
+        $meta = $this->meta()->updateOrCreate(
             ['key' => $key],
             ['value' => $value]
         );
+
+        $this->unsetRelation('meta');
+
+        return $meta;
     }
 }
