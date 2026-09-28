@@ -118,8 +118,7 @@ class ManagerService
 
         $permissionIds = Permission::whereIn('key', $permissionKeys)->pluck('id');
 
-        $manager->permissions()->sync($permissionIds);
-        $manager->load('permissions');
+        $this->repository->syncPermissions($manager, $permissionIds);
     }
 
     public function delete(int $id): bool

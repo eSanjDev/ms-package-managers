@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Cache;
 
 class ManagerRepository
 {
-    private const KEY_SUFFIX_ESANJ_ID = '_esanj_id';
+    // Holds the manager id only; the older '_esanj_id' entries held the whole model.
+    private const KEY_SUFFIX_ESANJ_ID = '_esanj';
     private const KEY_SUFFIX_MANAGER_ID = '_manager_id';
+    private const KEY_SUFFIX_VERSION = '_version';
 
     public function __construct(
         protected Manager         $model,
@@ -20,18 +22,24 @@ class ManagerRepository
 
     public function findById(int $id): ?Manager
     {
-        return $this->rememberInCache($id, self::KEY_SUFFIX_MANAGER_ID, function () use ($id) {
-            return $this->model->with('permissions')->find($id);
-        });
+        $find = fn () => $this->model->with('permissions')->find($id);
+
+        if (!$this->cacheEnabled()) {
+            return $find();
+        }
+
+        return $this->remember($this->makeCacheKey($id, self::KEY_SUFFIX_MANAGER_ID . $this->version($id)), $find);
     }
 
     public function findByEsanjId(int $esanjId): ?Manager
     {
-        $manager = $this->rememberInCache($esanjId, self::KEY_SUFFIX_ESANJ_ID, function () use ($esanjId) {
-            return $this->model->where('esanj_id', $esanjId)->first();
-        });
+        $find = fn () => $this->model->where('esanj_id', $esanjId)->value('id');
 
-        return $manager ? $this->findById($manager->id) : null;
+        $id = $this->cacheEnabled()
+            ? $this->remember($this->makeCacheKey($esanjId, self::KEY_SUFFIX_ESANJ_ID), $find)
+            : $find();
+
+        return $id ? $this->findById((int) $id) : null;
     }
 
     public function create(array $data): Manager
@@ -53,6 +61,16 @@ class ManagerRepository
         return $manager;
     }
 
+    /**
+     * @param iterable<int> $permissionIds
+     */
+    public function syncPermissions(Manager $manager, iterable $permissionIds): void
+    {
+        $manager->permissions()->sync($permissionIds);
+        $manager->load('permissions');
+        $this->clearCache($manager);
+    }
+
     public function delete(int $id): bool
     {
         $manager = $this->findById($id);
@@ -68,29 +86,29 @@ class ManagerRepository
 
     public function restore(int $id): ?Manager
     {
-        $this->model->withTrashed()->findOrFail($id)->restore();
-        $manager = $this->findById($id);
-        if ($manager) {
-            $this->clearCache($manager);
-        }
-        return $manager;
+        $manager = $this->model->withTrashed()->findOrFail($id);
+        $manager->restore();
+        $this->clearCache($manager);
+
+        return $this->findById($id);
     }
 
-    private function rememberInCache(int|string $identifier, string $suffix, callable $callback): ?Manager
+    private function remember(string $key, callable $callback): mixed
     {
-        $key = $this->makeCacheKey($identifier, $suffix);
-
-        return $this->getCacheRepository()->remember(
-            $key,
-            $this->getCacheTtlInSeconds(),
-            $callback
-        );
+        return $this->getCacheRepository()->remember($key, $this->getCacheTtlInSeconds(), $callback);
     }
 
     protected function clearCache(Manager $manager): void
     {
-        $this->getCacheRepository()->forget($this->makeCacheKey($manager->id, self::KEY_SUFFIX_MANAGER_ID));
-        $this->getCacheRepository()->forget($this->makeCacheKey($manager->esanj_id, self::KEY_SUFFIX_ESANJ_ID));
+        $cache = $this->getCacheRepository();
+
+        $cache->forever($this->makeCacheKey($manager->id, self::KEY_SUFFIX_VERSION), bin2hex(random_bytes(8)));
+        $cache->forget($this->makeCacheKey($manager->esanj_id, self::KEY_SUFFIX_ESANJ_ID));
+    }
+
+    private function version(int $id): string
+    {
+        return (string) ($this->getCacheRepository()->get($this->makeCacheKey($id, self::KEY_SUFFIX_VERSION)) ?? '');
     }
 
     private function makeCacheKey(int|string $id, string $suffix): string
@@ -98,11 +116,14 @@ class ManagerRepository
         return $this->getCachePrefix() . $id . $suffix;
     }
 
+    private function cacheEnabled(): bool
+    {
+        return (bool) config('esanj.manager.cache.is_enabled', true);
+    }
+
     private function getCacheTtlInSeconds(): int
     {
-        return config('esanj.manager.cache.is_enabled', true)
-            ? (int) config('esanj.manager.cache.ttl', 60) * 60
-            : 1;
+        return (int) config('esanj.manager.cache.ttl', 60) * 60;
     }
 
     private function getCachePrefix(): string
