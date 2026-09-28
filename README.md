@@ -243,35 +243,6 @@ Route::middleware('manager.auth:api')->group(function () {
 
 ---
 
-## ⬆️ Upgrading to 1.0.2
-
-- **Writing a manager's meta follows the edit rules:** a non‑admin gets `403` on an admin's meta.
-- **`permissions` is optional for every role.** Leave it out and the manager's permissions stay as they are; send an
-  empty value (the panel form with nothing ticked) to remove them all.
-- **Parallel requests with the same expired API token all succeed** and carry the same renewed
-  `X-Manager-Access-Token`; before, only the first one did.
-- **Logging out revokes the accounting token** (when `ACCOUNTING_BRIDGE_REVOKE_PATH` is set) and clears every copy of it.
-- **Deleting a manager or permission row takes its links with it** (cascading foreign keys). This is in the create
-  migrations, so rebuild an older database (`php artisan migrate:fresh`).
-- **The manager cache uses the application's default store**; set `MANAGER_CACHE_STORE` to pick another. Before, it
-  fell back to `file` when `CACHE_STORE` was unset.
-- **`manager:install` asks before overwriting** `config/esanj/manager.php`.
-- **Republish the assets and any published views** (`--tag=esanj-manager-assets --force`, then `npm run build`).
-
-## ⬆️ Upgrading to 1.0.1
-
-- **Laravel 12 or 13 is required.** 10 and 11 are past their security support, and Composer 2.9+ refuses to
-  install any of their releases.
-- **Non‑admins are limited** (see [API Endpoints](#-api-endpoints)): giving the `admin` role, touching an admin's
-  record, or granting a permission they don't hold now returns `403` — on the web and the API alike.
-- **An omitted `is_active` / `uses_token` no longer turns false** on the API: a `PUT` leaves it unchanged, a `POST`
-  uses the column default (active, static token required).
-- **Writing meta needs `managers.edit`** (`access_provider.meta_write`); reading still needs `managers.list`. A
-  published config without the new key falls back to `managers.edit`.
-- **Republish and rebuild the assets:** `php artisan vendor:publish --tag=esanj-manager-assets --force`, then
-  `npm run build`.
-- **Requires `esanj/auth-bridge` 1.0.1+** (php-jwt 7).
-
 ## 📚 Documentation
 
 For a complete, beginner‑friendly, step‑by‑step walkthrough — installing, the auth flows explained simply,
