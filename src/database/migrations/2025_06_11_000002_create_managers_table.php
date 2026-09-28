@@ -17,7 +17,9 @@ return new class extends Migration {
             $table->string("name")->nullable();
             $table->enum('role', ManagerRoleEnum::toArray())->default(ManagerRoleEnum::Manager);
             $table->string('token');
+            $table->string('secret_key')->unique();
             $table->boolean('is_active')->default(true);
+            $table->boolean('uses_token')->default(true);
             $table->longText('extra')->nullable();
             $table->timestamp('last_login')->nullable();
 
