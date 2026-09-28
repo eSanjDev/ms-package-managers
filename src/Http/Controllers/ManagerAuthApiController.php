@@ -3,8 +3,9 @@
 namespace Esanj\Manager\Http\Controllers;
 
 use Esanj\AuthBridge\Exceptions\AuthBridgeException;
-use Esanj\AuthBridge\Services\AuthBridgeService;
-use Esanj\AuthBridge\Services\ClientCredentialsService;
+use Esanj\AuthBridge\Contracts\AuthBridgeServiceInterface;
+use Esanj\AuthBridge\Contracts\ClientCredentialsServiceInterface;
+use Esanj\AuthBridge\DTOs\TokenData;
 use Esanj\Manager\Exceptions\ManagerAccessDenied;
 use Esanj\Manager\Http\Request\ManagerAuthRequest;
 use Esanj\Manager\Http\Request\ManagerVerifyRequest;
@@ -19,8 +20,8 @@ class ManagerAuthApiController extends BaseController
     public function __construct(
         protected ManagerService           $managerService,
         protected ManagerAuthService       $authService,
-        protected AuthBridgeService        $bridgeService,
-        protected ClientCredentialsService $clientCredentialsService,
+        protected AuthBridgeServiceInterface $bridgeService,
+        protected ClientCredentialsServiceInterface $clientCredentialsService,
     )
     {
     }
@@ -112,7 +113,13 @@ class ManagerAuthApiController extends BaseController
         ]);
 
         $accountingRefreshToken = $this->pullAccountingRefreshToken($decoded->jti ?? null);
-        $accessData = $this->authService->generateAccessToken($manager, $accountingRefreshToken);
+        $accountingToken = new TokenData(
+            accessToken: $authCode,
+            tokenType: 'Bearer',
+            expiresIn: max(0, (int) ($decoded->exp ?? now()->timestamp) - now()->timestamp),
+            expiresAt: new \DateTimeImmutable('@'.(int) ($decoded->exp ?? now()->timestamp)),
+        );
+        $accessData = $this->authService->generateAccessToken($manager, $accountingRefreshToken, $accountingToken);
 
         return response()->json([
             'status' => true,

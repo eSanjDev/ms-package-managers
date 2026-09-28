@@ -4,6 +4,7 @@ namespace Esanj\Manager\Services;
 
 use Carbon\Carbon;
 use Esanj\AuthBridge\Contracts\AuthBridgeServiceInterface;
+use Esanj\AuthBridge\DTOs\TokenData;
 use Esanj\AuthBridge\Exceptions\TokenExchangeException;
 use Esanj\Manager\Models\Manager;
 use Illuminate\Contracts\Cache\LockProvider;
@@ -47,20 +48,27 @@ class ManagerAuthService
     /**
      * Issue a manager access token for the given manager.
      *
-     * The accounting refresh token is embedded (encrypted) inside the token so
+     * The accounting tokens are embedded (encrypted) inside the token so
      * that, when the short access window lapses, the token can be silently
      * renewed against accounting without the client holding a refresh token.
+     * Its lifetime never exceeds the Accounting access token's expiry.
      *
      * @return array{access_token: string, expires_in: int, expires_at: int}
      */
-    public function generateAccessToken(Manager $manager, ?string $accountingRefreshToken = null): array
+    public function generateAccessToken(Manager $manager, ?string $accountingRefreshToken = null, ?TokenData $accountingToken = null): array
     {
         $extra = [];
         if (!empty($accountingRefreshToken)) {
             $extra['acc_rt'] = Crypt::encryptString($accountingRefreshToken);
         }
 
-        $token = $this->buildToken($manager, 'access', (int) config('esanj.manager.access_token_expires_in'), $extra);
+        if ($accountingToken !== null) {
+            $data = $accountingToken->toArray();
+            unset($data['refresh_token']);
+            $extra['acc_at'] = Crypt::encryptString(json_encode($data, JSON_THROW_ON_ERROR));
+        }
+
+        $token = $this->buildToken($manager, 'access', (int) config('esanj.manager.access_token_expires_in'), $extra, $accountingToken);
 
         return [
             'access_token' => $token['token'],
@@ -79,7 +87,7 @@ class ManagerAuthService
      *     'expires_in' => int]                              — token was renewed
      *  - JsonResponse                                        — auth failed (401/403/400)
      *
-     * @return array{manager: Manager, access_token?: string, expires_in?: int}|JsonResponse
+     * @return array{manager: Manager, accounting_token?: TokenData|null, access_token?: string, expires_in?: int}|JsonResponse
      */
     public function authenticate(): array|JsonResponse
     {
@@ -104,8 +112,11 @@ class ManagerAuthService
             return $this->errorResponse('manager::manager.errors.manager_not_active', 403);
         }
 
-        if (!$this->isExpired($payload)) {
-            return ['manager' => $manager];
+        // Older bearer tokens with a refresh grant can acquire the Accounting identity once.
+        $needsAccountingToken = !isset($payload['acc_at']) && !empty($payload['acc_rt']);
+
+        if (!$this->isExpired($payload) && !$needsAccountingToken) {
+            return ['manager' => $manager, 'accounting_token' => $this->accountingToken($payload)];
         }
 
         return $this->renewAgainstAccounting($manager, $payload);
@@ -116,7 +127,7 @@ class ManagerAuthService
      * valid at accounting. When accounting has blocked/revoked the manager the
      * refresh fails and no new access is granted.
      *
-     * @return array{manager: Manager, access_token: string, expires_in: int}|JsonResponse
+     * @return array{manager: Manager, accounting_token: TokenData|null, access_token: string, expires_in: int}|JsonResponse
      */
     private function renewAgainstAccounting(Manager $manager, array $payload): array|JsonResponse
     {
@@ -160,7 +171,17 @@ class ManagerAuthService
             return null;
         }
 
-        return ['manager' => $manager, 'access_token' => $shared['access_token'], 'expires_in' => (int) ($shared['expires_in'] ?? 0)];
+        $verified = $this->decodeVerified($shared['access_token']);
+        if ($verified === null || $this->isExpired($verified[0])) {
+            return null;
+        }
+
+        return [
+            'manager' => $manager,
+            'access_token' => $shared['access_token'],
+            'expires_in' => max(0, $verified[0]['expires_at'] - now()->timestamp),
+            'accounting_token' => $this->accountingToken($verified[0]),
+        ];
     }
 
     private function renewAndShare(Manager $manager, array $payload, string $key): array|JsonResponse
@@ -199,14 +220,29 @@ class ManagerAuthService
 
         $fresh = $this->generateAccessToken(
             $manager,
-            $accounting->hasRefreshToken() ? $accounting->refreshToken : $accountingRefreshToken
+            $accounting->hasRefreshToken() ? $accounting->refreshToken : $accountingRefreshToken,
+            $accounting,
         );
 
         return [
             'manager' => $manager,
             'access_token' => $fresh['access_token'],
             'expires_in' => $fresh['expires_in'],
+            'accounting_token' => $accounting,
         ];
+    }
+
+    private function accountingToken(array $payload): ?TokenData
+    {
+        if (!is_string($payload['acc_at'] ?? null)) {
+            return null;
+        }
+
+        try {
+            return TokenData::fromStorage(json_decode(Crypt::decryptString($payload['acc_at']), true, flags: JSON_THROW_ON_ERROR));
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**
@@ -215,9 +251,12 @@ class ManagerAuthService
      * @param array<string, mixed> $extra
      * @return array{token: string, expires_in: int, expires_at: int}
      */
-    private function buildToken(Manager $manager, string $type, int $ttlMinutes, array $extra = []): array
+    private function buildToken(Manager $manager, string $type, int $ttlMinutes, array $extra = [], ?TokenData $accountingToken = null): array
     {
         $expiresAt = now()->addMinutes($ttlMinutes);
+        if ($accountingToken !== null && $accountingToken->expiresAt->getTimestamp() < $expiresAt->timestamp) {
+            $expiresAt = Carbon::createFromTimestamp($accountingToken->expiresAt->getTimestamp());
+        }
 
         $payload = array_merge($extra, [
             'manager_id' => $manager->id,
@@ -232,7 +271,7 @@ class ManagerAuthService
 
         return [
             'token' => $base64 . '.' . $signature,
-            'expires_in' => $ttlMinutes * 60,
+            'expires_in' => max(0, $expiresAt->timestamp - now()->timestamp),
             'expires_at' => $expiresAt->timestamp,
         ];
     }
@@ -278,7 +317,7 @@ class ManagerAuthService
 
     private function isExpired(array $payload): bool
     {
-        return Carbon::createFromTimestamp($payload['expires_at'])->isPast();
+        return $payload['expires_at'] <= now()->timestamp;
     }
 
     private function errorResponse(string $messageKey, int $status): JsonResponse

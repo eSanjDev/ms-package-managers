@@ -4,6 +4,7 @@ namespace Esanj\Manager\Http\Middleware;
 
 use Closure;
 use Esanj\AuthBridge\Facades\AuthBridge;
+use Esanj\AuthBridge\Support\RequestTokenContext;
 use Esanj\Manager\Services\ManagerAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -14,7 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckAuthManagerMiddleware
 {
     public function __construct(
-        protected ManagerAuthService $authService
+        protected ManagerAuthService $authService,
+        protected RequestTokenContext $requestTokens,
     )
     {
     }
@@ -76,9 +78,12 @@ class CheckAuthManagerMiddleware
             return $result;
         }
 
-        Auth::login($result['manager']);
+        Auth::setUser($result['manager']);
 
-        $response = $next($request);
+        $response = $this->requestTokens->run(
+            $result['accounting_token'] ?? null,
+            fn () => $next($request),
+        );
         
         if (!empty($result['access_token'])) {
             $response->headers->set('X-Manager-Access-Token', $result['access_token']);
