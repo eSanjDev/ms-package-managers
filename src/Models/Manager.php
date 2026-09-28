@@ -2,6 +2,7 @@
 
 namespace Esanj\Manager\Models;
 
+use Esanj\AuthBridge\Contracts\AccountingIdentity;
 use Esanj\Manager\Enums\ManagerRoleEnum;
 use Esanj\Manager\Traits\HasManagerActivities;
 use Esanj\Manager\Traits\HasManagerMeta;
@@ -9,7 +10,7 @@ use Esanj\Manager\Traits\HasManagerPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Manager extends Authenticatable
+class Manager extends Authenticatable implements AccountingIdentity
 {
     use SoftDeletes, HasManagerPermissions, HasManagerActivities, HasManagerMeta;
 
@@ -45,6 +46,11 @@ class Manager extends Authenticatable
                 $manager->secret_key = bin2hex(random_bytes(16));
             }
         });
+    }
+
+    public function accountingId(): int
+    {
+        return (int) $this->esanj_id;
     }
 
     public function isActive(): bool
