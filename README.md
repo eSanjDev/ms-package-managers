@@ -206,6 +206,18 @@ permission checks.
 
 > With defaults that means `/api/managers`, `/api/managers/{manager}`, etc.
 
+### Accounting identity in API requests
+
+The manager bearer carries the Accounting access token encrypted with Laravel's application key, alongside
+the encrypted refresh grant. Its expiry is capped by the Accounting token's expiry. After verifying the bearer,
+`manager.auth:api` exposes that identity through Auth Bridge for the downstream request, including remote actor
+exchange. It does not write a browser session. The temporary identity is removed even if the route throws.
+
+Clients must adopt `X-Manager-Access-Token` when the middleware renews a bearer. Renewal also replaces the embedded
+Accounting access token. Older bearers with a refresh grant acquire this identity on their next request; older
+bearers without one need a fresh login before performing remote writes. An absent API identity never falls back
+to another user's browser token. Deploy the updated managers and auth-bridge packages together.
+
 > Only an `admin` can hand out the `admin` role or edit, delete or restore an admin. A non‑admin can grant or revoke
 > only the permissions they hold themselves; the target's other permissions stay as they are. Anything else is `403`.
 
