@@ -197,7 +197,10 @@ class ManagerAuthService
             return $this->errorResponse('manager::manager.errors.unauthorized', 401);
         }
 
-        $fresh = $this->generateAccessToken($manager, $accounting->refreshToken);
+        $fresh = $this->generateAccessToken(
+            $manager,
+            $accounting->hasRefreshToken() ? $accounting->refreshToken : $accountingRefreshToken
+        );
 
         return [
             'manager' => $manager,
