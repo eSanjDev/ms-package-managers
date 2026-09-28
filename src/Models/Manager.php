@@ -39,6 +39,11 @@ class Manager extends Authenticatable implements AccountingIdentity
         'secret_key',
     ];
 
+    protected $attributes = [
+        'is_active' => true,
+        'uses_token' => true,
+    ];
+
     protected static function booted(): void
     {
         static::creating(function ($manager) {
