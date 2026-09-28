@@ -50,6 +50,10 @@ class ManagerAuthApiController extends BaseController
 
             $decoded = $this->clientCredentialsService->extractJwt($response->accessToken);
         } catch (AuthBridgeException $e) {
+            if ($e->getStatusCode() < 500) {
+                $this->authService->hitRateLimit();
+            }
+
             return $this->response($e->getMessage(), false, $e->getCode());
         }
 
@@ -67,6 +71,8 @@ class ManagerAuthApiController extends BaseController
             ]);
 
         } catch (ManagerAccessDenied $e) {
+            $this->authService->hitRateLimit();
+
             return $this->response($e->getMessage(), false, $e->getCode());
         }
     }
