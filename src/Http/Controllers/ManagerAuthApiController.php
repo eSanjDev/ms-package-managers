@@ -77,7 +77,7 @@ class ManagerAuthApiController extends BaseController
     public function authenticateFromBridge(ManagerAuthRequest $request): JsonResponse
     {
         $authCode = $request->input('auth_code');
-        $token = $request->input('token', "");
+        $token = $request->string('token')->toString();
 
         try {
             $decoded = $this->clientCredentialsService->extractJwt($authCode);
